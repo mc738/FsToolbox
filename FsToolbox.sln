@@ -4,6 +4,12 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox", "FsToolbox\FsTo
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Web", "FsToolbox.Web\FsToolbox.Web.fsproj", "{7DDBE8B2-EAB9-41E2-9B86-3FD8BA4B29AC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{C7A31AAF-6741-45FC-8FA7-447D993E1295}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
