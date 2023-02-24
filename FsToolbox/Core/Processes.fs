@@ -1,4 +1,4 @@
-﻿module FsToolbox.Core
+﻿namespace FsToolbox.Core
 
 module Processes =
 

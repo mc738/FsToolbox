@@ -24,7 +24,6 @@
         <Compile Include="Core\Compression.fs" />
         <Compile Include="Core\Json.fs" />
         <Compile Include="Core\Rsa.fs" />
-        <Compile Include="Core\Jwt.fs" />
         <Compile Include="Extensions\Strings.fs" />
         <Compile Include="Extensions\Streams.fs" />
         <Compile Include="AppEnvironment\Args\Mapping.fs" />
