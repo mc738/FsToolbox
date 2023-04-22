@@ -18,8 +18,7 @@ module FileIO =
             File.ReadAllBytes(path) |> Ok
         with
         | exn -> Error exn.Message
-        
-        
+                
     let readText (path: string) =
         try
             File.ReadAllText path |> Ok

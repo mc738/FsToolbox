@@ -11,6 +11,7 @@
     <ItemGroup>
         <Compile Include="Library.fs" />
         <Compile Include="Core\Common.fs" />
+        <Compile Include="Core\Results.fs" />
         <Compile Include="Core\Strings.fs" />
         <Compile Include="Core\IO.fs" />
         <Compile Include="Core\Streams.fs" />
