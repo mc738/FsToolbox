@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Tokens\Common.fs" />
         <Compile Include="Tokens\Jwt.fs" />
     </ItemGroup>
 

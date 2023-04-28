@@ -9,31 +9,6 @@ module Jwt =
     open System.Text
     open System.Text.Json.Serialization
     open Microsoft.IdentityModel.Tokens
-    
-    [<CLIMutable>]
-    type JwtSettings =
-        { [<JsonPropertyName("name")>]
-          Name: string
-          [<JsonPropertyName("secretKey")>]
-          SecretKey: string
-          [<JsonPropertyName("audience")>]
-          Audience: string
-          [<JsonPropertyName("tokenExpiry")>]
-          TokenExpiry: float
-          [<JsonPropertyName("issuer")>]
-          Issuer: string }
-
-    type ServiceJwtSettings =
-        { [<JsonPropertyName("name")>]
-          Name: string
-          [<JsonPropertyName("serverPublicKey")>]
-          ServerPublicKey: string
-          [<JsonPropertyName("audience")>]
-          Audience: string
-          [<JsonPropertyName("tokenExpiry")>]
-          TokenExpiry: float
-          [<JsonPropertyName("issuer")>]
-          Issuer: string }
 
     type JwtTokenValidationError =
         | EncryptionKeyNotFound
@@ -45,71 +20,74 @@ module Jwt =
         | TokenException of string
         | Unhandled of string
 
-    let createClaim issuer key value = Claim(key, value, issuer)
+    type CreateTokenParameters =
+        { Issuer: string
+          Audience: string
+          Lifetime: TokenLifetime
+          Username: string
+          Claims: (string * string) list }
 
-    let createClaims issuer (keyValues: (string * string) list) =
-        keyValues
-        |> List.map (fun (k, v) -> Claim(k, v, issuer))
+        member tp.CreateClaims() =
+            [ Claim("username", tp.Username, tp.Issuer) ] @ createClaims tp.Issuer tp.Claims
 
-    let createSymmetricToken (settings: JwtSettings) username claims =
-        let claims =
-            [ Claim("username", username, settings.Issuer) ]
-            @ createClaims settings.Issuer claims
+    type ValidateTokenParameters =
+        { Issuer: string option
+          Audience: string option
+          ValidateLifetime: bool }
 
-        let signedKey =
-            SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.SecretKey))
+    let createSymmetricToken (parameters: CreateTokenParameters) (secretKey: byte array) =
 
-        let (now: Nullable<DateTime>) = Nullable<DateTime>(DateTime.UtcNow)
-
-        let expiryTime =
-            Nullable<DateTime>(now.Value.AddMinutes(settings.TokenExpiry))
+        let signedKey = SymmetricSecurityKey(secretKey)
 
         let jwt =
             JwtSecurityToken(
-                settings.Issuer,
-                settings.Audience,
-                claims,
-                now,
-                expiryTime,
+                parameters.Issuer,
+                parameters.Audience,
+                parameters.CreateClaims(),
+                parameters.Lifetime.GetStart(),
+                parameters.Lifetime.GetExpiry(),
                 SigningCredentials(signedKey, SecurityAlgorithms.HmacSha256)
             )
 
         let jwtSecurityHandler = JwtSecurityTokenHandler()
         jwtSecurityHandler.WriteToken(jwt)
 
-    let createRsaToken issuer audience createdOn expiresOn privateRsaXml username claims =
-        let claims =
-            [ Claim("username", username, issuer) ]
-            @ createClaims issuer claims
-
-        use rsa = new RSACryptoServiceProvider()
-        rsa.FromXmlString(privateRsaXml)
+    let createRsaToken (parameters: CreateTokenParameters) (rsa: RSACryptoServiceProvider) =
 
         let jwt =
             JwtSecurityToken(
-                issuer,
-                audience,
-                claims,
-                Nullable<DateTime>(createdOn),
-                Nullable<DateTime>(expiresOn),
+                parameters.Issuer,
+                parameters.Audience,
+                parameters.CreateClaims(),
+                parameters.Lifetime.GetStart(),
+                parameters.Lifetime.GetExpiry(),
                 SigningCredentials(RsaSecurityKey(rsa.ExportParameters(true)), SecurityAlgorithms.RsaSha512Signature)
             )
 
         let jwtSecurityHandler = JwtSecurityTokenHandler()
         jwtSecurityHandler.WriteToken(jwt)
 
-    let validateSymmetricToken (settings: JwtSettings) (token: string) =
+    let validateSymmetricToken (parameters: ValidateTokenParameters) (secretKey: byte array) (token: string) =
         let tokenHandler = JwtSecurityTokenHandler()
 
         try
             let p = TokenValidationParameters()
             p.ValidateIssuerSigningKey <- true
-            p.ValidateIssuer <- true
-            p.ValidateAudience <- true
-            p.ValidIssuer <- settings.Issuer
-            p.ValidAudience <- settings.Audience
-            p.IssuerSigningKey <- SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.SecretKey))
-
+            match parameters.Issuer with
+            | Some issuer ->
+                p.ValidateIssuer <- true
+                p.ValidIssuer <- issuer
+            | None -> ()
+            
+            match parameters.Audience with
+            | Some audience ->
+                p.ValidateAudience <- true
+                p.ValidAudience <- audience
+            | None -> ()
+            
+            p.IssuerSigningKey <- SymmetricSecurityKey(secretKey)
+            p.ValidateLifetime <- parameters.ValidateLifetime
+            
             match tokenHandler.ValidateToken(token, p) with
             | _ -> Ok()
         with
@@ -123,21 +101,28 @@ module Jwt =
         | :? SecurityTokenInvalidSignatureException -> Error TokenInvalidSignature
         | :? SecurityTokenException -> Error(TokenException "Error")
 
-    let validateRsaToken issuer audience rsaPublicXml (token: string) =
+    let validateRsaToken (parameters: ValidateTokenParameters) (token: string) (rsa: RSACryptoServiceProvider) =
         let tokenHandler = JwtSecurityTokenHandler()
 
         try
-            use rsa = new RSACryptoServiceProvider()
-            rsa.FromXmlString(rsaPublicXml)
 
             let p = TokenValidationParameters()
             p.ValidateIssuerSigningKey <- true
-            p.ValidateIssuer <- true
-            p.ValidateAudience <- true
-            p.ValidIssuer <- issuer
-            p.ValidAudience <- audience
+            match parameters.Issuer with
+            | Some issuer ->
+                p.ValidateIssuer <- true
+                p.ValidIssuer <- issuer
+            | None -> ()
+            
+            match parameters.Audience with
+            | Some audience ->
+                p.ValidateAudience <- true
+                p.ValidAudience <- audience
+            | None -> ()
+            
             p.IssuerSigningKey <- RsaSecurityKey(rsa)
-
+            p.ValidateLifetime <- parameters.ValidateLifetime
+            
             match tokenHandler.ValidateToken(token, p) with
             | _ -> Ok()
         with
@@ -155,32 +140,8 @@ module Jwt =
         let tokenHandler = JwtSecurityTokenHandler()
         tokenHandler.ReadJwtToken token
 
-    type JwtClaim =
-        { Issuer: string
-          OriginalIssuer: string
-          Type: string
-          Value: string }
-
-    type JwtClaimMap =
-        { Claims: Map<string, JwtClaim> }
-
-
-        static member Create(claims: JwtClaim list) =
-            { Claims =
-                  claims
-                  |> List.map (fun c -> c.Type, c)
-                  |> Map.ofList }
-
-        member jcm.TryGet(claim) = jcm.Claims.TryFind claim
-
-    let getClaims (jwt: JwtSecurityToken) =
+    let getClaimsMap (jwt: JwtSecurityToken) =
         jwt.Claims
         |> List.ofSeq
-        |> List.map
-            (fun claim ->
-                { Issuer = claim.Issuer
-                  OriginalIssuer = claim.OriginalIssuer
-                  Type = claim.Type
-                  Value = claim.Value })
-        |> JwtClaimMap.Create
-
+        |> List.map (fun claim -> claim.Type, claim)
+        |> Map.ofList
