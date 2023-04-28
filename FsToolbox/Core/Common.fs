@@ -29,3 +29,5 @@ module Conversions =
         bytes
         |> Array.fold (fun (sb: StringBuilder) b -> sb.AppendFormat("{0:x2}", b)) (StringBuilder(bytes.Length * 2))
         |> fun sb -> sb.ToString()
+        
+    let toBase64 (data: byte array) = Convert.ToBase64String data
