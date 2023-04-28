@@ -31,3 +31,5 @@ module Conversions =
         |> fun sb -> sb.ToString()
         
     let toBase64 (data: byte array) = Convert.ToBase64String data
+    
+    let fromBase64 (str: string) = Convert.FromBase64String str

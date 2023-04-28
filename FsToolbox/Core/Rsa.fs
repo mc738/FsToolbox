@@ -95,7 +95,7 @@ module Rsa =
         =
         rsa.VerifyData(value, hashAlgorithm.Serialize(), signature)
 
-    let verifyHash256Signature (value: byte array) (signature: byte array) (rsa: RSACryptoServiceProvider) =
+    let verifySHA256Signature (value: byte array) (signature: byte array) (rsa: RSACryptoServiceProvider) =
         verifySignature HashAlgorithm.SHA256 value signature rsa
 
     /// Create a base64 encoded RSA SHA256 signature for a value based on private RSA details.        
