@@ -24,11 +24,9 @@ module Jwt =
         { Issuer: string
           Audience: string
           Lifetime: TokenLifetime
-          Username: string
           Claims: (string * string) list }
 
-        member tp.CreateClaims() =
-            [ Claim("username", tp.Username, tp.Issuer) ] @ createClaims tp.Issuer tp.Claims
+        member tp.CreateClaims() = createClaims tp.Issuer tp.Claims
 
     type ValidateTokenParameters =
         { Issuer: string option
@@ -44,8 +42,8 @@ module Jwt =
                 parameters.Issuer,
                 parameters.Audience,
                 parameters.CreateClaims(),
-                parameters.Lifetime.GetStart(),
-                parameters.Lifetime.GetExpiry(),
+                parameters.Lifetime.Start,
+                parameters.Lifetime.Expiry,
                 SigningCredentials(signedKey, SecurityAlgorithms.HmacSha256)
             )
 
@@ -59,8 +57,8 @@ module Jwt =
                 parameters.Issuer,
                 parameters.Audience,
                 parameters.CreateClaims(),
-                parameters.Lifetime.GetStart(),
-                parameters.Lifetime.GetExpiry(),
+                parameters.Lifetime.Start,
+                parameters.Lifetime.Expiry,
                 SigningCredentials(RsaSecurityKey(rsa.ExportParameters(true)), SecurityAlgorithms.RsaSha512Signature)
             )
 

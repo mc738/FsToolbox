@@ -12,26 +12,20 @@ module Common =
     let createClaims issuer (keyValues: (string * string) list) =
         keyValues |> List.map (fun (k, v) -> Claim(k, v, issuer))
 
-
     type TokenLifetime =
         { Start: DateTime
-          Length: TokenLength }
+          Expiry: DateTime }
 
         static member Create(?start: DateTime, ?minutes: int, ?seconds: int) =
-            { Start = start |> Option.defaultValue DateTime.UtcNow
-              Length = TokenLength.FromStart(minutes |> Option.defaultValue 0, seconds |> Option.defaultValue 0) }
+            let s = start |> Option.defaultValue DateTime.UtcNow
+            let mins = minutes |> Option.defaultValue 0
+            let secs = seconds |> Option.defaultValue 0
 
-        static member Create(until: DateTime) =
+            { Start = s
+              Expiry = s.AddSeconds(float ((60 * mins) + secs)) }
+
+        static member Create(expiry: DateTime) =
             { Start = DateTime.UtcNow
-              Length = TokenLength.Specific until }
-            
-        member tlt.GetStart() = tlt.Start
+              Expiry = expiry }
 
-        member tlt.GetExpiry() =
-            match tlt.Length with
-            | FromStart(minutes, seconds) -> tlt.Start.AddSeconds(float ((60 * minutes) + seconds))
-            | Specific dateTime -> dateTime
-
-    and TokenLength =
-        | FromStart of Minutes: int * Seconds: int
-        | Specific of DateTime
+        static member Create(start: DateTime, expiry: DateTime) = { Start = start; Expiry = expiry }
