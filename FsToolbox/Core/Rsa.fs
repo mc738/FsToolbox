@@ -77,12 +77,12 @@ module Rsa =
         | false ->
             use ms = new MemoryStream(value)
 
-            rsa.SignData(ms, hashAlgorithm) |> Ok
+            rsa.SignData(ms, hashAlgorithm.Serialize()) |> Ok
 
     let createSignature (hashAlgorithm: HashAlgorithm) (value: byte array) (rsa: RSACryptoServiceProvider) =
         use ms = new MemoryStream(value)
 
-        rsa.SignData(ms, hashAlgorithm)
+        rsa.SignData(ms, hashAlgorithm.Serialize())
 
     let createSHA256Signature (value: byte array) (rsa: RSACryptoServiceProvider) =
         createSignature HashAlgorithm.SHA256 value rsa
