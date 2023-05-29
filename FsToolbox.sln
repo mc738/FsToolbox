@@ -12,6 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Scripting", "FsToolbox.Scripting\FsToolbox.Scripting.fsproj", "{FED36885-79EA-4989-A40D-ACDF4495B718}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.RabbitMQ", "FsToolbox.RabbitMQ\FsToolbox.RabbitMQ.fsproj", "{5B02B430-25A3-4885-98CE-554B9FA079B8}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.S3", "FsToolbox.S3\FsToolbox.S3.fsproj", "{4F8A388F-20B3-4124-9815-C7F8BF15E7E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,13 @@ Global
 		{FED36885-79EA-4989-A40D-ACDF4495B718}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FED36885-79EA-4989-A40D-ACDF4495B718}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FED36885-79EA-4989-A40D-ACDF4495B718}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B02B430-25A3-4885-98CE-554B9FA079B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B02B430-25A3-4885-98CE-554B9FA079B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B02B430-25A3-4885-98CE-554B9FA079B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B02B430-25A3-4885-98CE-554B9FA079B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F8A388F-20B3-4124-9815-C7F8BF15E7E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F8A388F-20B3-4124-9815-C7F8BF15E7E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F8A388F-20B3-4124-9815-C7F8BF15E7E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F8A388F-20B3-4124-9815-C7F8BF15E7E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
