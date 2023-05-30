@@ -21,6 +21,44 @@ type FailureResult =
             | false -> AggregateException(exceptions) :> exn |> Some }
 
 [<RequireQualifiedAccess>]
+module FailureResult =
+
+    let separateResults<'T> (results: Result<'T, FailureResult> seq) =
+        results
+        |> Seq.fold
+            (fun (ok, errors) r ->
+                match r with
+                | Ok v -> v :: ok, errors
+                | Error e -> ok, e :: errors)
+            ([], [])
+        |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
+
+    let separateResultsAsync<'T> (results: Async<Result<'T, FailureResult> seq>) =
+        async {
+            let! r = results
+
+            return
+                r
+                |> Seq.fold
+                    (fun (ok, errors) r ->
+                        match r with
+                        | Ok v -> v :: ok, errors
+                        | Error e -> ok, e :: errors)
+                    ([], [])
+                |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
+        }
+
+
+    let unwrap<'T> (result: Result<'T, FailureResult>) =
+        match result with
+        | Ok v -> v
+        | Error e ->
+            match e.Exception with
+            | Some ex -> raise ex
+            | None -> failwith e.Message
+
+
+[<RequireQualifiedAccess>]
 type FetchResult<'T> =
     | Success of 'T
     | Failure of FailureResult
