@@ -38,7 +38,7 @@ module Channels =
 
         channel.BasicPublish(
             exchange = (parameters.Exchange |> Option.defaultValue String.Empty),
-            routingKey = (parameters.Exchange |> Option.defaultValue String.Empty),
+            routingKey = (parameters.Channel |> Option.defaultValue String.Empty),
             basicProperties = props,
             body = body
         )
@@ -84,7 +84,7 @@ module Channels =
             d |> Encoding.UTF8.GetString |> JsonSerializer.Deserialize<'T> |> fn
         
         consume queue handler channel
-        
+
     let run (fn: IModel -> Result<unit, FailureResult>) (connection: IConnection) =
         use channel = connection.CreateModel()
 

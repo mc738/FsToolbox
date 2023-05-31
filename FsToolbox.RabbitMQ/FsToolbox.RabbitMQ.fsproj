@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageProjectUrl>https://github.com/mc738/FsToolbox</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/mc738/FsToolbox</RepositoryUrl>
+        <PackageLicenseUrl>https://raw.githubusercontent.com/mc738/FsToolbox/master/LICENSE</PackageLicenseUrl>
     </PropertyGroup>
 
     <ItemGroup>
