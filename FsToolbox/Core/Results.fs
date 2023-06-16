@@ -208,10 +208,10 @@ module FetchResult =
         | FetchResult.Success v -> actionFn v |> ActionResult.Success
         | FetchResult.Failure f -> ActionResult.Failure f
 
-    let bindToCreate<'T, 'U> (createFn: 'T -> ActionResult<'U>) (result: FetchResult<'T>) =
+    let bindToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> createFn v
-        | FetchResult.Failure f -> ActionResult.Failure f
+        | FetchResult.Failure f -> CreateResult.Failure f
 
     let mapToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: FetchResult<'T>) =
         match result with
@@ -284,7 +284,6 @@ module FetchResult =
             ([], [])
         |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
         
-    
     let aggregateResults<'T> (errorDisplayMessage: string) (results: FetchResult<'T> seq) =
         results
         |> unzipResults
