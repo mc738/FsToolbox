@@ -68,14 +68,14 @@ type FetchResult<'T> =
         | FetchResult.Failure f -> Error f
 
 [<RequireQualifiedAccess>]
-type AddResult<'T> =
+type CreateResult<'T> =
     | Success of 'T
     | Failure of FailureResult
 
     member ar.ToResult() =
         match ar with
-        | AddResult.Success r -> Ok r
-        | AddResult.Failure f -> Error f
+        | CreateResult.Success r -> Ok r
+        | CreateResult.Failure f -> Error f
 
 [<RequireQualifiedAccess>]
 type UpdateResult<'T> =
@@ -207,11 +207,26 @@ module FetchResult =
         | FetchResult.Success v -> actionFn v |> ActionResult.Success
         | FetchResult.Failure f -> ActionResult.Failure f
 
-    let mapAdd<'T, 'U> (addFn: 'T -> AddResult<'U>) (result: FetchResult<'T>) =
+    let bindCreate<'T, 'U> (createFn: 'T -> ActionResult<'U>) (result: FetchResult<'T>) =
         match result with
-        | FetchResult.Success v -> addFn v
-        | FetchResult.Failure f -> AddResult.Failure f
+        | FetchResult.Success v -> createFn v
+        | FetchResult.Failure f -> ActionResult.Failure f
+    
+    let mapCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success v -> createFn v
+        | FetchResult.Failure f -> CreateResult.Failure f
 
+    let bindUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success v -> createFn v
+        | FetchResult.Failure f -> UpdateResult.Failure f
+    
+    let mapUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success v -> createFn v
+        | FetchResult.Failure f -> UpdateResult.Failure f
+  
     let toActionResult<'T> (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> ActionResult.Success v
@@ -222,6 +237,26 @@ module FetchResult =
         | ActionResult.Success v -> FetchResult.Success v
         | ActionResult.Failure f -> FetchResult.Failure f
 
+    let toCreateResult<'T> (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success v -> CreateResult.Success v
+        | FetchResult.Failure f -> CreateResult.Failure f
+    
+    let fromCreateResult<'T> (result: CreateResult<'T>) =
+        match result with
+        | CreateResult.Success v -> FetchResult.Success v
+        | CreateResult.Failure f -> FetchResult.Failure f
+    
+    let toUpdateResult<'T> (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success v -> UpdateResult.Success v
+        | FetchResult.Failure f -> UpdateResult.Failure f
+    
+    let fromUpdateResult<'T> (result: UpdateResult<'T>) =
+        match result with
+        | UpdateResult.Success v -> FetchResult.Success v
+        | UpdateResult.Failure f -> FetchResult.Failure f
+    
     let iter<'T> (fn: 'T -> unit) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> fn v
