@@ -57,7 +57,6 @@ module FailureResult =
             | Some ex -> raise ex
             | None -> failwith e.Message
 
-
 [<RequireQualifiedAccess>]
 type FetchResult<'T> =
     | Success of 'T
@@ -222,6 +221,21 @@ module FetchResult =
         match result with
         | ActionResult.Success v -> FetchResult.Success v
         | ActionResult.Failure f -> FetchResult.Failure f
+
+    let iter<'T> (fn: 'T -> unit) (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success v -> fn v
+        | FetchResult.Failure _ -> ()
+
+    let orElse<'T> (ifFailure: FetchResult<'T>) (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success _ -> result
+        | FetchResult.Failure _ -> ifFailure
+        
+    let orElseWith<'T> (fn: unit -> FetchResult<'T>) (result: FetchResult<'T>) =
+        match result with
+        | FetchResult.Success _ -> result
+        | FetchResult.Failure _ -> fn ()
 
 [<RequireQualifiedAccess>]
 module ActionResult =
