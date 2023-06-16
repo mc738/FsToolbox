@@ -1,6 +1,7 @@
 ﻿namespace FsToolbox.Core.Results
 
 open System
+open Microsoft.FSharp.Core.LanguagePrimitives
 
 type FailureResult =
     { Message: string
@@ -211,7 +212,7 @@ module FetchResult =
         match result with
         | FetchResult.Success v -> createFn v
         | FetchResult.Failure f -> ActionResult.Failure f
-    
+
     let mapToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> createFn v
@@ -221,12 +222,12 @@ module FetchResult =
         match result with
         | FetchResult.Success v -> createFn v
         | FetchResult.Failure f -> UpdateResult.Failure f
-    
+
     let mapToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> createFn v
         | FetchResult.Failure f -> UpdateResult.Failure f
-  
+
     let toActionResult<'T> (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> ActionResult.Success v
@@ -241,22 +242,22 @@ module FetchResult =
         match result with
         | FetchResult.Success v -> CreateResult.Success v
         | FetchResult.Failure f -> CreateResult.Failure f
-    
+
     let fromCreateResult<'T> (result: CreateResult<'T>) =
         match result with
         | CreateResult.Success v -> FetchResult.Success v
         | CreateResult.Failure f -> FetchResult.Failure f
-    
+
     let toUpdateResult<'T> (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> UpdateResult.Success v
         | FetchResult.Failure f -> UpdateResult.Failure f
-    
+
     let fromUpdateResult<'T> (result: UpdateResult<'T>) =
         match result with
         | UpdateResult.Success v -> FetchResult.Success v
         | UpdateResult.Failure f -> FetchResult.Failure f
-    
+
     let iter<'T> (fn: 'T -> unit) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> fn v
@@ -266,11 +267,36 @@ module FetchResult =
         match result with
         | FetchResult.Success _ -> result
         | FetchResult.Failure _ -> ifFailure
-        
+
     let orElseWith<'T> (fn: unit -> FetchResult<'T>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success _ -> result
         | FetchResult.Failure _ -> fn ()
+
+    let unzipResults (results: FetchResult<'T> seq) =
+        // NOTE would resize arrays be better for this?
+        results
+        |> Seq.fold
+            (fun (ok, errors) r ->
+                match r with
+                | FetchResult.Success v -> v :: ok, errors
+                | FetchResult.Failure f -> ok, f :: errors)
+            ([], [])
+        |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
+        
+    
+    let aggregateResults<'T> (errorDisplayMessage: string) (results: FetchResult<'T> seq) =
+        results
+        |> unzipResults
+        |> fun (ok, err) ->
+            ActionResult.Success ok,
+
+            (match err.IsEmpty with
+             | true -> None
+             | false ->
+                 FailureResult.Aggregate(err, errorDisplayMessage)
+                 |> ActionResult.Failure
+                 |> Some)
 
 [<RequireQualifiedAccess>]
 module ActionResult =
@@ -295,7 +321,7 @@ module ActionResult =
         | ActionResult.Success v -> fn v
         | ActionResult.Failure f -> ()
 
-    let split<'T> (results: ActionResult<'T> seq) =
+    let unzipResults<'T> (results: ActionResult<'T> seq) =
         results
         |> Seq.fold
             (fun (ok, err) curr ->
@@ -305,9 +331,9 @@ module ActionResult =
             ([], [])
         |> fun (ok, err) -> ok |> List.rev, err |> List.rev
 
-    let aggregateMap<'T> (errorDisplayMessage: string) (results: ActionResult<'T> seq) =
+    let aggregateResults<'T> (errorDisplayMessage: string) (results: ActionResult<'T> seq) =
         results
-        |> split
+        |> unzipResults
         |> fun (ok, err) ->
             ActionResult.Success ok,
 
