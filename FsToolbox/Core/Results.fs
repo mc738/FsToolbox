@@ -194,35 +194,35 @@ module FetchResult =
 
     let toOption<'T> (result: FetchResult<'T>) = toOptionOrElse (fun _ -> None) result
 
-    let mapOption<'T, 'U> (fn: 'T -> FetchResult<'U>) (value: 'T option) =
+    let mapToOption<'T, 'U> (fn: 'T -> FetchResult<'U>) (value: 'T option) =
         value |> Option.bind (fun v -> fn v |> toOption)
 
-    let bindAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: FetchResult<'T>) =
+    let bindToAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> actionFn v
         | FetchResult.Failure f -> ActionResult.Failure f
 
-    let mapAction<'T, 'U> (actionFn: 'T -> 'U) (result: FetchResult<'T>) =
+    let mapToAction<'T, 'U> (actionFn: 'T -> 'U) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> actionFn v |> ActionResult.Success
         | FetchResult.Failure f -> ActionResult.Failure f
 
-    let bindCreate<'T, 'U> (createFn: 'T -> ActionResult<'U>) (result: FetchResult<'T>) =
+    let bindToCreate<'T, 'U> (createFn: 'T -> ActionResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> createFn v
         | FetchResult.Failure f -> ActionResult.Failure f
     
-    let mapCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: FetchResult<'T>) =
+    let mapToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> createFn v
         | FetchResult.Failure f -> CreateResult.Failure f
 
-    let bindUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: FetchResult<'T>) =
+    let bindToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> createFn v
         | FetchResult.Failure f -> UpdateResult.Failure f
     
-    let mapUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: FetchResult<'T>) =
+    let mapToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> createFn v
         | FetchResult.Failure f -> UpdateResult.Failure f
