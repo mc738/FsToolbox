@@ -499,32 +499,32 @@ module ActionResult =
 [<RequireQualifiedAccess>]
 module CreateResult =
 
-    let defaultWith<'T> (fn: unit -> 'T) (result: ActionResult<'T>) =
+    let defaultWith<'T> (fn: unit -> 'T) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success r -> r
-        | ActionResult.Failure _ -> fn ()
+        | CreateResult.Success r -> r
+        | CreateResult.Failure _ -> fn ()
 
-    let defaultValue<'T> (value: 'T) (result: ActionResult<'T>) = defaultWith (fun _ -> value) result
+    let defaultValue<'T> (value: 'T) (result: CreateResult<'T>) = defaultWith (fun _ -> value) result
 
-    let map<'T, 'U> (fn: 'T -> 'U) (result: ActionResult<'T>) =
+    let map<'T, 'U> (fn: 'T -> 'U) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success r -> fn r |> ActionResult.Success
-        | ActionResult.Failure f -> ActionResult.Failure f
+        | CreateResult.Success r -> fn r |> CreateResult.Success
+        | CreateResult.Failure f -> CreateResult.Failure f
 
-    let mapFailure<'T> (fn: unit -> 'T) (result: ActionResult<'T>) =
+    let mapFailure<'T> (fn: unit -> 'T) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success r -> ActionResult.Success r
-        | ActionResult.Failure _ -> fn () |> ActionResult.Success
+        | CreateResult.Success r -> CreateResult.Success r
+        | CreateResult.Failure _ -> fn () |> CreateResult.Success
 
-    let bind<'T, 'U> (fn: 'T -> ActionResult<'U>) (result: ActionResult<'T>) =
+    let bind<'T, 'U> (fn: 'T -> CreateResult<'U>) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success r -> fn r
-        | ActionResult.Failure f -> ActionResult.Failure f
+        | CreateResult.Success r -> fn r
+        | CreateResult.Failure f -> CreateResult.Failure f
 
-    let bindFailure<'T> (fn: unit -> ActionResult<'T>) (result: ActionResult<'T>) =
+    let bindFailure<'T> (fn: unit -> CreateResult<'T>) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success r -> ActionResult.Success r
-        | ActionResult.Failure _ -> fn ()
+        | CreateResult.Success r -> CreateResult.Success r
+        | CreateResult.Failure _ -> fn ()
 
     let combine<'T1, 'T2, 'U> (result2: ActionResult<'T2>) (result1: ActionResult<'T1>) =
         match result1, result2 with
