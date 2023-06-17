@@ -347,9 +347,6 @@ module ActionResult =
 
     /// <summary>
     ///     Merge to fetch results, the second one is based of the first ones result value.
-    ///     For example, fetch a user then us the user's company id to fetch a company.
-    ///     The results are merged via a merge function that takes both result values
-    ///     and produces a new one.
     /// </summary>
     let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> ActionResult<'T2>) (result: ActionResult<'T1>) =
         // QUESTION would this make more sense to be `pipe`?
@@ -432,7 +429,7 @@ module ActionResult =
         | ActionResult.Success v -> FetchResult.Success v
         | ActionResult.Failure f -> FetchResult.Failure f
 
-    let fromActionResult<'T> (result: FetchResult<'T>) =
+    let fromFetchResult<'T> (result: FetchResult<'T>) =
         match result with
         | FetchResult.Success v -> ActionResult.Success v
         | FetchResult.Failure f -> ActionResult.Failure f
