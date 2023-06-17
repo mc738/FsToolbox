@@ -536,7 +536,7 @@ module CreateResult =
         match result1, result2 with
         | CreateResult.Success v1, CreateResult.Success v2 -> chainFn v1 v2 |> CreateResult.Success
         | CreateResult.Failure f, _ -> CreateResult.Failure f
-        | _, ActionResult.Failure f -> CreateResult.Failure f
+        | _, CreateResult.Failure f -> CreateResult.Failure f
 
     let append<'T1, 'T2, 'T3, 'U> (result2: CreateResult<'T3>) (result1: CreateResult<'T1 * 'T2>) =
         match result1, result2 with
