@@ -526,55 +526,52 @@ module CreateResult =
         | CreateResult.Success r -> CreateResult.Success r
         | CreateResult.Failure _ -> fn ()
 
-    let combine<'T1, 'T2, 'U> (result2: ActionResult<'T2>) (result1: ActionResult<'T1>) =
+    let combine<'T1, 'T2, 'U> (result2: CreateResult<'T2>) (result1: CreateResult<'T1>) =
         match result1, result2 with
-        | ActionResult.Success v1, ActionResult.Success v2 -> ActionResult.Success(v1, v2)
-        | ActionResult.Failure f, _ -> ActionResult.Failure f
-        | _, ActionResult.Failure f -> ActionResult.Failure f
+        | CreateResult.Success v1, CreateResult.Success v2 -> CreateResult.Success(v1, v2)
+        | CreateResult.Failure f, _ -> CreateResult.Failure f
+        | _, CreateResult.Failure f -> CreateResult.Failure f
 
     let chain<'T1, 'T2, 'U> (chainFn: 'T1 -> 'T2 -> 'U) (result2: ActionResult<'T2>) (result1: ActionResult<'T1>) =
         match result1, result2 with
-        | ActionResult.Success v1, ActionResult.Success v2 -> chainFn v1 v2 |> ActionResult.Success
-        | ActionResult.Failure f, _ -> ActionResult.Failure f
-        | _, ActionResult.Failure f -> ActionResult.Failure f
+        | CreateResult.Success v1, CreateResult.Success v2 -> chainFn v1 v2 |> CreateResult.Success
+        | CreateResult.Failure f, _ -> CreateResult.Failure f
+        | _, ActionResult.Failure f -> CreateResult.Failure f
 
-    let append<'T1, 'T2, 'T3, 'U> (result2: ActionResult<'T3>) (result1: ActionResult<'T1 * 'T2>) =
+    let append<'T1, 'T2, 'T3, 'U> (result2: CreateResult<'T3>) (result1: CreateResult<'T1 * 'T2>) =
         match result1, result2 with
-        | ActionResult.Success(v1, v2), ActionResult.Success v3 -> ActionResult.Success(v1, v2, v3)
-        | ActionResult.Failure f, _ -> ActionResult.Failure f
-        | _, ActionResult.Failure f -> ActionResult.Failure f
+        | CreateResult.Success(v1, v2), CreateResult.Success v3 -> CreateResult.Success(v1, v2, v3)
+        | CreateResult.Failure f, _ -> CreateResult.Failure f
+        | _, CreateResult.Failure f -> CreateResult.Failure f
 
     /// <summary>
-    ///     Merge to fetch results, the second one is based of the first ones result value.
-    ///     For example, fetch a user then us the user's company id to fetch a company.
-    ///     The results are merged via a merge function that takes both result values
-    ///     and produces a new one.
+    ///     Merge to create results, the second one is based of the first ones result value.
     /// </summary>
-    let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> ActionResult<'T2>) (result: ActionResult<'T1>) =
+    let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> CreateResult<'T2>) (result: CreateResult<'T1>) =
         // QUESTION would this make more sense to be `pipe`?
         match result with
-        | ActionResult.Success v1 ->
+        | CreateResult.Success v1 ->
             match result2 v1 with
-            | ActionResult.Success v2 -> mergeFn v1 v2 |> ActionResult.Success
-            | ActionResult.Failure f -> ActionResult.Failure f
-        | ActionResult.Failure f -> ActionResult.Failure f
+            | CreateResult.Success v2 -> mergeFn v1 v2 |> CreateResult.Success
+            | CreateResult.Failure f -> CreateResult.Failure f
+        | CreateResult.Failure f -> CreateResult.Failure f
 
     /// <summary>
     ///     A wrapper around `merge`, with a merge function that takes both result values and combines them into a tuple.
     /// </summary>
-    let pipe<'T1, 'T2, 'U> (result2: 'T1 -> ActionResult<'T2>) (result: ActionResult<'T1>) =
+    let pipe<'T1, 'T2, 'U> (result2: 'T1 -> CreateResult<'T2>) (result: CreateResult<'T1>) =
         // QUESTION would this make more sense to be `merge`?
         merge (fun v1 v2 -> v1, v2) <| result2 <| result
 
-    let toResult<'T> (fetchResult: ActionResult<'T>) = fetchResult.ToResult()
+    let toResult<'T> (result: CreateResult<'T>) = result.ToResult()
 
-    let toResult2<'T1, 'T2> (result1: ActionResult<'T1>) (result2: ActionResult<'T2>) =
+    let toResult2<'T1, 'T2> (result1: CreateResult<'T1>) (result2: CreateResult<'T2>) =
         match result1.ToResult(), result2.ToResult() with
         | Ok r1, Ok r2 -> Ok(r1, r2)
         | Error e, _
         | _, Error e -> Error e
 
-    let toResult3<'T1, 'T2, 'T3> (result1: ActionResult<'T1>) (result2: ActionResult<'T2>) (result3: ActionResult<'T3>) =
+    let toResult3<'T1, 'T2, 'T3> (result1: CreateResult<'T1>) (result2: CreateResult<'T2>) (result3: CreateResult<'T3>) =
         match result1.ToResult(), result2.ToResult(), result3.ToResult() with
         | Ok r1, Ok r2, Ok r3 -> Ok(r1, r2, r3)
         | Error e, _, _
@@ -583,38 +580,38 @@ module CreateResult =
 
     let fromResult<'T> (result: Result<'T, FailureResult>) =
         match result with
-        | Ok v -> ActionResult.Success v
-        | Error f -> ActionResult.Failure f
+        | Ok v -> CreateResult.Success v
+        | Error f -> CreateResult.Failure f
 
-    let toOptionOrElse<'T> (fn: unit -> 'T option) (result: ActionResult<'T>) =
+    let toOptionOrElse<'T> (fn: unit -> 'T option) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success v -> Some v
-        | ActionResult.Failure _ -> fn ()
+        | CreateResult.Success v -> Some v
+        | CreateResult.Failure _ -> fn ()
 
-    let toOption<'T> (result: ActionResult<'T>) = toOptionOrElse (fun _ -> None) result
+    let toOption<'T> (result: CreateResult<'T>) = toOptionOrElse (fun _ -> None) result
 
-    let mapToOption<'T, 'U> (fn: 'T -> ActionResult<'U>) (value: 'T option) =
+    let mapToOption<'T, 'U> (fn: 'T -> CreateResult<'U>) (value: 'T option) =
         value |> Option.bind (fun v -> fn v |> toOption)
 
-    let bindToFetch<'T, 'U> (fetchFn: 'T -> FetchResult<'U>) (result: ActionResult<'T>) =
+    let bindToFetch<'T, 'U> (fetchFn: 'T -> FetchResult<'U>) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success v -> fetchFn v
-        | ActionResult.Failure f -> FetchResult.Failure f
+        | CreateResult.Success v -> fetchFn v
+        | CreateResult.Failure f -> FetchResult.Failure f
 
-    let mapToFetch<'T, 'U> (fetchFn: 'T -> 'U) (result: ActionResult<'T>) =
+    let mapToFetch<'T, 'U> (fetchFn: 'T -> 'U) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success v -> fetchFn v |> FetchResult.Success
-        | ActionResult.Failure f -> FetchResult.Failure f
+        | CreateResult.Success v -> fetchFn v |> FetchResult.Success
+        | CreateResult.Failure f -> FetchResult.Failure f
 
-    let bindToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: ActionResult<'T>) =
+    let bindToAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success v -> createFn v
-        | ActionResult.Failure f -> CreateResult.Failure f
+        | CreateResult.Success v -> actionFn v
+        | CreateResult.Failure f -> ActionResult.Failure f
 
-    let mapToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: ActionResult<'T>) =
+    let mapToAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: CreateResult<'T>) =
         match result with
-        | ActionResult.Success v -> createFn v
-        | ActionResult.Failure f -> CreateResult.Failure f
+        | CreateResult.Success v -> actionFn v
+        | CreateResult.Failure f -> ActionResult.Failure f
 
     let bindToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: ActionResult<'T>) =
         match result with
