@@ -731,23 +731,23 @@ module UpdateResult =
         | UpdateResult.Failure f, _ -> UpdateResult.Failure f
         | _, UpdateResult.Failure f -> UpdateResult.Failure f
 
-    let append<'T1, 'T2, 'T3, 'U> (result2: CreateResult<'T3>) (result1: CreateResult<'T1 * 'T2>) =
+    let append<'T1, 'T2, 'T3, 'U> (result2: UpdateResult<'T3>) (result1: UpdateResult<'T1 * 'T2>) =
         match result1, result2 with
-        | CreateResult.Success(v1, v2), CreateResult.Success v3 -> CreateResult.Success(v1, v2, v3)
-        | CreateResult.Failure f, _ -> CreateResult.Failure f
-        | _, CreateResult.Failure f -> CreateResult.Failure f
+        | UpdateResult.Success(v1, v2), UpdateResult.Success v3 -> UpdateResult.Success(v1, v2, v3)
+        | UpdateResult.Failure f, _ -> UpdateResult.Failure f
+        | _, UpdateResult.Failure f -> UpdateResult.Failure f
 
     /// <summary>
-    ///     Merge to create results, the second one is based of the first ones result value.
+    ///     Merge to update results, the second one is based of the first ones result value.
     /// </summary>
-    let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> CreateResult<'T2>) (result: CreateResult<'T1>) =
+    let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> UpdateResult<'T2>) (result: UpdateResult<'T1>) =
         // QUESTION would this make more sense to be `pipe`?
         match result with
-        | CreateResult.Success v1 ->
+        | UpdateResult.Success v1 ->
             match result2 v1 with
-            | CreateResult.Success v2 -> mergeFn v1 v2 |> CreateResult.Success
-            | CreateResult.Failure f -> CreateResult.Failure f
-        | CreateResult.Failure f -> CreateResult.Failure f
+            | UpdateResult.Success v2 -> mergeFn v1 v2 |> UpdateResult.Success
+            | UpdateResult.Failure f -> UpdateResult.Failure f
+        | UpdateResult.Failure f -> UpdateResult.Failure f
 
     /// <summary>
     ///     A wrapper around `merge`, with a merge function that takes both result values and combines them into a tuple.
