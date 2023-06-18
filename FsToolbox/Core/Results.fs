@@ -610,14 +610,14 @@ module CreateResult =
         | CreateResult.Success v -> actionFn v
         | CreateResult.Failure f -> ActionResult.Failure f
 
-    let bindToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: CreateResult<'T>) =
+    let bindToUpdate<'T, 'U> (updateFn: 'T -> UpdateResult<'U>) (result: CreateResult<'T>) =
         match result with
-        | CreateResult.Success v -> createFn v
+        | CreateResult.Success v -> updateFn v
         | CreateResult.Failure f -> UpdateResult.Failure f
 
-    let mapToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: CreateResult<'T>) =
+    let mapToUpdate<'T, 'U> (updateFn: 'T -> UpdateResult<'U>) (result: CreateResult<'T>) =
         match result with
-        | CreateResult.Success v -> createFn v
+        | CreateResult.Success v -> updateFn v
         | CreateResult.Failure f -> UpdateResult.Failure f
 
     let toFetchResult<'T> (result: CreateResult<'T>) =
