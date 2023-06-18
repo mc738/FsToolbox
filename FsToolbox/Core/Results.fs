@@ -719,17 +719,17 @@ module UpdateResult =
         | UpdateResult.Success r -> UpdateResult.Success r
         | UpdateResult.Failure _ -> fn ()
 
-    let combine<'T1, 'T2, 'U> (result2: CreateResult<'T2>) (result1: CreateResult<'T1>) =
+    let combine<'T1, 'T2, 'U> (result2: UpdateResult<'T2>) (result1: UpdateResult<'T1>) =
         match result1, result2 with
-        | CreateResult.Success v1, CreateResult.Success v2 -> CreateResult.Success(v1, v2)
-        | CreateResult.Failure f, _ -> CreateResult.Failure f
-        | _, CreateResult.Failure f -> CreateResult.Failure f
+        | UpdateResult.Success v1, UpdateResult.Success v2 -> UpdateResult.Success(v1, v2)
+        | UpdateResult.Failure f, _ -> UpdateResult.Failure f
+        | _, UpdateResult.Failure f -> UpdateResult.Failure f
 
-    let chain<'T1, 'T2, 'U> (chainFn: 'T1 -> 'T2 -> 'U) (result2: CreateResult<'T2>) (result1: CreateResult<'T1>) =
+    let chain<'T1, 'T2, 'U> (chainFn: 'T1 -> 'T2 -> 'U) (result2: UpdateResult<'T2>) (result1: UpdateResult<'T1>) =
         match result1, result2 with
-        | CreateResult.Success v1, CreateResult.Success v2 -> chainFn v1 v2 |> CreateResult.Success
-        | CreateResult.Failure f, _ -> CreateResult.Failure f
-        | _, CreateResult.Failure f -> CreateResult.Failure f
+        | UpdateResult.Success v1, UpdateResult.Success v2 -> chainFn v1 v2 |> UpdateResult.Success
+        | UpdateResult.Failure f, _ -> UpdateResult.Failure f
+        | _, UpdateResult.Failure f -> UpdateResult.Failure f
 
     let append<'T1, 'T2, 'T3, 'U> (result2: CreateResult<'T3>) (result1: CreateResult<'T1 * 'T2>) =
         match result1, result2 with
