@@ -796,83 +796,83 @@ module UpdateResult =
         | UpdateResult.Success v -> fetchFn v |> FetchResult.Success
         | UpdateResult.Failure f -> FetchResult.Failure f
 
-    let bindToAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: CreateResult<'T>) =
+    let bindToAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success v -> actionFn v
-        | CreateResult.Failure f -> ActionResult.Failure f
+        | UpdateResult.Success v -> actionFn v
+        | UpdateResult.Failure f -> ActionResult.Failure f
 
-    let mapToAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: CreateResult<'T>) =
+    let mapToAction<'T, 'U> (actionFn: 'T -> ActionResult<'U>) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success v -> actionFn v
-        | CreateResult.Failure f -> ActionResult.Failure f
+        | UpdateResult.Success v -> actionFn v
+        | UpdateResult.Failure f -> ActionResult.Failure f
 
-    let bindToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: CreateResult<'T>) =
+    let bindToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success v -> createFn v
-        | CreateResult.Failure f -> UpdateResult.Failure f
+        | UpdateResult.Success v -> createFn v
+        | UpdateResult.Failure f -> CreateResult.Failure f
 
-    let mapToUpdate<'T, 'U> (createFn: 'T -> UpdateResult<'U>) (result: CreateResult<'T>) =
+    let mapToCreate<'T, 'U> (createFn: 'T -> CreateResult<'U>) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success v -> createFn v
-        | CreateResult.Failure f -> UpdateResult.Failure f
+        | UpdateResult.Success v -> createFn v
+        | UpdateResult.Failure f -> CreateResult.Failure f
 
-    let toFetchResult<'T> (result: CreateResult<'T>) =
+    let toFetchResult<'T> (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success v -> FetchResult.Success v
-        | CreateResult.Failure f -> FetchResult.Failure f
+        | UpdateResult.Success v -> FetchResult.Success v
+        | UpdateResult.Failure f -> FetchResult.Failure f
 
     let fromFetchResult<'T> (result: FetchResult<'T>) =
         match result with
-        | FetchResult.Success v -> CreateResult.Success v
-        | FetchResult.Failure f -> CreateResult.Failure f
+        | FetchResult.Success v -> UpdateResult.Success v
+        | FetchResult.Failure f -> UpdateResult.Failure f
 
-    let toActionResult<'T> (result: CreateResult<'T>) =
+    let toActionResult<'T> (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success v -> ActionResult.Success v
-        | CreateResult.Failure f -> ActionResult.Failure f
+        | UpdateResult.Success v -> ActionResult.Success v
+        | UpdateResult.Failure f -> ActionResult.Failure f
 
     let fromActionResult<'T> (result: ActionResult<'T>) =
         match result with
-        | ActionResult.Success v -> CreateResult.Success v
-        | ActionResult.Failure f -> CreateResult.Failure f
+        | ActionResult.Success v -> UpdateResult.Success v
+        | ActionResult.Failure f -> UpdateResult.Failure f
 
-    let toUpdateResult<'T> (result: CreateResult<'T>) =
-        match result with
-        | CreateResult.Success v -> UpdateResult.Success v
-        | CreateResult.Failure f -> UpdateResult.Failure f
-
-    let fromUpdateResult<'T> (result: UpdateResult<'T>) =
+    let toCreateResult<'T> (result: UpdateResult<'T>) =
         match result with
         | UpdateResult.Success v -> CreateResult.Success v
         | UpdateResult.Failure f -> CreateResult.Failure f
 
-    let iter<'T> (fn: 'T -> unit) (result: CreateResult<'T>) =
+    let fromCreateResult<'T> (result: CreateResult<'T>) =
         match result with
-        | CreateResult.Success v -> fn v
-        | CreateResult.Failure _ -> ()
+        | CreateResult.Success v -> UpdateResult.Success v
+        | CreateResult.Failure f -> UpdateResult.Failure f
 
-    let orElse<'T> (ifFailure: CreateResult<'T>) (result: CreateResult<'T>) =
+    let iter<'T> (fn: 'T -> unit) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success _ -> result
-        | CreateResult.Failure _ -> ifFailure
+        | UpdateResult.Success v -> fn v
+        | UpdateResult.Failure _ -> ()
 
-    let orElseWith<'T> (fn: unit -> CreateResult<'T>) (result: CreateResult<'T>) =
+    let orElse<'T> (ifFailure: UpdateResult<'T>) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success _ -> result
-        | CreateResult.Failure _ -> fn ()
+        | UpdateResult.Success _ -> result
+        | UpdateResult.Failure _ -> ifFailure
 
-    let unzipResults (results: CreateResult<'T> seq) =
+    let orElseWith<'T> (fn: unit -> UpdateResult<'T>) (result: UpdateResult<'T>) =
+        match result with
+        | UpdateResult.Success _ -> result
+        | UpdateResult.Failure _ -> fn ()
+
+    let unzipResults (results: UpdateResult<'T> seq) =
         // NOTE would resize arrays be better for this?
         results
         |> Seq.fold
             (fun (ok, errors) r ->
                 match r with
-                | CreateResult.Success v -> v :: ok, errors
-                | CreateResult.Failure f -> ok, f :: errors)
+                | UpdateResult.Success v -> v :: ok, errors
+                | UpdateResult.Failure f -> ok, f :: errors)
             ([], [])
         |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
         
-    let aggregateResults<'T> (errorDisplayMessage: string) (results: CreateResult<'T> seq) =
+    let aggregateResults<'T> (errorDisplayMessage: string) (results: UpdateResult<'T> seq) =
         results
         |> unzipResults
         |> fun (ok, err) ->
