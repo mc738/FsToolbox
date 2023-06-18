@@ -709,15 +709,15 @@ module UpdateResult =
         | UpdateResult.Success r -> UpdateResult.Success r
         | UpdateResult.Failure _ -> fn () |> UpdateResult.Success
 
-    let bind<'T, 'U> (fn: 'T -> CreateResult<'U>) (result: CreateResult<'T>) =
+    let bind<'T, 'U> (fn: 'T -> UpdateResult<'U>) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success r -> fn r
-        | CreateResult.Failure f -> CreateResult.Failure f
+        | UpdateResult.Success r -> fn r
+        | UpdateResult.Failure f -> UpdateResult.Failure f
 
-    let bindFailure<'T> (fn: unit -> CreateResult<'T>) (result: CreateResult<'T>) =
+    let bindFailure<'T> (fn: unit -> UpdateResult<'T>) (result: UpdateResult<'T>) =
         match result with
-        | CreateResult.Success r -> CreateResult.Success r
-        | CreateResult.Failure _ -> fn ()
+        | UpdateResult.Success r -> UpdateResult.Success r
+        | UpdateResult.Failure _ -> fn ()
 
     let combine<'T1, 'T2, 'U> (result2: CreateResult<'T2>) (result1: CreateResult<'T1>) =
         match result1, result2 with
