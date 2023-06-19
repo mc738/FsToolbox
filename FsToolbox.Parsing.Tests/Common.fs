@@ -39,3 +39,14 @@ type ParsableInputTests() =
             
         Assert.AreEqual(expected, actual)
 
+    [<TestMethod>]
+    member _.``ReadUntilString found``() =
+        let expected = { StartIndex = 7; EndIndex = 11 } |> Some
+        
+        let pi = ParsableInput.Create "Hello, World!"
+        
+        let actual = pi.ReadUntilString("World")
+        
+        ()
+    
+    
