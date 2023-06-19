@@ -5,12 +5,15 @@ open System
 [<AutoOpen>]
 module Common =
 
+
+
     [<RequireQualifiedAccess>]
-    type ReadResult =
-        | Found of StartIndex: int * EndIndex: int
-        | NotFound
+    type StringMatchResult =
+        | Match of StringMatch
+        | NonMatch
         | OutOfBounds
 
+    and StringMatch = { StartIndex: int; EndIndex: int }
 
     type ParsableInput =
         { Input: string
@@ -52,24 +55,30 @@ module Common =
             | true, true, false -> true
             | _ -> false
 
-
         member pi.IsString(startIndex: int, str: string, ?comparison: StringComparison) =
             let sc = comparison |> Option.defaultValue StringComparison.Ordinal
             let endIndex = startIndex + str.Length - 1
 
             match pi.GetSlice(startIndex, endIndex) with
-            | Some s when String.Equals(s, str, sc) -> ReadResult.Found(startIndex, endIndex)
-            | Some _ -> ReadResult.NotFound
-            | None -> ReadResult.OutOfBounds
+            | Some s when String.Equals(s, str, sc) -> StringMatchResult.Match {  StartIndex = startIndex; EndIndex = endIndex }
+            | Some _ -> StringMatchResult.NonMatch
+            | None -> StringMatchResult.OutOfBounds
 
+        member pi.ReadUntilString(str: string, ?comparison: StringComparison) =
+            let sc = comparison |> Option.defaultValue StringComparison.Ordinal
 
-        member pi.ReadUntil(chars: char array) =
+            let rec handler (i: int) =
+                match pi.IsString(i, str, sc) with
+                | StringMatchResult.Match r -> Some r
+                | StringMatchResult.NonMatch ->
+                    // Could optimize here.
+                    handler (i + 1)
+                | StringMatchResult.OutOfBounds -> None
 
-
-            ()
+            handler pi.Position
 
         member pi.NextNonNested() = ()
-            (*
+        (*
             let oc1, oc2 = pi.OpenDelimiter.[0], pi.OpenDelimiter.[1]
             let cc1, cc2 = pi.CloseDelimiter.[0], pi.CloseDelimiter.[1]
 

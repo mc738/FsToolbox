@@ -10,7 +10,7 @@ type ParsableInputTests() =
     
     [<TestMethod>]
     member _.``IsString found``() =
-        let expected = ReadResult.Found (0, 2)
+        let expected = StringMatchResult.Match { StartIndex =  0; EndIndex = 2 }
         
         let pi = ParsableInput.Create "foo"
         
@@ -20,7 +20,7 @@ type ParsableInputTests() =
         
     [<TestMethod>]
     member _.``IsString not found``() =
-        let expected = ReadResult.NotFound
+        let expected = StringMatchResult.NonMatch
         
         let pi = ParsableInput.Create "foo"
         
@@ -31,7 +31,7 @@ type ParsableInputTests() =
     
     [<TestMethod>]
     member _.``IsString out of bounds``() =
-        let expected = ReadResult.OutOfBounds
+        let expected = StringMatchResult.OutOfBounds
         
         let pi = ParsableInput.Create "foo"
         
