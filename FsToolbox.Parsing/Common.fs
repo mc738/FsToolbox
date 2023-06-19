@@ -1,5 +1,7 @@
 ﻿namespace FsToolbox.Parsing
 
+open System
+
 [<AutoOpen>]
 module Common =
 
@@ -8,15 +10,13 @@ module Common =
         | Found of StartIndex: int * EndIndex: int
         | NotFound
         | OutOfBounds
-    
-    
+
+
     type ParsableInput =
         { Input: string
           Position: int }
 
-        static member Create(input) =
-            { Input = input
-              Position = 0 }
+        static member Create(input) = { Input = input; Position = 0 }
 
         member pi.IsInBounds(i) = i >= 0 && i < pi.Input.Length
 
@@ -52,20 +52,24 @@ module Common =
             | true, true, false -> true
             | _ -> false
 
-        
-        member pi.IsChars(startIndex: int, chars: string list) =
-            match pi.GetSlice
-            
-            
-            
-            ()
-        
+
+        member pi.IsString(startIndex: int, str: string, ?comparison: StringComparison) =
+            let sc = comparison |> Option.defaultValue StringComparison.Ordinal
+            let endIndex = startIndex + str.Length - 1
+
+            match pi.GetSlice(startIndex, endIndex) with
+            | Some s when String.Equals(s, str, sc) -> ReadResult.Found(startIndex, endIndex)
+            | Some _ -> ReadResult.NotFound
+            | None -> ReadResult.OutOfBounds
+
+
         member pi.ReadUntil(chars: char array) =
-            
-            
+
+
             ()
-        
-        member pi.NextNonNested() =
+
+        member pi.NextNonNested() = ()
+            (*
             let oc1, oc2 = pi.OpenDelimiter.[0], pi.OpenDelimiter.[1]
             let cc1, cc2 = pi.CloseDelimiter.[0], pi.CloseDelimiter.[1]
 
@@ -80,6 +84,7 @@ module Common =
                 | false, _, _ -> None
 
             handler (pi, 0)
+            *)
 
         member pi.GetSlice(startIndex, endIndex) =
             match pi.IsInBounds(startIndex), pi.IsInBounds(endIndex), startIndex < endIndex with
