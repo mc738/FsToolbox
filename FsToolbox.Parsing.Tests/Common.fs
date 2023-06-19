@@ -47,6 +47,6 @@ type ParsableInputTests() =
         
         let actual = pi.ReadUntilString("World")
         
-        ()
+        Assert.AreEqual(expected, actual)
     
     
