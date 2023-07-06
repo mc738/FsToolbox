@@ -7,5 +7,8 @@ module Tokens =
         | Whitespace
         | PropertyKey of string
         | SetMarker
+        | QuotedString of string
+        | SetOpen
+        | SetClose
         
 
