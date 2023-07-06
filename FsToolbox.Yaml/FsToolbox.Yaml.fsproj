@@ -7,7 +7,7 @@
 
     <ItemGroup>
         <Compile Include="Library.fs" />
-        <Folder Include="SimpleYaml\" />
+        <Compile Include="SimpleYaml\Tokens.fs" />
     </ItemGroup>
 
     <ItemGroup>
