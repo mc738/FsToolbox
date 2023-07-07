@@ -10,6 +10,5 @@ module Tokens =
         | QuotedString of string
         | SetOpen
         | SetClose
-        | Separator
         
 
