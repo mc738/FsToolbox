@@ -8,5 +8,4 @@ module Tokens =
         | PropertyKey of string
         | SetMarker
         | QuotedString of string
-        | SetOpen
 
