@@ -12,6 +12,5 @@ module Tokens =
         | SetClose
         | Separator
         | Anchor
-        | Reference
         
 
