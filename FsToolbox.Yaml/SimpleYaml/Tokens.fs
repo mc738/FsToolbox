@@ -9,6 +9,4 @@ module Tokens =
         | SetMarker
         | QuotedString of string
         | SetOpen
-        | SetClose
-        
 
