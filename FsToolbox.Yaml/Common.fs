@@ -2,6 +2,7 @@
 
 open System.IO
 open System.Reflection
+open FsToolbox.Core.Results
 open YamlDotNet.Core
 open YamlDotNet.Core.Events
 open YamlDotNet.RepresentationModel
@@ -51,4 +52,8 @@ module Common =
             :?> YamlDocument
             |> Ok
         with exn ->
-            Error $"Unhandled exception while parsing yaml document: {exn}"
+            ({ Message = $"Unhandled exception while parsing yaml document: {exn.Message}"
+               DisplayMessage = "Error while parsing yaml document"
+               Exception = Some exn }
+            : FailureResult)
+            |> Error
