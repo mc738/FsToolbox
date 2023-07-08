@@ -46,6 +46,7 @@ module Common =
         parser.MoveNext() |> ignore
 
         try
+            // NOTE This is a bit of a hack. The ctor that accepts a IParser is internal. This invokes it via reflection.
             typeof<YamlDocument>
                 .GetConstructor(BindingFlags.NonPublic ||| BindingFlags.Instance, null, [| typeof<IParser> |], null)
                 .Invoke([| parser |])
