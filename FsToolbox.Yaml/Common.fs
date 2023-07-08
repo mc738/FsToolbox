@@ -14,6 +14,7 @@ module Common =
         use reader = new StringReader(yaml)
         let parser = Parser(reader) :> IParser
 
+        (*
         // Move the parser forwards twice - to get to document start token.
         let rec move () =
             match nameof (parser.Current) with
@@ -22,7 +23,7 @@ module Common =
                 match parser.MoveNext() with
                 | true -> move ()
                 | false -> Error "documentStart token not found"
-
+        
         move ()
         |> Result.bind (fun _ ->
             try
@@ -39,3 +40,15 @@ module Common =
             with exn ->
                 Error $"Unhandled exception while parsing yaml document: {exn}"
         )
+        *)
+        parser.MoveNext() |> ignore
+        parser.MoveNext() |> ignore
+
+        try
+            typeof<YamlDocument>
+                .GetConstructor(BindingFlags.NonPublic ||| BindingFlags.Instance, null, [| typeof<IParser> |], null)
+                .Invoke([| parser |])
+            :?> YamlDocument
+            |> Ok
+        with exn ->
+            Error $"Unhandled exception while parsing yaml document: {exn}"
