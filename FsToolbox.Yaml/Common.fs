@@ -10,6 +10,8 @@ open YamlDotNet.RepresentationModel
 [<AutoOpen>]
 module Common =
 
+    open System
+
 
     let parseDocument (yaml: string) =
         use reader = new StringReader(yaml)
@@ -59,3 +61,32 @@ module Common =
                Exception = Some exn }
             : FailureResult)
             |> Error
+
+    let getPropertyValue (name: string) (node: YamlNode) =
+        match node.NodeType with
+        | YamlNodeType.Mapping ->
+            let n = node :?> YamlMappingNode
+
+            match n.Children.TryGetValue(YamlScalarNode(name)) with
+            | true, nv -> Some nv
+            | false, _ -> None
+        | YamlNodeType.Alias ->
+            // NOTE could this be handled?
+            None
+        | _ -> None
+
+    let tryGetInt (node: YamlNode) =
+        match node.NodeType with
+        | YamlNodeType.Scalar ->
+            let n = node :?> YamlScalarNode
+
+            match Int32.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None
+        | YamlNodeType.Alias ->
+            // NOTE could this be handled?
+            None
+        | _ -> None
+
+    let tryGetIntProperty (name: string) (node: YamlNode) =
+        getPropertyValue name node |> Option.bind tryGetInt

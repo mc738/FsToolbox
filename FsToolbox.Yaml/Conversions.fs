@@ -62,6 +62,9 @@ module Conversions =
                             handler kv.Value))
                     writer
             | YamlNodeType.Scalar ->
+                // Not perfect but,
+                // use regex to get 
+                
 
                 failwith "todo"
             | YamlNodeType.Sequence -> failwith "todo"

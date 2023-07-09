@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs" />
         <Compile Include="Conversions.fs" />
         <Compile Include="Common.fs" />
     </ItemGroup>
