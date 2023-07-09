@@ -57,17 +57,15 @@ module Conversions =
                                 let kn = kv.Key :?> YamlScalarNode
                                 w.WritePropertyName(kn.Value)
                             | YamlNodeType.Sequence -> failwith "todo"
+                            | _ -> System.ArgumentOutOfRangeException() |> raise
 
                             handler kv.Value))
                     writer
-
-
-            //JsonElement("")
-            //failwith "todo"
             | YamlNodeType.Scalar ->
 
                 failwith "todo"
             | YamlNodeType.Sequence -> failwith "todo"
+            | _ -> System.ArgumentOutOfRangeException() |> raise
 
         handler yamlNode
 
