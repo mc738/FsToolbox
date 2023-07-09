@@ -22,6 +22,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Parsing.Tests", "
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Yaml", "FsToolbox.Yaml\FsToolbox.Yaml.fsproj", "{B608F198-0792-4BAC-9A39-F0B3FD359EAF}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Yaml.Tests", "FsToolbox.Yaml.Tests\FsToolbox.Yaml.Tests.fsproj", "{5DABDA1D-04F4-4DE3-890E-792CB724898E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{B608F198-0792-4BAC-9A39-F0B3FD359EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B608F198-0792-4BAC-9A39-F0B3FD359EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B608F198-0792-4BAC-9A39-F0B3FD359EAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DABDA1D-04F4-4DE3-890E-792CB724898E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DABDA1D-04F4-4DE3-890E-792CB724898E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DABDA1D-04F4-4DE3-890E-792CB724898E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DABDA1D-04F4-4DE3-890E-792CB724898E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
