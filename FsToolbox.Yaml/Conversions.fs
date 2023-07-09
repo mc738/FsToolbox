@@ -5,12 +5,12 @@ open System.Text.Json
 open FsToolbox.Core
 open YamlDotNet.RepresentationModel
 
-module Conversion =
+module Conversions =
 
 
     let jsonElementToYamlNode (element: JsonElement) =
         let rec handler (el: JsonElement) =
-            match element.ValueKind with
+            match el.ValueKind with
             | JsonValueKind.Array ->
                 el.EnumerateArray()
                 |> List.ofSeq

@@ -10,10 +10,16 @@ type ConversionTests() =
 
     [<TestMethod>]
     member _.``Json object to yaml``() =
-        let obj = JsonDocument.Parse("{ ").RootElement
+        let obj = JsonDocument.Parse("""{ "test": "Hello, World!" }""").RootElement
 
         let expected =
-            YamlMappingNode(seq { KeyValuePair(YamlScalarNode "test", YamlScalarNode "Hello, World!") })
-        
+            YamlMappingNode(
+                seq { KeyValuePair(YamlScalarNode "test" :> YamlNode, YamlScalarNode "Hello, World!" :> YamlNode) }
+            )
+            :> YamlNode
+            |> Some
 
-        ()
+        let actual =
+            FsToolbox.Yaml.Conversion.jsonElementToYamlNode obj
+        
+        Assert.AreEqual(expected, actual)
