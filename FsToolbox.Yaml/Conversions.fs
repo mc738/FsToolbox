@@ -35,6 +35,7 @@ module Conversions =
             | JsonValueKind.True -> failwith "todo"
             | JsonValueKind.False -> failwith "todo"
             | JsonValueKind.Null -> failwith "todo"
+            | _ -> System.ArgumentOutOfRangeException() |> raise
 
         handler element
 
