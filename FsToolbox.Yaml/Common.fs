@@ -92,6 +92,19 @@ module Common =
             match Byte.TryParse n.Value with
             | true, v -> Some v
             | false, _ -> None)
+        
+    let tryGetBoolean (node: YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match n.Value.ToLower() with
+            | "yes"
+            | "ok"
+            | "true"
+            | "1" -> Some true
+            | "no"
+            | "false"
+            | "0" -> Some false
+            | _ -> None)
     
     let tryGetInt (node: YamlNode) =
         tryGetScalarNode node
