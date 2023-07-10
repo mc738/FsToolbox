@@ -112,6 +112,13 @@ module Common =
             match Single.TryParse n.Value with
             | true, v -> Some v
             | false, _ -> None)
+
+    let tryGetDouble (node:YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Double.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
     
     
     
