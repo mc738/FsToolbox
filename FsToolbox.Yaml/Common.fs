@@ -87,7 +87,11 @@ module Common =
         tryGetScalarNode node |> Option.map (fun n -> n.Value)
 
     let tryGetByte (node: YamlNode) =
-        tryGetScalarNode
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Byte.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
     
     let tryGetInt (node: YamlNode) =
         tryGetScalarNode node
