@@ -120,7 +120,12 @@ module Common =
             | true, v -> Some v
             | false, _ -> None)
     
-    
+    let tryGetInt16 (node:YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Int16.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
     
     let tryGetInt (node: YamlNode) =
         tryGetScalarNode node
