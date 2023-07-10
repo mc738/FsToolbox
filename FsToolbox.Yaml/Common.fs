@@ -126,7 +126,7 @@ module Common =
             match Int16.TryParse n.Value with
             | true, v -> Some v
             | false, _ -> None)
-    
+        
     let tryGetInt (node: YamlNode) =
         tryGetScalarNode node
         |> Option.bind (fun n ->
@@ -134,5 +134,14 @@ module Common =
             | true, v -> Some v
             | false, _ -> None)
 
+    let tryGetInt64 (node:YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Int64.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
+        
+        
+    
     let tryGetIntProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetInt
