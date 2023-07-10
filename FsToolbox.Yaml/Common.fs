@@ -106,6 +106,15 @@ module Common =
             | "0" -> Some false
             | _ -> None)
     
+    let tryGetSingle (node:YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Single.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
+    
+    
+    
     let tryGetInt (node: YamlNode) =
         tryGetScalarNode node
         |> Option.bind (fun n ->
