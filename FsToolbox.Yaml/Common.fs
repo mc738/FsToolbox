@@ -75,18 +75,26 @@ module Common =
             None
         | _ -> None
 
-    let tryGetInt (node: YamlNode) =
+    let tryGetScalarNode (node: YamlNode) =
         match node.NodeType with
-        | YamlNodeType.Scalar ->
-            let n = node :?> YamlScalarNode
-
-            match Int32.TryParse n.Value with
-            | true, v -> Some v
-            | false, _ -> None
+        | YamlNodeType.Scalar -> node :?> YamlScalarNode |> Some
         | YamlNodeType.Alias ->
             // NOTE could this be handled?
             None
         | _ -> None
+
+    let tryGetString (node: YamlNode) =
+        tryGetScalarNode node |> Option.map (fun n -> n.Value)
+
+    let tryGetByte (node: YamlNode) =
+        tryGetScalarNode
+    
+    let tryGetInt (node: YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Int32.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
 
     let tryGetIntProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetInt
