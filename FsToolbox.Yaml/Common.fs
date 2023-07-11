@@ -120,6 +120,13 @@ module Common =
             | true, v -> Some v
             | false, _ -> None)
     
+    let tryGetDecimal (node:YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Decimal.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
+    
     let tryGetInt16 (node:YamlNode) =
         tryGetScalarNode node
         |> Option.bind (fun n ->
