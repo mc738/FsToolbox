@@ -140,8 +140,9 @@ module Common =
             match Int64.TryParse n.Value with
             | true, v -> Some v
             | false, _ -> None)
+       
+    let tryGetBoolProperty (name: string) (node: YamlNode) =
+        getPropertyValue name node |> Option.bind tryGetBoolean
         
-        
-    
     let tryGetIntProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetInt
