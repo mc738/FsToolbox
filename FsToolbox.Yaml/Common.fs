@@ -152,6 +152,9 @@ module Common =
       
     let tryGetDoubleProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetDouble
+        
+    let tryGetInt16Property (name: string) (node: YamlNode) =
+        getPropertyValue name node |> Option.bind tryGetInt16
       
     let tryGetIntProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetInt
