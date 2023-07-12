@@ -148,6 +148,13 @@ module Common =
             | true, v -> Some v
             | false, _ -> None)
        
+    let tryGetDateTime (node: YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match DateTime.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
+       
     let tryGetBoolProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetBoolean
         
