@@ -205,4 +205,7 @@ module Common =
     let tryGetDateTimeProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetDateTime
         
+    let tryGetFormattedDateTimeProperty (name: string) (format) (node: YamlNode) =
+        getPropertyValue name node |> Option.bind (tryGetFormattedDateTime format)
+       
         
