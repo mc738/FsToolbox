@@ -201,3 +201,8 @@ module Common =
 
     let tryGetInt64Property (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetInt64
+
+    let tryGetDateTimeProperty (name: string) (node: YamlNode) =
+        getPropertyValue name node |> Option.bind tryGetDateTime
+        
+        
