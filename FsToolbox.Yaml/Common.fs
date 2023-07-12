@@ -1,5 +1,6 @@
 ﻿namespace FsToolbox.Yaml
 
+open System.Globalization
 open System.IO
 open System.Reflection
 open FsToolbox.Core.Results
@@ -152,6 +153,13 @@ module Common =
         tryGetScalarNode node
         |> Option.bind (fun n ->
             match DateTime.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
+        
+    let tryGetFormattedDateTime (format: string) (node: YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match DateTime.TryParseExact(n.Value, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal) with
             | true, v -> Some v
             | false, _ -> None)
        
