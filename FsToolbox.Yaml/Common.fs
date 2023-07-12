@@ -169,7 +169,13 @@ module Common =
             match Guid.TryParse n.Value with
             | true, v -> Some v
             | false, _ -> None)
-        
+    
+    let tryGetFormattedGuid (format: string) (node: YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Guid.TryParseExact(n.Value, format) with
+            | true, v -> Some v
+            | false, _ -> None)    
         
        
     let tryGetBoolProperty (name: string) (node: YamlNode) =
