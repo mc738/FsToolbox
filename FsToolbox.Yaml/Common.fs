@@ -162,6 +162,15 @@ module Common =
             match DateTime.TryParseExact(n.Value, format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal) with
             | true, v -> Some v
             | false, _ -> None)
+    
+    let tryGetGuid (node: YamlNode) =
+        tryGetScalarNode node
+        |> Option.bind (fun n ->
+            match Guid.TryParse n.Value with
+            | true, v -> Some v
+            | false, _ -> None)
+        
+        
        
     let tryGetBoolProperty (name: string) (node: YamlNode) =
         getPropertyValue name node |> Option.bind tryGetBoolean
