@@ -110,7 +110,7 @@ module Strings =
         with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToDateTime (str: string) =
         match DateTime.TryParse str with
         | true, v -> Some v
@@ -126,4 +126,8 @@ module Strings =
             match Guid.TryParse str with
             | true, v -> Some v
             | false, _ -> None
-    
+
+
+    let removeChars (chars: char list) (options: StringSplitOptions option) (str: string) =
+        str.Split(chars |> Array.ofList, options |> Option.defaultValue StringSplitOptions.RemoveEmptyEntries)
+        |> String.concat ""
