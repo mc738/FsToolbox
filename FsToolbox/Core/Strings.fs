@@ -28,3 +28,21 @@ module Strings =
         match str with
         | Some v -> v
         | None -> String.Empty
+
+    let tryToByte (str: string) =
+        match Byte.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+
+    let tryToBool (additionTrueValues: string list) (additionalFalseValues: string list) (str: string) =
+        let trueValues = [ "true"; "yes"; "ok"; "1"; yield! additionTrueValues ]
+
+        let falseValues = [ "false"; "no"; "none"; "0"; yield! additionalFalseValues ]
+
+        match str.ToLower() with
+        | v when trueValues |> List.contains v -> Some true
+        | v when falseValues |> List.contains v -> Some false
+        | _ ->
+            match Boolean.TryParse str with
+            | true, v -> Some v
+            | false, _ -> None
