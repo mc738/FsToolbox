@@ -46,3 +46,28 @@ module Strings =
             match Boolean.TryParse str with
             | true, v -> Some v
             | false, _ -> None
+
+    let tryToDouble (str: string) =
+        match Double.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToDecimal (str: string) =
+        match Decimal.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToSingle (str: string) =
+        match Single.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToInt16 (str: string) =
+        match Int16.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToUInt16 (str: string) =
+        match UInt16.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
