@@ -1,5 +1,7 @@
 ﻿namespace FsToolbox.Core
 
+open System.Globalization
+
 module Strings =
 
     open System
@@ -51,43 +53,68 @@ module Strings =
         match Double.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToDecimal (str: string) =
         match Decimal.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToSingle (str: string) =
         match Single.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToInt16 (str: string) =
         match Int16.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToUInt16 (str: string) =
         match UInt16.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-    
+
     let tryToInt32 (str: string) =
         match Int32.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToUInt32 (str: string) =
         match UInt32.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToInt64 (str: string) =
         match Int64.TryParse str with
         | true, v -> Some v
         | false, _ -> None
-        
+
     let tryToUInt64 (str: string) =
         match UInt64.TryParse str with
         | true, v -> Some v
         | false, _ -> None
+
+    let tryToFormattedDateTime
+        (format: string)
+        (provider: IFormatProvider option)
+        (style: DateTimeStyles option)
+        (str: string)
+        =
+        match
+            DateTime.TryParseExact(
+                str,
+                format,
+                provider |> Option.defaultValue CultureInfo.InvariantCulture,
+                style |> Option.defaultValue DateTimeStyles.None
+            )
+        with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToDateTime (str: string) =
+        match DateTime.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+
+
+    
