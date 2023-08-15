@@ -71,3 +71,23 @@ module Strings =
         match UInt16.TryParse str with
         | true, v -> Some v
         | false, _ -> None
+    
+    let tryToInt32 (str: string) =
+        match Int32.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToUInt32 (str: string) =
+        match UInt32.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToInt64 (str: string) =
+        match Int64.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
+        
+    let tryToUInt64 (str: string) =
+        match UInt64.TryParse str with
+        | true, v -> Some v
+        | false, _ -> None
