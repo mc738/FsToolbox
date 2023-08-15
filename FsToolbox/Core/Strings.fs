@@ -116,5 +116,14 @@ module Strings =
         | true, v -> Some v
         | false, _ -> None
 
-
+    let tryToGuid (format: string option) (str: string) =
+        match format with
+        | Some f ->
+            match Guid.TryParseExact(str, f) with
+            | true, v -> Some v
+            | false, _ -> None
+        | None ->
+            match Guid.TryParse str with
+            | true, v -> Some v
+            | false, _ -> None
     
