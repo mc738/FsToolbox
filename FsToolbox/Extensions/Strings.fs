@@ -83,3 +83,27 @@ module Strings =
 
         member str.GetSHA256Hash() =
             str.ToUtf8Bytes() |> Hashing.generateHash (SHA256.Create())
+
+        member str.IsNullOrEmpty() = String.IsNullOrEmpty str
+
+        member str.IsNotNullOrEmpty() = str.IsNullOrEmpty() |> not
+
+        member str.IsNullOrWhiteSpace() = String.IsNullOrWhiteSpace str
+
+        member str.IsNotNullOrWhiteSpace() = str.IsNullOrWhiteSpace() |> not
+
+        member str.ToOption(?emptyToNone: bool, ?whitespaceToNone: bool) =
+            match emptyToNone |> Option.defaultValue true, whitespaceToNone |> Option.defaultValue true with
+            | true, true
+            | false, true ->
+                match str.IsNotNullOrWhiteSpace() with
+                | true -> Some str
+                | false -> None
+            | true, false ->
+                match str.IsNotNullOrEmpty() with
+                | true -> Some str
+                | false -> None
+            | false, false ->
+                match str <> null with
+                | true -> Some str
+                | false -> None
