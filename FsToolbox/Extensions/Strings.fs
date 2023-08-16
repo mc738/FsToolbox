@@ -120,3 +120,9 @@ module Strings =
         
         member str.TryToSingle() = Strings.tryToSingle str
     
+        member str.TryToInt16() = Strings.tryToInt16 str
+        
+        member str.TryToInt32() = Strings.tryToInt32 str
+        
+        member str.TryToInt64() = Strings.tryToInt64 str
+    
