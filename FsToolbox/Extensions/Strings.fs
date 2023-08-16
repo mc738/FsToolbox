@@ -107,3 +107,7 @@ module Strings =
                 match str <> null with
                 | true -> Some str
                 | false -> None
+
+        member str.TryToByte() = Strings.tryToByte
+        
+        
