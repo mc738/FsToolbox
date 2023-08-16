@@ -116,24 +116,26 @@ module Strings =
                 (additionalTrueValues |> Option.defaultValue [])
                 (additionFalseValues |> Option.defaultValue [])
                 str
-    
+
         member str.TryToDouble() = Strings.tryToDouble str
-        
+
         member str.TryToSingle() = Strings.tryToSingle str
-    
+
         member str.TryToInt16() = Strings.tryToInt16 str
-        
+
         member str.TryToInt32() = Strings.tryToInt32 str
-        
+
         member str.TryToInt64() = Strings.tryToInt64 str
-        
+
         member str.TryToUInt16() = Strings.tryToUInt16 str
-        
+
         member str.TryToUInt32() = Strings.tryToUInt32 str
-        
+
         member str.TryToUInt64() = Strings.tryToUInt64 str
-        
+
         member str.TryToDateTime(format: string, ?provider: IFormatProvider, ?styles: DateTimeStyles) =
             Strings.tryToFormattedDateTime format provider styles str
-        
+
         member str.TryToDateTime() = Strings.tryToDateTime str
+
+        member str.RemoveChars(chars: char list, ?options: StringSplitOptions) = Strings.removeChars chars options str
