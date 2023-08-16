@@ -125,4 +125,9 @@ module Strings =
         member str.TryToInt32() = Strings.tryToInt32 str
         
         member str.TryToInt64() = Strings.tryToInt64 str
-    
+        
+        member str.TryToUInt16() = Strings.tryToUInt16 str
+        
+        member str.TryToUInt32() = Strings.tryToUInt32 str
+        
+        member str.TryToUInt64() = Strings.tryToUInt64 str
