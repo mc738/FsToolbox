@@ -1,5 +1,6 @@
 ﻿namespace FsToolbox.Extensions
 
+open System.Globalization
 open System.Security.Cryptography
 
 [<AutoOpen>]
@@ -131,5 +132,8 @@ module Strings =
         member str.TryToUInt32() = Strings.tryToUInt32 str
         
         member str.TryToUInt64() = Strings.tryToUInt64 str
+        
+        member str.TryToDateTime(format: string, ?provider: IFormatProvider, ?styles: DateTimeStyles) =
+            Strings.tryToFormattedDateTime format provider styles str
         
         member str.TryToDateTime() = Strings.tryToDateTime str
