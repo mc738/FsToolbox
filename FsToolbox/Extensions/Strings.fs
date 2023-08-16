@@ -109,5 +109,11 @@ module Strings =
                 | false -> None
 
         member str.TryToByte() = Strings.tryToByte
-        
-        
+
+        member str.TryToBool(?additionalTrueValues: string list, ?additionFalseValues: string list) =
+            Strings.tryToBool
+                (additionalTrueValues |> Option.defaultValue [])
+                (additionFalseValues |> Option.defaultValue [])
+                str
+    
+    
