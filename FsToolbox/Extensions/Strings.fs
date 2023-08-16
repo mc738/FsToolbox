@@ -116,4 +116,7 @@ module Strings =
                 (additionFalseValues |> Option.defaultValue [])
                 str
     
+        member str.TryToDouble() = Strings.tryToDouble str
+        
+        member str.TryToSingle() = Strings.tryToSingle str
     
