@@ -131,3 +131,5 @@ module Strings =
         member str.TryToUInt32() = Strings.tryToUInt32 str
         
         member str.TryToUInt64() = Strings.tryToUInt64 str
+        
+        member str.TryToDateTime() = Strings.tryToDateTime str
