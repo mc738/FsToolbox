@@ -16,7 +16,7 @@ module Streams =
             new MemoryStream(str |> Conversions.fromBase64)
             
         static member FromHexString(str: string) =
-            new MemoryStream(str |> Conversions.)
+            new MemoryStream(str |> Conversions.fromHex)
             
         member ms.GetSHA256Hash() = Hashing.hashStream (SHA256.Create()) ms
         
