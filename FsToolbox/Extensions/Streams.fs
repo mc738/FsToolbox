@@ -1,11 +1,10 @@
 ﻿namespace FsToolbox.Extensions
 
-open System.Text
-
 [<AutoOpen>]
 module Streams =
 
     open System.IO
+    open System.Text
     open System.Security.Cryptography
     open FsToolbox.Core
         
