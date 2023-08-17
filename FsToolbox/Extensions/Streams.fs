@@ -1,5 +1,7 @@
 ﻿namespace FsToolbox.Extensions
 
+open System.Text
+
 [<AutoOpen>]
 module Streams =
 
@@ -10,3 +12,5 @@ module Streams =
     type MemoryStream with
 
         member ms.GetSHA256Hash() = Hashing.hashStream (SHA256.Create()) ms
+        
+        member ms.GetUtf8String() = ms.ToArray() |> Encoding.UTF8.GetString
