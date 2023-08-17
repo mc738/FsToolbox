@@ -22,4 +22,5 @@ module Streams =
         
         member ms.GetUtf8String() = ms.ToArray() |> Encoding.UTF8.GetString
         
+        member ms.GetBase64String() = ms.ToArray() |> Conversions.toBase64
         
