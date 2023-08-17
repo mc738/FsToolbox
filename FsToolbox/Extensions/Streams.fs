@@ -24,3 +24,5 @@ module Streams =
         
         member ms.GetBase64String() = ms.ToArray() |> Conversions.toBase64
         
+        member ms.GetHexString() = ms.ToArray() |> Conversions.toHex
+        
