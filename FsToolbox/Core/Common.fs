@@ -33,3 +33,7 @@ module Conversions =
     let toBase64 (data: byte array) = Convert.ToBase64String data
     
     let fromBase64 (str: string) = Convert.FromBase64String str
+    
+    let toHex (data: byte array) = Convert.ToHexString data
+    
+    let fromHex (str: string) = Convert.FromHexString str
