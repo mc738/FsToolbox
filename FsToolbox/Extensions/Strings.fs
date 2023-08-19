@@ -139,3 +139,6 @@ module Strings =
         member str.TryToDateTime() = Strings.tryToDateTime str
 
         member str.RemoveChars(chars: char list, ?options: StringSplitOptions) = Strings.removeChars chars options str
+
+        member str.ReplaceMultiple(replacements: (string * string) list) =
+                replacements |> List.fold (fun (s:string) -> s.Replace) str
