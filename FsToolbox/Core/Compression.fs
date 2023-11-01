@@ -1,5 +1,7 @@
 ﻿namespace FsToolbox.Core
 
+open System.IO.Compression
+
 module Compression =
         open System.IO.Compression
         
@@ -8,4 +10,3 @@ module Compression =
             
         let unzip (path: string) (output: string) =
             ZipFile.ExtractToDirectory(path, output)
-
