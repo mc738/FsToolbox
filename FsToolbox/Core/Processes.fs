@@ -1,5 +1,9 @@
 ﻿namespace FsToolbox.Core
 
+open System
+open System.Diagnostics
+open FsToolbox.Core.Results
+
 module Processes =
 
     [<RequireQualifiedAccess>]
@@ -28,11 +32,9 @@ module Processes =
             | Some d -> procInfo.WorkingDirectory <- d
             | _ -> ()
 
-            let outputs =
-                System.Collections.Generic.List<string>()
+            let outputs = System.Collections.Generic.List<string>()
 
-            let errors =
-                System.Collections.Generic.List<string>()
+            let errors = System.Collections.Generic.List<string>()
 
             use p = new Process()
             let outputHandler f (_sender: obj) (args: DataReceivedEventArgs) = f args.Data
@@ -44,8 +46,7 @@ module Processes =
             let started =
                 try
                     p.Start()
-                with
-                | ex ->
+                with ex ->
                     ex.Data.Add("filename", filename)
                     reraise ()
 
@@ -62,9 +63,7 @@ module Processes =
             printfn $"Finished {filename} after {timer.ElapsedMilliseconds} milliseconds"
 
             let cleanOut l =
-                l
-                |> Seq.filter (fun o -> String.IsNullOrWhiteSpace o |> not)
-                |> List.ofSeq
+                l |> Seq.filter (fun o -> String.IsNullOrWhiteSpace o |> not) |> List.ofSeq
 
             cleanOut outputs, cleanOut errors
 
@@ -76,3 +75,91 @@ module Processes =
             match errors.Length = 0 with
             | true -> Ok output
             | false -> Error(String.concat Environment.NewLine errors)
+
+    type ProcessResult =
+        { ExitCode: int
+          Args: string
+          Pid: int
+          StdOut: string list
+          StdError: string list
+          StartTime: DateTime
+          ExecutionDuration: TimeSpan
+          ExitTime: DateTime }
+
+    let executeWithDiagnostics
+        filename
+        args
+        startDir
+        (outputReceivedFn: (string -> unit) option)
+        (errorReceivedFn: (string -> unit) option)
+        =
+
+        try
+            let timer = Stopwatch.StartNew()
+            let procInfo = ProcessStartInfo()
+            procInfo.RedirectStandardOutput <- true
+            procInfo.RedirectStandardError <- true
+            procInfo.UseShellExecute <- false
+            procInfo.FileName <- filename
+            procInfo.Arguments <- args
+
+            match startDir with
+            | Some d -> procInfo.WorkingDirectory <- d
+            | _ -> ()
+
+            let outputs = System.Collections.Generic.List<string>()
+
+            let errors = System.Collections.Generic.List<string>()
+
+            use p = new Process()
+
+            let outputHandler (_sender: obj) (args: DataReceivedEventArgs) =
+                outputReceivedFn |> Option.iter (fun fn -> fn args.Data)
+                outputs.Add args.Data
+
+            let errorHandler (_sender: obj) (args: DataReceivedEventArgs) =
+                errorReceivedFn |> Option.iter (fun fn -> fn args.Data)
+                errors.Add args.Data
+
+            p.StartInfo <- procInfo
+            p.OutputDataReceived.AddHandler(DataReceivedEventHandler(outputHandler))
+            p.ErrorDataReceived.AddHandler(DataReceivedEventHandler(errorHandler))
+
+            match p.Start() with
+            | true ->
+
+                let pid = p.Id
+                printfn $"Started {p.ProcessName} (pid: {p.Id})"
+                printfn $"\tArgs: {args}"
+                printfn $"\tId: {p.Id}"
+                p.BeginOutputReadLine()
+                p.BeginErrorReadLine()
+                p.WaitForExit()
+                timer.Stop()
+
+                let cleanOut l =
+                    l
+                    |> Seq.filter (fun o -> System.String.IsNullOrWhiteSpace o |> not)
+                    |> List.ofSeq
+
+                { ExitCode = p.ExitCode
+                  Args = failwith "todo"
+                  Pid = pid
+                  StdOut = outputs |> List.ofSeq
+                  StdError = errors |> List.ofSeq
+                  StartTime = p.StartTime
+                  ExecutionDuration = timer.Elapsed
+                  ExitTime = p.ExitTime }
+                |> ActionResult.Success
+            | false ->
+                ({ Message = "Process failed to start"
+                   DisplayMessage = "Process failed to start"
+                   Exception = None }
+                : FailureResult)
+                |> ActionResult.Failure
+        with ex ->
+            ({ Message = $"Unhandled exception while executing process. Error: {ex.Message}"
+               DisplayMessage = "Unhandled exception while executing process"
+               Exception = Some ex }
+            : FailureResult)
+            |> ActionResult.Failure
