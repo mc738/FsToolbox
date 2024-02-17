@@ -24,6 +24,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Yaml", "FsToolbox
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Yaml.Tests", "FsToolbox.Yaml.Tests\FsToolbox.Yaml.Tests.fsproj", "{5DABDA1D-04F4-4DE3-890E-792CB724898E}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Web.Apps", "FsToolbox.Web.Apps\FsToolbox.Web.Apps.fsproj", "{9C0482E0-6728-4F72-AA42-D542C0E23ABE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,5 +68,9 @@ Global
 		{5DABDA1D-04F4-4DE3-890E-792CB724898E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DABDA1D-04F4-4DE3-890E-792CB724898E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DABDA1D-04F4-4DE3-890E-792CB724898E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C0482E0-6728-4F72-AA42-D542C0E23ABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C0482E0-6728-4F72-AA42-D542C0E23ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C0482E0-6728-4F72-AA42-D542C0E23ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C0482E0-6728-4F72-AA42-D542C0E23ABE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
