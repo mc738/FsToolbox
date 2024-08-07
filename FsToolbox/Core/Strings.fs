@@ -1,11 +1,32 @@
 ﻿namespace FsToolbox.Core
 
 open System.Globalization
+open System.Text.Encodings.Web
 
 module Strings =
 
     open System
     open System.Text
+
+    type SlugifySettings =
+
+        { ReplacementCharacter: char
+          NormalizeCase: NormalizeCaseType
+           }
+
+        static member Default =
+            { ReplacementCharacter = '_'
+              NormalizeCase = NormalizeCaseType.LowerCase }
+
+
+    and [<RequireQualifiedAccess>] NormalizeCaseType =
+        | UpperCase
+        | LowerCase
+        | None
+        
+    and [<RequireQualifiedAccess>] EncodingType =
+        | Url
+        | None
 
     let bytesToHex (bytes: byte array) = Convert.ToHexString bytes
 
@@ -131,3 +152,5 @@ module Strings =
     let removeChars (chars: char list) (options: StringSplitOptions option) (str: string) =
         str.Split(chars |> Array.ofList, options |> Option.defaultValue StringSplitOptions.RemoveEmptyEntries)
         |> String.concat ""
+
+    let urlEncode (str: string) = UrlEncoder.Default.Encode str
