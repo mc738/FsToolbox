@@ -55,8 +55,7 @@ module Strings =
                    '=' |]
               FilterFunction = fun c -> Char.IsLetterOrDigit c || Char.IsPunctuation c 
               NormalizeCase = NormalizeCaseType.LowerCase
-              Encoding = EncodingType.Url }
-
+              Encoding = EncodingType.None }
 
     and [<RequireQualifiedAccess>] NormalizeCaseType =
         | UpperCase
@@ -65,6 +64,7 @@ module Strings =
 
     and [<RequireQualifiedAccess>] EncodingType =
         | Url
+        | Html
         | None
 
     let bytesToHex (bytes: byte array) = Convert.ToHexString bytes
@@ -208,6 +208,7 @@ module Strings =
         |> fun r ->
             match options.Encoding with
             | EncodingType.Url -> urlEncode r
+            | EncodingType.Html -> htmlEncode r
             | EncodingType.None -> r
         
         

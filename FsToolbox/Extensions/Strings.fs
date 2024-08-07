@@ -145,4 +145,10 @@ module Strings =
 
         member str.UrlEncode() = Strings.urlEncode str
 
+        member str.UrlDecode() = Strings.urlDecode str
+        
+        member str.HtmlEncode() = Strings.htmlEncode
+        
+        member str.HtmlDecode() = Strings.htmlDecode
+        
         member str.Slugify(options: Strings.SlugifySettings) = Strings.slugify options str 
