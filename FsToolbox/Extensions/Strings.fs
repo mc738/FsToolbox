@@ -141,4 +141,8 @@ module Strings =
         member str.RemoveChars(chars: char list, ?options: StringSplitOptions) = Strings.removeChars chars options str
 
         member str.ReplaceMultiple(replacements: (string * string) list) =
-                replacements |> List.fold (fun (s:string) -> s.Replace) str
+            replacements |> List.fold (fun (s: string) -> s.Replace) str
+
+        member str.UrlEncode() = Strings.urlEncode str
+
+        member str.Slugify(options: Strings.SlugifySettings) = Strings.slugify options str 

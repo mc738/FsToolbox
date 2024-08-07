@@ -2,6 +2,7 @@
 
 open System.Globalization
 open System.Text.Encodings.Web
+open Microsoft.FSharp.Core
 
 module Strings =
 
@@ -10,20 +11,57 @@ module Strings =
 
     type SlugifySettings =
 
-        { ReplacementCharacter: char
+        { Replacement: string
+          CharactersToRemove: char array
+          FilterFunction: char -> bool
           NormalizeCase: NormalizeCaseType
-           }
+          Encoding: EncodingType }
 
         static member Default =
-            { ReplacementCharacter = '_'
-              NormalizeCase = NormalizeCaseType.LowerCase }
+            { Replacement = "_"
+              CharactersToRemove =
+                [| '_'
+                   '-'
+                   '?'
+                   '/'
+                   '\\'
+                   '.'
+                   ','
+                   '!'
+                   '"'
+                   '''
+                   '£'
+                   '$'
+                   '%'
+                   '^'
+                   '&'
+                   '*'
+                   '('
+                   ')'
+                   '['
+                   ']'
+                   '{'
+                   '}'
+                   ' '
+                   '\t'
+                   ':'
+                   ':'
+                   '@'
+                   '<'
+                   '>'
+                   '`'
+                   '¬'
+                   '=' |]
+              FilterFunction = fun c -> Char.IsLetterOrDigit c || Char.IsPunctuation c 
+              NormalizeCase = NormalizeCaseType.LowerCase
+              Encoding = EncodingType.Url }
 
 
     and [<RequireQualifiedAccess>] NormalizeCaseType =
         | UpperCase
         | LowerCase
         | None
-        
+
     and [<RequireQualifiedAccess>] EncodingType =
         | Url
         | None
@@ -154,3 +192,15 @@ module Strings =
         |> String.concat ""
 
     let urlEncode (str: string) = UrlEncoder.Default.Encode str
+
+    let slugify (options: SlugifySettings) (str: string) =
+        str
+        |> String.filter options.FilterFunction  
+        |> _.Split(options.CharactersToRemove, StringSplitOptions.RemoveEmptyEntries)
+        |> String.concat "_"
+        |> fun r ->
+            match options.Encoding with
+            | EncodingType.Url -> urlEncode r
+            | EncodingType.None -> r
+        
+        
