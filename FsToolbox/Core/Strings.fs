@@ -2,6 +2,7 @@
 
 open System.Globalization
 open System.Text.Encodings.Web
+open System.Web
 open Microsoft.FSharp.Core
 
 module Strings =
@@ -192,6 +193,12 @@ module Strings =
         |> String.concat ""
 
     let urlEncode (str: string) = UrlEncoder.Default.Encode str
+    
+    let urlDecode (str: string) = HttpUtility.UrlDecode str
+    
+    let htmlEncode (str: string) = HttpUtility.HtmlEncode str
+    
+    let htmlDecode (str: string) = HttpUtility.HtmlDecode str
 
     let slugify (options: SlugifySettings) (str: string) =
         str
