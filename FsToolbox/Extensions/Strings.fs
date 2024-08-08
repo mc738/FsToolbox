@@ -2,6 +2,7 @@
 
 open System.Globalization
 open System.Security.Cryptography
+open FsToolbox.Core.Strings
 
 [<AutoOpen>]
 module Strings =
@@ -12,6 +13,9 @@ module Strings =
     type String with
 
         static member FromUtfBytes(bytes: byte array) = Conversions.toUtf8 bytes
+
+        static member CreateRandom(length: int, ?settings: Strings.RandomStringSettings) =
+            Strings.createRandomString (settings |> Option.defaultValue Strings.RandomStringSettings.Default)
 
         member str.ToSnakeCase() =
             str
@@ -150,4 +154,8 @@ module Strings =
 
         member str.HtmlDecode() = Strings.htmlDecode
 
+        member str.Encode(encodingType: EncodingType) = Strings.encode encodingType str
+        
+        member str.Decode(encodingType: EncodingType) = Strings.Decode encodingType str
+        
         member str.Slugify(options: Strings.SlugifySettings) = Strings.slugify options str
