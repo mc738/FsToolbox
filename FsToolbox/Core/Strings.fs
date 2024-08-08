@@ -9,6 +9,16 @@ module Strings =
 
     open System
     open System.Text
+    
+    type [<RequireQualifiedAccess>] NormalizeCaseType =
+        | UpperCase
+        | LowerCase
+        | None
+
+    type [<RequireQualifiedAccess>] EncodingType =
+        | Url
+        | Html
+        | None
 
     type SlugifySettings =
 
@@ -56,17 +66,15 @@ module Strings =
               FilterFunction = fun c -> Char.IsLetterOrDigit c || Char.IsPunctuation c 
               NormalizeCase = NormalizeCaseType.LowerCase
               Encoding = EncodingType.None }
-
-    and [<RequireQualifiedAccess>] NormalizeCaseType =
-        | UpperCase
-        | LowerCase
-        | None
-
-    and [<RequireQualifiedAccess>] EncodingType =
-        | Url
-        | Html
-        | None
-
+            
+    type RandomStringSettings =
+        {
+            IncludeLetters: bool
+            IncludeDigits: bool
+            IncludePunctuation: bool
+            Encoding: EncodingType
+        }
+    
     let bytesToHex (bytes: byte array) = Convert.ToHexString bytes
 
     (*
@@ -212,3 +220,6 @@ module Strings =
             | EncodingType.None -> r
         
         
+    let createRandomString () () =
+        
+        ()
