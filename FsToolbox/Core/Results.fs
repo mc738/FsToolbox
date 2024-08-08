@@ -1,7 +1,6 @@
 ﻿namespace FsToolbox.Core.Results
 
 open System
-open Microsoft.FSharp.Core.LanguagePrimitives
 
 type FailureResult =
     { Message: string
@@ -283,7 +282,7 @@ module FetchResult =
                 | FetchResult.Failure f -> ok, f :: errors)
             ([], [])
         |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
-        
+
     let aggregateResults<'T> (errorDisplayMessage: string) (results: FetchResult<'T> seq) =
         results
         |> unzipResults
@@ -292,10 +291,7 @@ module FetchResult =
 
             (match err.IsEmpty with
              | true -> None
-             | false ->
-                 FailureResult.Aggregate(err, errorDisplayMessage)
-                 |> FetchResult.Failure
-                 |> Some)
+             | false -> FailureResult.Aggregate(err, errorDisplayMessage) |> FetchResult.Failure |> Some)
 
 [<RequireQualifiedAccess>]
 module ActionResult =
@@ -348,7 +344,11 @@ module ActionResult =
     /// <summary>
     ///     Merge to fetch results, the second one is based of the first ones result value.
     /// </summary>
-    let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> ActionResult<'T2>) (result: ActionResult<'T1>) =
+    let merge<'T1, 'T2, 'U>
+        (mergeFn: 'T1 -> 'T2 -> 'U)
+        (result2: 'T1 -> ActionResult<'T2>)
+        (result: ActionResult<'T1>)
+        =
         // QUESTION would this make more sense to be `pipe`?
         match result with
         | ActionResult.Success v1 ->
@@ -372,7 +372,11 @@ module ActionResult =
         | Error e, _
         | _, Error e -> Error e
 
-    let toResult3<'T1, 'T2, 'T3> (result1: ActionResult<'T1>) (result2: ActionResult<'T2>) (result3: ActionResult<'T3>) =
+    let toResult3<'T1, 'T2, 'T3>
+        (result1: ActionResult<'T1>)
+        (result2: ActionResult<'T2>)
+        (result3: ActionResult<'T3>)
+        =
         match result1.ToResult(), result2.ToResult(), result3.ToResult() with
         | Ok r1, Ok r2, Ok r3 -> Ok(r1, r2, r3)
         | Error e, _, _
@@ -479,7 +483,7 @@ module ActionResult =
                 | ActionResult.Failure f -> ok, f :: errors)
             ([], [])
         |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
-        
+
     let aggregateResults<'T> (errorDisplayMessage: string) (results: ActionResult<'T> seq) =
         results
         |> unzipResults
@@ -492,7 +496,7 @@ module ActionResult =
                  FailureResult.Aggregate(err, errorDisplayMessage)
                  |> ActionResult.Failure
                  |> Some)
-            
+
 [<RequireQualifiedAccess>]
 module CreateResult =
 
@@ -544,7 +548,11 @@ module CreateResult =
     /// <summary>
     ///     Merge to create results, the second one is based of the first ones result value.
     /// </summary>
-    let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> CreateResult<'T2>) (result: CreateResult<'T1>) =
+    let merge<'T1, 'T2, 'U>
+        (mergeFn: 'T1 -> 'T2 -> 'U)
+        (result2: 'T1 -> CreateResult<'T2>)
+        (result: CreateResult<'T1>)
+        =
         // QUESTION would this make more sense to be `pipe`?
         match result with
         | CreateResult.Success v1 ->
@@ -568,7 +576,11 @@ module CreateResult =
         | Error e, _
         | _, Error e -> Error e
 
-    let toResult3<'T1, 'T2, 'T3> (result1: CreateResult<'T1>) (result2: CreateResult<'T2>) (result3: CreateResult<'T3>) =
+    let toResult3<'T1, 'T2, 'T3>
+        (result1: CreateResult<'T1>)
+        (result2: CreateResult<'T2>)
+        (result3: CreateResult<'T3>)
+        =
         match result1.ToResult(), result2.ToResult(), result3.ToResult() with
         | Ok r1, Ok r2, Ok r3 -> Ok(r1, r2, r3)
         | Error e, _, _
@@ -675,7 +687,7 @@ module CreateResult =
                 | CreateResult.Failure f -> ok, f :: errors)
             ([], [])
         |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
-        
+
     let aggregateResults<'T> (errorDisplayMessage: string) (results: CreateResult<'T> seq) =
         results
         |> unzipResults
@@ -688,7 +700,7 @@ module CreateResult =
                  FailureResult.Aggregate(err, errorDisplayMessage)
                  |> ActionResult.Failure
                  |> Some)
-            
+
 [<RequireQualifiedAccess>]
 module UpdateResult =
 
@@ -740,7 +752,11 @@ module UpdateResult =
     /// <summary>
     ///     Merge to update results, the second one is based of the first ones result value.
     /// </summary>
-    let merge<'T1, 'T2, 'U> (mergeFn: 'T1 -> 'T2 -> 'U) (result2: 'T1 -> UpdateResult<'T2>) (result: UpdateResult<'T1>) =
+    let merge<'T1, 'T2, 'U>
+        (mergeFn: 'T1 -> 'T2 -> 'U)
+        (result2: 'T1 -> UpdateResult<'T2>)
+        (result: UpdateResult<'T1>)
+        =
         // QUESTION would this make more sense to be `pipe`?
         match result with
         | UpdateResult.Success v1 ->
@@ -764,7 +780,11 @@ module UpdateResult =
         | Error e, _
         | _, Error e -> Error e
 
-    let toResult3<'T1, 'T2, 'T3> (result1: UpdateResult<'T1>) (result2: UpdateResult<'T2>) (result3: UpdateResult<'T3>) =
+    let toResult3<'T1, 'T2, 'T3>
+        (result1: UpdateResult<'T1>)
+        (result2: UpdateResult<'T2>)
+        (result3: UpdateResult<'T3>)
+        =
         match result1.ToResult(), result2.ToResult(), result3.ToResult() with
         | Ok r1, Ok r2, Ok r3 -> Ok(r1, r2, r3)
         | Error e, _, _
@@ -871,7 +891,7 @@ module UpdateResult =
                 | UpdateResult.Failure f -> ok, f :: errors)
             ([], [])
         |> fun (ok, errors) -> ok |> List.rev, errors |> List.rev
-        
+
     let aggregateResults<'T> (errorDisplayMessage: string) (results: UpdateResult<'T> seq) =
         results
         |> unzipResults

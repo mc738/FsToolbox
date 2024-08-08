@@ -9,28 +9,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs" />
-        <Compile Include="Core\Common.fs" />
-        <Compile Include="Core\Results.fs" />
-        <Compile Include="Core\Strings.fs" />
-        <Compile Include="Core\IO.fs" />
-        <Compile Include="Core\Streams.fs" />
-        <Compile Include="Core\TypeHelpers.fs" />
-        <Compile Include="Core\Hashing.fs" />
-        <Compile Include="Core\Encryption.fs" />
-        <Compile Include="Core\Passwords.fs" />
-        <Compile Include="Core\Xml.fs" />
-        <Compile Include="Core\Https.fs" />
-        <Compile Include="Core\Processes.fs" />
-        <Compile Include="Core\Compression.fs" />
-        <Compile Include="Core\Json.fs" />
-        <Compile Include="Core\Rsa.fs" />
-        <Compile Include="Core\RsaV2.fs" />
-        <Compile Include="Extensions\Strings.fs" />
-        <Compile Include="Extensions\Streams.fs" />
-        <Compile Include="AppEnvironment\Args\Mapping.fs" />
-        <Compile Include="AppEnvironment\Args\Impl.fs" />
-        <Compile Include="Tools\Grok.fs" />
+        <Compile Include="Library.fs"/>
+        <Compile Include="Core\Common.fs"/>
+        <Compile Include="Core\Array.fs"/>
+        <Compile Include="Core\Results.fs"/>
+        <Compile Include="Core\Strings.fs"/>
+        <Compile Include="Core\IO.fs"/>
+        <Compile Include="Core\Streams.fs"/>
+        <Compile Include="Core\TypeHelpers.fs"/>
+        <Compile Include="Core\Hashing.fs"/>
+        <Compile Include="Core\Encryption.fs"/>
+        <Compile Include="Core\Passwords.fs"/>
+        <Compile Include="Core\Xml.fs"/>
+        <Compile Include="Core\Https.fs"/>
+        <Compile Include="Core\Processes.fs"/>
+        <Compile Include="Core\Compression.fs"/>
+        <Compile Include="Core\Json.fs"/>
+        <Compile Include="Core\Rsa.fs"/>
+        <Compile Include="Core\RsaV2.fs"/>
+        <Compile Include="Extensions\Strings.fs"/>
+        <Compile Include="Extensions\Streams.fs"/>
+        <Compile Include="AppEnvironment\Args\Mapping.fs"/>
+        <Compile Include="AppEnvironment\Args\Impl.fs"/>
+        <Compile Include="Tools\Grok.fs"/>
     </ItemGroup>
 
 </Project>

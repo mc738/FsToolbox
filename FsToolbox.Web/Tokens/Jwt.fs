@@ -4,10 +4,7 @@ module Jwt =
 
     open System
     open System.IdentityModel.Tokens.Jwt
-    open System.Security.Claims
     open System.Security.Cryptography
-    open System.Text
-    open System.Text.Json.Serialization
     open Microsoft.IdentityModel.Tokens
 
     type JwtTokenValidationError =
@@ -72,21 +69,22 @@ module Jwt =
         try
             let p = TokenValidationParameters()
             p.ValidateIssuerSigningKey <- true
+
             match parameters.Issuer with
             | Some issuer ->
                 p.ValidateIssuer <- true
                 p.ValidIssuer <- issuer
             | None -> ()
-            
+
             match parameters.Audience with
             | Some audience ->
                 p.ValidateAudience <- true
                 p.ValidAudience <- audience
             | None -> ()
-            
+
             p.IssuerSigningKey <- SymmetricSecurityKey(secretKey)
             p.ValidateLifetime <- parameters.ValidateLifetime
-            
+
             match tokenHandler.ValidateToken(token, p) with
             | _ -> Ok()
         with
@@ -102,13 +100,13 @@ module Jwt =
 
     let validateRsaToken (parameters: ValidateTokenParameters) (token: string) (rsa: RSA) =
         let tokenHandler = JwtSecurityTokenHandler()
-        
+
         try
 
             let p = TokenValidationParameters()
-            
+
             let cp = CryptoProviderFactory()
-            
+
             // This is used to fix this is issue:
             // https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/1433
             // It came up when 2 tests in a project used the same rsa csp.
@@ -116,27 +114,26 @@ module Jwt =
             // However the validation would actually work if you tried it again after that.
             // See https://github.com/mc738/FsToolbox/issues/2
             cp.CacheSignatureProviders <- parameters.CacheSignatureProviders
-            
+
             p.CryptoProviderFactory <- cp
-            
+
             p.ValidateIssuerSigningKey <- true
+
             match parameters.Issuer with
             | Some issuer ->
                 p.ValidateIssuer <- true
                 p.ValidIssuer <- issuer
-            | None ->
-                p.ValidateIssuer <- false
-            
+            | None -> p.ValidateIssuer <- false
+
             match parameters.Audience with
             | Some audience ->
                 p.ValidateAudience <- true
                 p.ValidAudience <- audience
-            | None ->
-                p.ValidateAudience <- false
-            
+            | None -> p.ValidateAudience <- false
+
             p.IssuerSigningKey <- RsaSecurityKey(rsa)
             p.ValidateLifetime <- parameters.ValidateLifetime
-            
+
             match tokenHandler.ValidateToken(token, p) with
             | _ -> Ok()
         with

@@ -2,7 +2,7 @@
 
 [<AutoOpen>]
 module Common =
-    
+
     type RabbitMQCredentials =
         | LocalGuest
         | LocalUser of RabbitMQLocalUserCredentials
@@ -14,13 +14,10 @@ module Common =
         { Endpoint: string
           Username: string
           Password: string }
-        
-    
-    type QueueDefinition =
-        {
-            Name: string
-            Durable: bool
-            Exclusive: bool
-            AutoDelete: bool
-        }
 
+
+    type QueueDefinition =
+        { Name: string
+          Durable: bool
+          Exclusive: bool
+          AutoDelete: bool }

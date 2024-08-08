@@ -12,16 +12,13 @@ module Json =
         attempt (fun _ -> JsonSerializer.Serialize<'T>(value))
 
     let tryLoad<'T> path =
-        attempt (fun _ ->
-            FileIO.readText path
-            |> Result.bind deserialize<'T>)
+        attempt (fun _ -> FileIO.readText path |> Result.bind deserialize<'T>)
 
     let tryOpenDocument (json: string) =
         attempt (fun _ -> JsonDocument.Parse json)
 
     let tryLoadDocument path =
-        FileIO.readText path
-        |> Result.bind tryOpenDocument
+        FileIO.readText path |> Result.bind tryOpenDocument
 
     let tryGetProperty (name: string) (element: JsonElement) =
         match element.TryGetProperty name with
@@ -33,7 +30,7 @@ module Json =
         | JsonValueKind.True -> Some true
         | JsonValueKind.False -> Some false
         | _ -> None
-    
+
     let tryGetByte (element: JsonElement) =
         match element.TryGetByte() with
         | true, b -> Some b
@@ -108,20 +105,16 @@ module Json =
         match element.ValueKind with
         | JsonValueKind.String -> element.GetString() |> Some
         | _ -> None
-        
+
     let getString (element: JsonElement) = element.GetString()
 
     /// Try and get a string array from a JsonElement.
     /// If the element is not a array, None is returned.
     let tryGetStringArray (element: JsonElement) =
         match element.ValueKind with
-        | JsonValueKind.Array ->
-            element.EnumerateArray()
-            |> List.ofSeq
-            |> List.choose (tryGetString)
-            |> Some
+        | JsonValueKind.Array -> element.EnumerateArray() |> List.ofSeq |> List.choose (tryGetString) |> Some
         | _ -> None
-    
+
     let tryGetStringProperty (name: string) (element: JsonElement) =
         match tryGetProperty name element with
         | Some p -> Some(p.GetString())
@@ -214,22 +207,15 @@ module Json =
 
     let tryGetIntArrayProperty (name: string) (element: JsonElement) =
         tryGetProperty name element
-        |> Option.map (fun p ->
-            p.EnumerateArray()
-            |> List.ofSeq
-            |> List.map (fun v -> v.GetInt32()))
+        |> Option.map (fun p -> p.EnumerateArray() |> List.ofSeq |> List.map (fun v -> v.GetInt32()))
 
     //let writeInt (writer : Utf8JsonWriter) (name : string) (value : byte) = writer.WriteNumber(name, byte)
 
     let propertiesToStringMap (properties: JsonProperty list) =
-        properties
-        |> List.map (fun el -> (el.Name, el.Value.GetString()))
-        |> Map.ofList
+        properties |> List.map (fun el -> (el.Name, el.Value.GetString())) |> Map.ofList
 
     let propertiesToMap (properties: JsonProperty list) =
-        properties
-        |> List.map (fun p -> p.Name, p.Value)
-        |> Map.ofList
+        properties |> List.map (fun p -> p.Name, p.Value) |> Map.ofList
 
     let writeString (writer: Utf8JsonWriter) (name: string) (value: string) = writer.WriteString(name, value)
 

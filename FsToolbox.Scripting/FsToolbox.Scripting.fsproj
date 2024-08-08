@@ -6,17 +6,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs" />
-        <Compile Include="InterprocessCommunication.fs" />
-        <Compile Include="ScriptHost.fs" />
+        <Compile Include="Library.fs"/>
+        <Compile Include="InterprocessCommunication.fs"/>
+        <Compile Include="ScriptHost.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="FSharp.Compiler.Service" Version="43.7.200" />
+        <PackageReference Include="FSharp.Compiler.Service" Version="43.7.200"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FsToolbox\FsToolbox.fsproj" />
+        <ProjectReference Include="..\FsToolbox\FsToolbox.fsproj"/>
     </ItemGroup>
 
 </Project>

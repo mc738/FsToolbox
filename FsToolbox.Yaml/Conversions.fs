@@ -63,8 +63,8 @@ module Conversions =
                     writer
             | YamlNodeType.Scalar ->
                 // Not perfect but,
-                // use regex to get 
-                
+                // use regex to get
+
 
                 failwith "todo"
             | YamlNodeType.Sequence -> failwith "todo"

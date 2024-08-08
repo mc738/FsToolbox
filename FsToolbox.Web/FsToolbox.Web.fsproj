@@ -9,12 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Tokens\Common.fs" />
-        <Compile Include="Tokens\Jwt.fs" />
+        <Compile Include="Tokens\Common.fs"/>
+        <Compile Include="Tokens\Jwt.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0"/>
     </ItemGroup>
 
 </Project>

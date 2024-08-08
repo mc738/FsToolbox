@@ -9,8 +9,6 @@ module Processes =
     [<RequireQualifiedAccess>]
     module Process =
 
-        open System
-        open System.Diagnostics
 
         type ProcessParameters =
             { Name: string

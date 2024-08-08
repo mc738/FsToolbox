@@ -19,7 +19,6 @@ type ConversionTests() =
             :> YamlNode
             |> Some
 
-        let actual =
-            FsToolbox.Yaml.Conversion.jsonElementToYamlNode obj
-        
+        let actual = FsToolbox.Yaml.Conversion.jsonElementToYamlNode obj
+
         Assert.AreEqual(expected, actual)

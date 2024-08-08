@@ -9,18 +9,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Common.fs" />
-        <Compile Include="Factory.fs" />
-        <Compile Include="Connections.fs" />
-        <Compile Include="Channels.fs" />
+        <Compile Include="Common.fs"/>
+        <Compile Include="Factory.fs"/>
+        <Compile Include="Connections.fs"/>
+        <Compile Include="Channels.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
+        <PackageReference Include="RabbitMQ.Client" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FsToolbox\FsToolbox.fsproj" />
+        <ProjectReference Include="..\FsToolbox\FsToolbox.fsproj"/>
     </ItemGroup>
 
 </Project>

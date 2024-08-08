@@ -4,7 +4,7 @@ open System
 open System.Text.RegularExpressions
 
 module TypeHelpers =
-    
+
     let getName<'T> = typeof<'T>.FullName
 
     let typeName (t: Type) = t.FullName
@@ -44,21 +44,15 @@ module TypeHelpers =
 
     let isOption (value: string) =
         Regex
-            .Match(
-                value,
-                "(?<=Microsoft.FSharp.Core.FSharpOption`1\[\[).+?(?=\,)"
-            )
+            .Match(value, "(?<=Microsoft.FSharp.Core.FSharpOption`1\[\[).+?(?=\,)")
             .Success
 
     let getOptionType value =
         // Maybe a bit wasteful doing this twice.
         Regex
-            .Match(
-                value,
-                "(?<=Microsoft.FSharp.Core.FSharpOption`1\[\[).+?(?=\,)"
-            )
+            .Match(value, "(?<=Microsoft.FSharp.Core.FSharpOption`1\[\[).+?(?=\,)")
             .Value
-                
+
     /// An internal DU for representing supported types.
     [<RequireQualifiedAccess>]
     type SupportedType =
@@ -109,9 +103,9 @@ module TypeHelpers =
 
         static member FromType(typeInfo: Type) =
             SupportedType.FromName(typeInfo.FullName)
-            
-        //member
-    
+
+    //member
+
     let createObj (t: Type) (value: string) =
         match SupportedType.TryFromType t with
         | Ok st ->

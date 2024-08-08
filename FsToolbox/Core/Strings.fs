@@ -8,14 +8,15 @@ open Microsoft.FSharp.Core
 module Strings =
 
     open System
-    open System.Text
-    
-    type [<RequireQualifiedAccess>] NormalizeCaseType =
+
+    [<RequireQualifiedAccess>]
+    type NormalizeCaseType =
         | UpperCase
         | LowerCase
         | None
 
-    type [<RequireQualifiedAccess>] EncodingType =
+    [<RequireQualifiedAccess>]
+    type EncodingType =
         | Url
         | Html
         | None
@@ -63,32 +64,28 @@ module Strings =
                    '`'
                    '¬'
                    '=' |]
-              FilterFunction = fun c -> Char.IsLetterOrDigit c || Char.IsPunctuation c 
+              FilterFunction = fun c -> Char.IsLetterOrDigit c || Char.IsPunctuation c
               NormalizeCase = NormalizeCaseType.LowerCase
               Encoding = EncodingType.None }
-            
+
     type RandomStringSettings =
-        {
-            IncludeLowerCaseLetters: bool
-            IncludeUpperCaseLetters: bool
-            IncludeDigits: bool
-            IncludeSymbol: bool
-            Encoding: EncodingType
-        }
-        
+        { IncludeLowerCaseLetters: bool
+          IncludeUpperCaseLetters: bool
+          IncludeDigits: bool
+          IncludeSymbol: bool
+          Encoding: EncodingType }
+
         member rss.GetCharacters() =
-            [
-                if rss.IncludeLowerCaseLetters then
-                    "abcdefghijklmnopqrstuvwxyz"
-                if rss.IncludeUpperCaseLetters then
-                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                if rss.IncludeDigits then
-                    "0123456789"
-                if rss.IncludeSymbol then
-                    ":;@'<>,/?!\"£$%^&*()\\|¬`#~-_=+"
-            ]
+            [ if rss.IncludeLowerCaseLetters then
+                  "abcdefghijklmnopqrstuvwxyz"
+              if rss.IncludeUpperCaseLetters then
+                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+              if rss.IncludeDigits then
+                  "0123456789"
+              if rss.IncludeSymbol then
+                  ":;@'<>,/?!\"£$%^&*()\\|¬`#~-_=+" ]
             |> String.concat ""
-    
+
     let bytesToHex (bytes: byte array) = Convert.ToHexString bytes
 
     (*
@@ -215,16 +212,16 @@ module Strings =
         |> String.concat ""
 
     let urlEncode (str: string) = UrlEncoder.Default.Encode str
-    
+
     let urlDecode (str: string) = HttpUtility.UrlDecode str
-    
+
     let htmlEncode (str: string) = HttpUtility.HtmlEncode str
-    
+
     let htmlDecode (str: string) = HttpUtility.HtmlDecode str
 
     let slugify (options: SlugifySettings) (str: string) =
         str
-        |> String.filter options.FilterFunction  
+        |> String.filter options.FilterFunction
         |> _.Split(options.CharactersToRemove, StringSplitOptions.RemoveEmptyEntries)
         |> String.concat "_"
         |> fun r ->
@@ -232,8 +229,8 @@ module Strings =
             | EncodingType.Url -> urlEncode r
             | EncodingType.Html -> htmlEncode r
             | EncodingType.None -> r
-        
-        
+
+
     let createRandomString () () =
-        
+
         ()

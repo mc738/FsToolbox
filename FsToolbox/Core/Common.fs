@@ -12,8 +12,7 @@ module Helpers =
     let attempt<'R> (fn: unit -> 'R) =
         try
             fn () |> Ok
-        with
-        | exn ->
+        with exn ->
             { Message = exn.Message
               Exception = Some exn }
             |> Error
@@ -29,11 +28,11 @@ module Conversions =
         bytes
         |> Array.fold (fun (sb: StringBuilder) b -> sb.AppendFormat("{0:x2}", b)) (StringBuilder(bytes.Length * 2))
         |> fun sb -> sb.ToString()
-        
+
     let toBase64 (data: byte array) = Convert.ToBase64String data
-    
+
     let fromBase64 (str: string) = Convert.FromBase64String str
-    
+
     let toHex (data: byte array) = Convert.ToHexString data
-    
+
     let fromHex (str: string) = Convert.FromHexString str

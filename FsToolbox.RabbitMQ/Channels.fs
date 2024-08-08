@@ -53,11 +53,11 @@ module Channels =
 
     let consume (queue: string) (fn: byte array -> Result<unit, FailureResult>) (channel: IModel) =
         let consumer = EventingBasicConsumer(channel)
-        
+
         consumer.Received.Add(fun args ->
-            
+
             let message = args.Body.ToArray()
-            
+
             match fn message with
             | Ok _ -> channel.BasicAck(deliveryTag = args.DeliveryTag, multiple = false)
             | Error f ->
@@ -75,14 +75,14 @@ module Channels =
                 // 2. Publish a new message with retry count
                 // 3. If retry count is too high (say over 10) - dead letter.
                 channel.BasicReject(deliveryTag = args.DeliveryTag, requeue = false))
-        
+
         channel.BasicConsume(queue, autoAck = false, consumer = consumer)
-    
+
     let consumeJson<'T> (queue: string) (fn: 'T -> Result<unit, FailureResult>) (channel: IModel) =
-        
-        let handler = fun (d: byte array) ->
-            d |> Encoding.UTF8.GetString |> JsonSerializer.Deserialize<'T> |> fn
-        
+
+        let handler =
+            fun (d: byte array) -> d |> Encoding.UTF8.GetString |> JsonSerializer.Deserialize<'T> |> fn
+
         consume queue handler channel
 
     let run (fn: IModel -> Result<unit, FailureResult>) (connection: IConnection) =

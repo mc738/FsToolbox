@@ -9,16 +9,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library.fs" />
-        <Compile Include="Common.fs" />
+        <Compile Include="Library.fs"/>
+        <Compile Include="Common.fs"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.S3" Version="3.7.104.24" />
+        <PackageReference Include="AWSSDK.S3" Version="3.7.104.24"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FsToolbox\FsToolbox.fsproj" />
+        <ProjectReference Include="..\FsToolbox\FsToolbox.fsproj"/>
     </ItemGroup>
 
 </Project>

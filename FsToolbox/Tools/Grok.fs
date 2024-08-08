@@ -56,12 +56,11 @@ module Grok =
           GroupNames: string list }
 
     let create (patterns: Map<string, string>) (grokStr: string) =
-        let compiled =
-            parseGrokString patterns grokStr |> compileRegex
+        let compiled = parseGrokString patterns grokStr |> compileRegex
 
         { Regex = compiled
           GroupNames = compiled.GetGroupNames() |> List.ofSeq }
-        
+
     let run (ctx: GrokContext) (str: string) =
         let m = ctx.Regex.Match(str)
 

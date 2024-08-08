@@ -60,7 +60,10 @@ module Common =
             let endIndex = startIndex + str.Length - 1
 
             match pi.GetSlice(startIndex, endIndex) with
-            | Some s when String.Equals(s, str, sc) -> StringMatchResult.Match {  StartIndex = startIndex; EndIndex = endIndex }
+            | Some s when String.Equals(s, str, sc) ->
+                StringMatchResult.Match
+                    { StartIndex = startIndex
+                      EndIndex = endIndex }
             | Some _ -> StringMatchResult.NonMatch
             | None -> StringMatchResult.OutOfBounds
 
