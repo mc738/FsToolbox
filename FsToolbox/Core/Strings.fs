@@ -231,6 +231,13 @@ module Strings =
             | EncodingType.None -> r
 
 
-    let createRandomString () () =
-
-        ()
+    let createRandomString (settings: RandomStringSettings) (length: int) =
+        let a = Array.zeroCreate length
+        
+        let chars = settings.GetCharacters() |> Seq.toArray
+        
+        for i in 0..(length - 1) do
+            a[i] <- Array.randomItem chars
+        
+        String(a)
+        
