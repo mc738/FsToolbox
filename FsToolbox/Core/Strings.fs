@@ -75,6 +75,13 @@ module Strings =
           IncludeSymbol: bool
           Encoding: EncodingType }
 
+        static member Default =
+            { IncludeLowerCaseLetters = true
+              IncludeUpperCaseLetters = true
+              IncludeDigits = true
+              IncludeSymbol = false
+              Encoding = EncodingType.None }
+
         member rss.GetCharacters() =
             [ if rss.IncludeLowerCaseLetters then
                   "abcdefghijklmnopqrstuvwxyz"
@@ -223,6 +230,12 @@ module Strings =
         match encodingType with
         | EncodingType.Url -> urlEncode str
         | EncodingType.Html -> htmlEncode str
+        | EncodingType.None -> str
+        
+    let decode (encodingType: EncodingType) (str: string) =
+        match encodingType with
+        | EncodingType.Url -> urlDecode str
+        | EncodingType.Html -> htmlDecode str
         | EncodingType.None -> str
 
     let slugify (options: SlugifySettings) (str: string) =
