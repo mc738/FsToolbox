@@ -219,6 +219,12 @@ module Strings =
 
     let htmlDecode (str: string) = HttpUtility.HtmlDecode str
 
+    let encode (encodingType: EncodingType) (str: string) =
+        match encodingType with
+        | EncodingType.Url -> urlEncode str
+        | EncodingType.Html -> htmlEncode str
+        | EncodingType.None -> str
+
     let slugify (options: SlugifySettings) (str: string) =
         str
         |> String.filter options.FilterFunction
@@ -230,14 +236,12 @@ module Strings =
             | EncodingType.Html -> htmlEncode r
             | EncodingType.None -> r
 
-
     let createRandomString (settings: RandomStringSettings) (length: int) =
         let a = Array.zeroCreate length
-        
+
         let chars = settings.GetCharacters() |> Seq.toArray
-        
-        for i in 0..(length - 1) do
+
+        for i in 0 .. (length - 1) do
             a[i] <- Array.randomItem chars
-        
-        String(a)
-        
+
+        String(a) |> encode settings.Encoding
