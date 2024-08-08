@@ -69,11 +69,25 @@ module Strings =
             
     type RandomStringSettings =
         {
-            IncludeLetters: bool
+            IncludeLowerCaseLetters: bool
+            IncludeUpperCaseLetters: bool
             IncludeDigits: bool
-            IncludePunctuation: bool
+            IncludeSymbol: bool
             Encoding: EncodingType
         }
+        
+        member rss.GetCharacters() =
+            [
+                if rss.IncludeLowerCaseLetters then
+                    "abcdefghijklmnopqrstuvwxyz"
+                if rss.IncludeUpperCaseLetters then
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                if rss.IncludeDigits then
+                    "0123456789"
+                if rss.IncludeSymbol then
+                    ":;@'<>,/?!\"£$%^&*()\\|¬`#~-_=+"
+            ]
+            |> String.concat ""
     
     let bytesToHex (bytes: byte array) = Convert.ToHexString bytes
 
