@@ -12,12 +12,16 @@ module Mapping =
         inherit Attribute()
 
         member att.Name = name
-
-    type ArgValueAttribute(shortName: string, longName: string) =
+        
+    type ArgValueAttribute(shortName: string, longName: string, ?environmentalVariableName: string, ?preferEnvironmentalVariable: bool) =
 
         inherit Attribute()
 
         member att.MatchValues = [ shortName; longName ]
+      
+        member att.EnvironmentVariableName = environmentalVariableName
+        
+        member att.PreferEnvironmentalVariable = preferEnvironmentalVariable |> Option.defaultValue false
 
     type MappedOption =
         {
@@ -34,7 +38,9 @@ module Mapping =
         { Name: string
           Ordinal: int
           Type: Type
-          MatchValues: string list }
+          MatchValues: string list
+          EnvironmentalVariable: string option
+          PreferEnvironmentalVariable: bool }
 
     let getCommandName (uci: UnionCaseInfo) =
         uci.GetCustomAttributes(typeof<CommandValue>)
@@ -64,7 +70,7 @@ module Mapping =
         | false -> Error "Not union type."
 
     let createOptions<'T> (mappedOption: MappedOption) (parameter: obj) =
-        //let uci =
+        //let uci =with
         FSharpValue.MakeUnion(mappedOption.UnionCase, [| parameter |]) :?> 'T
 
     let mapRecord (recordType: Type) =
@@ -79,13 +85,17 @@ module Mapping =
                     ({ Name = pi.Name
                        Ordinal = i
                        Type = pi.PropertyType
-                       MatchValues = ava.MatchValues }
+                       MatchValues = ava.MatchValues
+                       EnvironmentalVariable = ava.EnvironmentVariableName
+                       PreferEnvironmentalVariable = ava.PreferEnvironmentalVariable }
                     : Field)
                 | _ ->
                     ({ Name = pi.Name
                        Ordinal = i
                        Type = pi.PropertyType
-                       MatchValues = [ $"--{pi.Name.ToLower()}" ] }
+                       MatchValues = [ $"--{pi.Name.ToLower()}" ]
+                       EnvironmentalVariable = None
+                       PreferEnvironmentalVariable = false }
                     : Field))
             |> fun f ->
                 { Name = recordType.Name

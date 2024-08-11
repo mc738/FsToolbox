@@ -75,8 +75,25 @@ module ArgParser =
                             mpi.Fields
                             |> Array.sortBy (fun mpi -> mpi.Ordinal)
                             |> Array.map (fun f ->
-                                match parsedArgs |> List.tryFind (fun pa -> f.MatchValues |> List.contains pa.Key) with
-                                | Some v -> TypeHelpers.createObj f.Type v.Value
+                                
+                                let tryGetFromParsedArgs _ =
+                                    parsedArgs
+                                    |> List.tryFind (fun pa -> f.MatchValues |> List.contains pa.Key)
+                                    |> Option.map (fun a -> a.Value)
+
+                                let tryGetFromEnvironmentalVariable _ =
+                                    f.EnvironmentalVariable
+                                    |> Option.bind (Environment.GetEnvironmentVariable >> Strings.toOptional)
+
+                                let result =
+                                    match f.PreferEnvironmentalVariable with
+                                    | true ->
+                                        tryGetFromEnvironmentalVariable () |> Option.orElseWith tryGetFromParsedArgs
+                                    | false ->
+                                        tryGetFromParsedArgs () |> Option.orElseWith tryGetFromEnvironmentalVariable
+
+                                match result with
+                                | Some v -> TypeHelpers.createObj f.Type v
                                 | None -> TypeHelpers.createDefault f.Type)
 
                         FSharpValue.MakeRecord(mpi.Type, values)
