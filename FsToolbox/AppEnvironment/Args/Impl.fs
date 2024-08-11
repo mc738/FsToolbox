@@ -109,3 +109,6 @@ module ArgParser =
             match Mapping.getUnionOption<'T> cmd with
             | Ok mo -> Internal.createParameter mo args |> Mapping.createOptions<'T> mo |> Ok
             | Error e -> Error e
+
+    let run<'T> () = tryGetOptions<'T> (Environment.GetCommandLineArgs() |> List.ofArray)
+        
