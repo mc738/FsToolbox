@@ -32,6 +32,7 @@
         <Compile Include="AppEnvironment\Args\Mapping.fs"/>
         <Compile Include="AppEnvironment\Args\Impl.fs"/>
         <Compile Include="Tools\Grok.fs"/>
+        <Content Include="README.md" />
     </ItemGroup>
 
 </Project>
