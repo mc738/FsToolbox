@@ -5,6 +5,7 @@ open System.IO
 open System.Security.Cryptography
 open System.Text
 
+(*
 [<RequireQualifiedAccess>]
 module RsaV2 =
 
@@ -107,3 +108,4 @@ module RsaV2 =
         rsa.FromXmlString(publicRsaXml)
 
         rsa.VerifyData(value |> Encoding.UTF8.GetBytes, "SHA256", signature |> Convert.FromBase64String)
+*)

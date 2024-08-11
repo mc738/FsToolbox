@@ -241,7 +241,7 @@ module Strings =
     let slugify (options: SlugifySettings) (str: string) =
         str
         |> String.filter options.FilterFunction
-        |> _.Split(options.CharactersToRemove, StringSplitOptions.RemoveEmptyEntries)
+        |> fun s -> s.Split(options.CharactersToRemove, StringSplitOptions.RemoveEmptyEntries)
         |> String.concat "_"
         |> fun r ->
             match options.Encoding with

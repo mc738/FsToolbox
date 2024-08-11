@@ -91,7 +91,7 @@ module TypeHelpers =
                 match SupportedType.TryFromName ot with
                 | Ok st -> Ok(SupportedType.Option st)
                 | Error e -> Error e
-            | _ -> Error $"Type `{name}` not supported."
+                | _ -> Error $"Type `{name}` not supported."
 
         static member TryFromType(typeInfo: Type) =
             SupportedType.TryFromName(typeInfo.FullName)

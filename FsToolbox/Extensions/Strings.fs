@@ -156,6 +156,6 @@ module Strings =
 
         member str.Encode(encodingType: EncodingType) = Strings.encode encodingType str
         
-        member str.Decode(encodingType: EncodingType) = Strings.Decode encodingType str
+        member str.Decode(encodingType: EncodingType) = Strings.decode encodingType str
         
         member str.Slugify(options: Strings.SlugifySettings) = Strings.slugify options str
