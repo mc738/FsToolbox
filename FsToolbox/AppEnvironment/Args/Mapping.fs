@@ -12,16 +12,20 @@ module Mapping =
         inherit Attribute()
 
         member att.Name = name
-        
-    type ArgValueAttribute(shortName: string, longName: string, ?environmentalVariableName: string, ?preferEnvironmentalVariable: bool) =
+
+    type ArgValueAttribute(shortName: string, longName: string) =
 
         inherit Attribute()
 
         member att.MatchValues = [ shortName; longName ]
-      
-        member att.EnvironmentVariableName = environmentalVariableName
-        
-        member att.PreferEnvironmentalVariable = preferEnvironmentalVariable |> Option.defaultValue false
+
+    type EnvironmentalVariableAttribute(name: string, prefer: bool) =
+
+        inherit Attribute()
+
+        member eva.Name = name
+
+        member eva.Prefer = prefer
 
     type MappedOption =
         {
@@ -82,12 +86,17 @@ module Mapping =
                 | att when att <> null ->
                     let ava = att :?> ArgValueAttribute
 
+                    let eva =
+                        match Attribute.GetCustomAttribute(pi, typeof<EnvironmentalVariableAttribute>) with
+                        | eva when eva <> null -> eva :?> EnvironmentalVariableAttribute |> Some
+                        | _ -> None
+
                     ({ Name = pi.Name
                        Ordinal = i
                        Type = pi.PropertyType
                        MatchValues = ava.MatchValues
-                       EnvironmentalVariable = ava.EnvironmentVariableName
-                       PreferEnvironmentalVariable = ava.PreferEnvironmentalVariable }
+                       EnvironmentalVariable = eva |> Option.map (fun a -> a.Name)
+                       PreferEnvironmentalVariable = eva |> Option.map (fun a -> a.Prefer) |> Option.defaultValue false }
                     : Field)
                 | _ ->
                     ({ Name = pi.Name
