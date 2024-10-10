@@ -20,7 +20,7 @@
         <Compile Include="Core\Encryption.fs"/>
         <Compile Include="Core\Passwords.fs"/>
         <Compile Include="Core\Xml.fs"/>
-        <Compile Include="Core\Https.fs"/>
+        <Compile Include="Core\Http.fs" />
         <Compile Include="Core\Processes.fs"/>
         <Compile Include="Core\Compression.fs"/>
         <Compile Include="Core\Json.fs"/>
