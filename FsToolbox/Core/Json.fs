@@ -1,10 +1,12 @@
 ﻿namespace FsToolbox.Core
 
+open System
+
 [<RequireQualifiedAccess>]
 module Json =
 
     open System.Text.Json
-
+        
     let deserialize<'T> (json: string) =
         attempt (fun _ -> JsonSerializer.Deserialize<'T>(json))
 
@@ -224,12 +226,27 @@ module Json =
         handler writer
         writer.WriteEndObject()
 
-    let writeArray (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
-        writer.WriteStartArray(name)
-        handler writer
-        writer.WriteEndArray()
-
-    let writeObject (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) =
+    let writeObjectValue (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) =
         writer.WriteStartObject()
         handler writer
         writer.WriteEndObject()
+
+    [<Obsolete "Use `writeObjectProperty` instead. This is a alias to ensure backwards capability.">]    
+    let writeObject (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) =
+        writeObjectValue handler writer
+    
+    let writeArrayValue (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) =
+        writer.WriteStartArray()
+        handler writer
+        writer.WriteEndArray()
+        
+    let writeArrayProperty (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
+        writer.WriteStartArray(name)
+        handler writer
+        writer.WriteEndArray()
+        
+    [<Obsolete "Use `writeArrayProperty` instead. This is a alias to ensure backwards capability.">]
+    let writeArray (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
+        writeArrayProperty handler name writer
+
+    

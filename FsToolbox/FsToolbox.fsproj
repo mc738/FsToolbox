@@ -32,6 +32,10 @@
         <Compile Include="AppEnvironment\Args\Mapping.fs"/>
         <Compile Include="AppEnvironment\Args\Impl.fs"/>
         <Compile Include="Tools\Grok.fs"/>
+        <Compile Include="Paths\Parsing.fs" />
+        <Compile Include="Paths\Expressions.fs" />
+        <Compile Include="Paths\GenericPath.fs" />
+        <Compile Include="Paths\JPath.fs" />
         <Content Include="README.md" />
     </ItemGroup>
 
