@@ -1,14 +1,16 @@
 namespace FsToolbox.Paths
 
+open System.Text
+
 module GenericPath =
 
     open System
     open FsToolbox.Paths.Expressions
     open FsToolbox.Paths.Expressions.Parsing
-    
+
     [<AutoOpen>]
     module private Internal =
-        
+
         /// <summary>
         /// Flatten a results list to a single result.
         /// </summary>
@@ -25,7 +27,48 @@ module GenericPath =
                 match errors.IsEmpty with
                 | true -> Ok values
                 | false -> Error <| String.concat ", " errors
-    
+
+        let countNonDelimitedCharacters
+            (blockDelimiterChar: char)
+            (singularDelimiterChar: char)
+            (needle: char)
+            (input: string)
+            =
+            input
+            |> Seq.fold
+                (fun (delimited: bool, singleDelimited: bool, count: int) curr ->
+                    match curr with
+                    | c when c = blockDelimiterChar && (delimited |> not) -> true, false, count
+                    | c when c = blockDelimiterChar && delimited -> false, false, count
+                    | c when c = singularDelimiterChar && (singleDelimited |> not) && (delimited |> not) ->
+                        delimited, true, count
+                    | c when c = needle && (delimited |> not) && (singleDelimited |> not) ->
+                        delimited, false, count + 1
+                    | _ when singleDelimited -> delimited, false, count
+                    | _ -> delimited, false, count)
+                (false, false, 0)
+            |> fun (_, _, count) -> count
+
+        let delimitedSplit (blockDelimiterChar: char) (singularDelimiterChar: char) (splitChar: char) (input: string) =
+            let sb = StringBuilder()
+
+            input
+            |> Seq.fold
+                (fun (delimited: bool, singleDelimited: bool, sb: StringBuilder, results: string list) curr ->
+                    match curr with
+                    | c when c = blockDelimiterChar && (delimited |> not) -> true, false, sb, results
+                    | c when c = blockDelimiterChar && delimited -> false, false, sb, results
+                    | c when c = singularDelimiterChar && (singleDelimited |> not) && (delimited |> not) ->
+                        delimited, true, sb, results
+                    | c when c = splitChar && (delimited |> not) && (singleDelimited |> not) ->
+                        let newResults = sb.ToString() :: results
+
+                        delimited, false, sb.Clear(), newResults
+                    | _ when singleDelimited -> delimited, false, sb.Append(curr), results
+                    | _ -> delimited, false, sb.Append(curr), results)
+                (false, false, sb, [])
+            |> fun (_, _, sb, results) -> (sb.ToString() :: results) |> List.rev
+
     module Parsing =
 
         type ParserPhase =
@@ -289,16 +332,28 @@ module GenericPath =
                                         | false -> state.GetSlice(state.Position + offset, foundIndex - 1)
                                         |> Option.defaultValue String.Empty
 
-                                    handler (state.SelectorComplete(SelectorToken.Child name, foundIndex))
+                                    let selector =
+                                        match countNonDelimitedCharacters ''' '\\' ',' name >= 1 with
+                                        | true -> SelectorToken.ChildUnion name
+                                        | false -> SelectorToken.Child name
+
+                                    handler (state.SelectorComplete(selector, foundIndex))
                                 | None ->
                                     // No selector, array selector or filter. this is the end of the input
                                     let name =
                                         state.GetSliceFromEnd(state.Position + offset)
                                         |> Option.defaultValue String.Empty
 
+
+                                    let selector =
+                                        match countNonDelimitedCharacters ''' '\\' ',' name >= 1 with
+                                        | true -> SelectorToken.ChildUnion name
+                                        | false -> SelectorToken.Child name
+
+
                                     ParserResult.Success(
                                         state.Sections
-                                        @ [ { Selector = SelectorToken.Child name
+                                        @ [ { Selector = selector
                                               Filter = None
                                               ArraySelector = None } ]
                                     )
@@ -367,10 +422,10 @@ module GenericPath =
         static member FromToken(token: Parsing.SelectorToken) =
             match token with
             | Parsing.SelectorToken.Child s -> Child s
-            | Parsing.SelectorToken.ChildUnion s -> ChildUnion(s.Split('|') |> List.ofSeq) // BUG? if there is a '|' in delimited name
+            | Parsing.SelectorToken.ChildUnion s -> ChildUnion(delimitedSplit ''' '\\' ',' s |> List.ofSeq) // BUG? if there is a '|' in delimited name
             | Parsing.SelectorToken.ChildWildCard -> ChildWildCard
             | Parsing.SelectorToken.DeepScan s -> DeepScan s
-            | Parsing.SelectorToken.DeepScanUnion s -> DeepScanUnion(s.Split('|') |> List.ofSeq) // BUG? if there is a '|' in delimited name
+            | Parsing.SelectorToken.DeepScanUnion s -> DeepScanUnion(delimitedSplit ''' '\\' ',' s |> List.ofSeq) // BUG? if there is a '|' in delimited name
             | Parsing.SelectorToken.DeepScanWildCard -> DeepScanWildCard
 
     and EvaluationResult =
@@ -441,67 +496,67 @@ module GenericPath =
         static member FromToken(token: ExpressionOperatorToken) =
             match token with
             | ExpressionOperatorToken.Exists v -> FilterValue.Parse v |> Result.map FilterOperator.Exists
-            | ExpressionOperatorToken.Equal (v1, v2) ->
+            | ExpressionOperatorToken.Equal(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.Equal(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.NotEqual (v1, v2) ->
+            | ExpressionOperatorToken.NotEqual(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.NotEqual(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.LessThan (v1, v2) ->
+            | ExpressionOperatorToken.LessThan(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.LessThan(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.LessThanOrEqual (v1, v2) ->
+            | ExpressionOperatorToken.LessThanOrEqual(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.LessThanOrEqual(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.GreaterThan (v1, v2) ->
+            | ExpressionOperatorToken.GreaterThan(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.GreaterThan(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.GreaterThanOrEqual (v1, v2) ->
+            | ExpressionOperatorToken.GreaterThanOrEqual(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.GreaterThanOrEqual(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.RegexMatch (v1, v2) ->
+            | ExpressionOperatorToken.RegexMatch(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.RegexMatch(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.In (v1, vs) ->
+            | ExpressionOperatorToken.In(v1, vs) ->
                 match FilterValue.Parse v1, vs |> List.map FilterValue.Parse |> flattenResultList with
                 | Ok pv1, Ok pvs -> FilterOperator.In(pv1, pvs) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.NotIn (v1, vs) ->
+            | ExpressionOperatorToken.NotIn(v1, vs) ->
                 match FilterValue.Parse v1, vs |> List.map FilterValue.Parse |> flattenResultList with
                 | Ok pv1, Ok pvs -> FilterOperator.NotIn(pv1, pvs) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.SubsetOf (v1, vs) ->
+            | ExpressionOperatorToken.SubsetOf(v1, vs) ->
                 match FilterValue.Parse v1, vs |> List.map FilterValue.Parse |> flattenResultList with
                 | Ok pv1, Ok pvs -> FilterOperator.SubsetOf(pv1, pvs) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.AnyOf (v1, vs) ->
+            | ExpressionOperatorToken.AnyOf(v1, vs) ->
                 match FilterValue.Parse v1, vs |> List.map FilterValue.Parse |> flattenResultList with
                 | Ok pv1, Ok pvs -> FilterOperator.AnyOf(pv1, pvs) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.NoneOf (v1, vs) ->
+            | ExpressionOperatorToken.NoneOf(v1, vs) ->
                 match FilterValue.Parse v1, vs |> List.map FilterValue.Parse |> flattenResultList with
                 | Ok pv1, Ok pvs -> FilterOperator.NoneOf(pv1, pvs) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionOperatorToken.Size (v1, v2) ->
+            | ExpressionOperatorToken.Size(v1, v2) ->
                 match FilterValue.Parse v1, FilterValue.Parse v2 with
                 | Ok pv1, Ok pv2 -> FilterOperator.Size(pv1, pv2) |> Ok
                 | Error e, _ -> Error e
@@ -540,12 +595,12 @@ module GenericPath =
 
             match statement with
             | ExpressionStatement.Operator op -> FilterOperator.FromToken op |> Result.map Operator
-            | ExpressionStatement.And (s1, s2) ->
+            | ExpressionStatement.And(s1, s2) ->
                 match FilterExpression.FromToken s1, FilterExpression.FromToken s2 with
                 | Ok exp1, Ok exp2 -> FilterExpression.And(exp1, exp2) |> Ok
                 | Error e, _ -> Error e
                 | _, Error e -> Error e
-            | ExpressionStatement.Or (s1, s2) ->
+            | ExpressionStatement.Or(s1, s2) ->
                 match FilterExpression.FromToken s1, FilterExpression.FromToken s2 with
                 | Ok exp1, Ok exp2 -> FilterExpression.Or(exp1, exp2) |> Ok
                 | Error e, _ -> Error e
@@ -629,4 +684,3 @@ module GenericPath =
                 |> Path.Create
                 |> Ok
             | _ -> Error "Failure to parse path."
-

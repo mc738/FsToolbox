@@ -35,7 +35,6 @@
         <Compile Include="Paths\Expressions.fs" />
         <Compile Include="Paths\GenericPath.fs" />
         <Compile Include="Paths\JPath.fs" />
-        <Content Include="README.md" />
     </ItemGroup>
 
 </Project>
