@@ -25,7 +25,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.foo.bar"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -42,7 +42,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.foo[2:4].bar"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -59,7 +59,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.foo[?(@.bar =~ '^TEST%')].bar"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -79,7 +79,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.foo[?(@.bar =~ '^TEST%')].bar[1:4].baz"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -99,7 +99,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.foo[?(@.bar =~ '^TEST)]%')].bar[1:4].baz"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -116,7 +116,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.'foo.baz'.bar"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -138,7 +138,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.store.f.book"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -160,7 +160,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.store.books.f"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -182,7 +182,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.store.f[?(@.price<10)].book"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -196,7 +196,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.a,b"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -211,7 +211,7 @@ module GenericPath =
                     ArraySelector = Some "1" } ]
 
             let path = "$.a,b[1]"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -225,7 +225,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.'a,b',c"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -240,7 +240,7 @@ module GenericPath =
                     ArraySelector = Some "1" } ]
 
             let path = "$.'a,b',c[1]"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
@@ -255,7 +255,7 @@ module GenericPath =
                     ArraySelector = None } ]
 
             let path = "$.'a,b'"
-            let result = parse path '$'
+            let result = parse path '$' true
 
             match result with
             | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
