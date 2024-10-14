@@ -105,10 +105,20 @@ module GenericPath =
               CurrentSection: SectionToken option
               Sections: SectionToken list }
 
-            static member Start(value) =
-                { Input = value
+            static member Start(value: string, startFromRoot: bool) =
+                { Input =
+                    // This is a slight hack - if we are not starting from a root,
+                    // add in a `.` character and set the initial phase as `Selector`.
+                    // This is because the parser requires a `.` character at the start ofe the `Selector` phase.
+                    // The parser will then carry on as expected.
+                    match startFromRoot |> not && value.StartsWith('.') |> not with
+                    | true -> $".{value}"
+                    | false -> value
                   Position = 0
-                  Phase = ParserPhase.Root
+                  Phase =
+                    match startFromRoot with
+                    | true -> ParserPhase.Root
+                    | false -> ParserPhase.Selector
                   CurrentSection = None
                   Sections = [] }
 
@@ -285,7 +295,7 @@ module GenericPath =
             | MissingToken of int
             | NotImplemented of string
 
-        let parse (input: string) (rootChar: Char) =
+        let parse (input: string) (rootChar: Char) (startFromRoot: bool) =
 
             let rec handler (state: ParserState) =
 
@@ -407,9 +417,7 @@ module GenericPath =
                             )
                         | None -> ParserResult.MissingChar(state.Position, [ ')'; ']' ])
 
-            let r = handler (ParserState.Start(input))
-
-            r
+            handler (ParserState.Start(input, startFromRoot))
 
     type Selector =
         | Child of string
@@ -661,12 +669,17 @@ module GenericPath =
           ArraySelector: ArraySelector option }
 
     and Path =
-        { Sections: PathSection list }
+        { FromRoot: bool
+          Sections: PathSection list }
 
-        static member Create(sections: PathSection list) = { Sections = sections }
+        static member Create(sections: PathSection list, fromRoot: bool) =
+            { FromRoot = fromRoot
+              Sections = sections }
 
-        static member Compile(path: string, ?rootChar) =
-            match Parsing.parse path (defaultArg rootChar '$') with
+        static member Compile(path: string, ?rootChar: char, ?rootRequire: bool) =
+            let startFromRoot = (defaultArg rootRequire true)
+
+            match Parsing.parse path (defaultArg rootChar '$') startFromRoot with
             | Parsing.ParserResult.Success tokens ->
                 tokens
                 |> List.map (fun t ->
@@ -681,6 +694,6 @@ module GenericPath =
                                 | Error e -> None
                             | _ -> None) //None   // TODO implement filter from token
                       ArraySelector = ArraySelector.FromToken t.ArraySelector })
-                |> Path.Create
+                |> fun sections -> Path.Create(sections, startFromRoot)
                 |> Ok
             | _ -> Error "Failure to parse path."
