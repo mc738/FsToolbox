@@ -279,4 +279,37 @@ module GenericPath =
             let actual = Selector.FromToken (SelectorToken.ChildUnion "'a,b',c")
             
             assertEqual expected actual
+        
+        [<TestMethod>]
+        member _.``Parse 1 levelled non-root path``() =
+            let expected =
+                [ { Selector = SelectorToken.Child "a"
+                    Filter = None
+                    ArraySelector = None }]
+
+            let path = "a"
+            let result = parse path '$' false
+
+            match result with
+            | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
+            | _ -> Assert.Fail($"Parsing failed. Error: '{result}'")
+            
+            
+        [<TestMethod>]
+        member _.``Parse 2 levelled non-root path``() =
+            let expected =
+                [ { Selector = SelectorToken.Child "a"
+                    Filter = None
+                    ArraySelector = None }
+                  { Selector = SelectorToken.Child "b"
+                    Filter = None
+                    ArraySelector = None } ]
+
+            let path = "a.b"
+            let result = parse path '$' false
+
+            match result with
+            | ParserResult.Success actual -> Assert.AreEqual(expected, actual)
+            | _ -> Assert.Fail($"Parsing failed. Error: '{result}'")
+            
             
