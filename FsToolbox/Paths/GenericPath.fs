@@ -676,8 +676,8 @@ module GenericPath =
             { FromRoot = fromRoot
               Sections = sections }
 
-        static member Compile(path: string, ?rootChar: char, ?rootRequired: bool) =
-            let startFromRoot = (defaultArg rootRequired true)
+        static member Compile(path: string, ?rootChar: char, ?requireRoot: bool) =
+            let startFromRoot = (defaultArg requireRoot true)
 
             match Parsing.parse path (defaultArg rootChar '$') startFromRoot with
             | Parsing.ParserResult.Success tokens ->
