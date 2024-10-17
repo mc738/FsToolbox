@@ -30,6 +30,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.UnitTests", "FsTo
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Testing.MsTest", "FsToolbox.Testing.MsTest\FsToolbox.Testing.MsTest.fsproj", "{3204352A-3CF6-4F62-8956-8F235CB15652}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.ProcessWrappers", "FsToolbox.ProcessWrappers\FsToolbox.ProcessWrappers.fsproj", "{B81B3E03-83EC-428A-98F2-C3464B73354F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,5 +86,9 @@ Global
 		{3204352A-3CF6-4F62-8956-8F235CB15652}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3204352A-3CF6-4F62-8956-8F235CB15652}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3204352A-3CF6-4F62-8956-8F235CB15652}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B81B3E03-83EC-428A-98F2-C3464B73354F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B81B3E03-83EC-428A-98F2-C3464B73354F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B81B3E03-83EC-428A-98F2-C3464B73354F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B81B3E03-83EC-428A-98F2-C3464B73354F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

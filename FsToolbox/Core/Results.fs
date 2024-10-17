@@ -5,7 +5,22 @@ open System
 type FailureResult =
     { Message: string
       DisplayMessage: string
-      Exception: exn option }
+      Exception: exn option
+      IsTransient: bool
+      Metadata: Map<string, string> }
+
+    static member Create
+        (?message: string, ?displayMessage: string, ?ex: Exception, ?isTransient: bool, ?metadata: Map<string, string>) =
+        let message =
+            message
+            |> Option.orElseWith (fun _ -> ex |> Option.map (fun ex -> ex.Message))
+            |> Option.defaultValue "Failure"
+
+        { Message = message
+          DisplayMessage = displayMessage |> Option.defaultValue message
+          Exception = ex
+          IsTransient = isTransient |> Option.defaultValue false
+          Metadata = metadata |> Option.defaultValue Map.empty }
 
     static member Aggregate(failures: FailureResult seq, displayMessage: string) =
         let exceptions = failures |> Seq.choose (fun f -> f.Exception) |> List.ofSeq
@@ -18,7 +33,15 @@ type FailureResult =
           Exception =
             match exceptions.IsEmpty with
             | true -> None
-            | false -> AggregateException(exceptions) :> exn |> Some }
+            | false -> AggregateException(exceptions) :> exn |> Some
+          IsTransient = failures |> Seq.forall (fun f -> f.IsTransient)
+          Metadata =
+            failures
+            |> Seq.fold
+                (fun (acc: Map<string, string>, i: int) failure ->
+                    failure.Metadata |> Map.fold (fun newAcc k v -> newAcc.Add($"${i}__{k}", v)) acc, i + 1)
+                (Map.empty, 0)
+            |> fst }
 
 [<RequireQualifiedAccess>]
 module FailureResult =
