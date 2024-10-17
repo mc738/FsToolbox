@@ -141,23 +141,167 @@ module Common =
                             [ "link",
                               "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.ConnectFailureException.html" ]
                 )
-            | HardProtocol hardProtocolException -> failwith "todo"
-            | MalformedFrame malformedFrameException -> failwith "todo"
-            | OperationInterrupted operationInterruptedException -> failwith "todo"
-            | PacketNotRecognized packetNotRecognizedException -> failwith "todo"
-            | PossibleAuthenticationFailure possibleAuthenticationFailureException -> failwith "todo"
-            | Protocol protocolException -> failwith "todo"
-            | ProtocolVersionMismatch protocolVersionMismatchException -> failwith "todo"
-            | ProtocolViolation protocolViolationException -> failwith "todo"
-            | RabbitMQClient rabbitMqClientException -> failwith "todo"
-            | SoftProtocol softProtocolException -> failwith "todo"
-            | SyntaxError syntaxErrorException -> failwith "todo"
-            | TopologyRecovery topologyRecoveryException -> failwith "todo"
-            | UnexpectedFrame unexpectedFrameException -> failwith "todo"
-            | UnexpectedMethod unexpectedMethodException -> failwith "todo"
-            | UnknownClassOrMethod unknownClassOrMethodException -> failwith "todo"
-            | UnsupportedMethod unsupportedMethodException -> failwith "todo"
-            | UnsupportedMethodField unsupportedMethodFieldException -> failwith "todo"
-            | WireFormatting wireFormattingException -> failwith "todo"
+            | HardProtocol hardProtocolException ->
+                FailureResult.Create(
+                    "RabbitMQ hard protocol",
+                    ex = hardProtocolException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.HardProtocolException.html" ]
+                )
+            | MalformedFrame malformedFrameException ->
+                FailureResult.Create(
+                    "RabbitMQ malformed frame",
+                    ex = malformedFrameException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.MalformedFrameException.html" ]
+                )
+            | OperationInterrupted operationInterruptedException ->
+                FailureResult.Create(
+                    "RabbitMQ operation interrupted",
+                    ex = operationInterruptedException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.OperationInterruptedException.html" ]
+                )
+            | PacketNotRecognized packetNotRecognizedException ->
+                FailureResult.Create(
+                    "RabbitMQ operation interrupted",
+                    ex = packetNotRecognizedException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.PacketNotRecognizedException.html" ]
+                )
+            | PossibleAuthenticationFailure possibleAuthenticationFailureException ->
+                FailureResult.Create(
+                    "RabbitMQ possible authentication failure",
+                    ex = possibleAuthenticationFailureException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.PossibleAuthenticationFailureException.html" ]
+                )
+            | Protocol protocolException ->
+                FailureResult.Create(
+                    "RabbitMQ protocol error",
+                    ex = protocolException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.ProtocolException.html" ]
+                )
+            | ProtocolVersionMismatch protocolVersionMismatchException ->
+                FailureResult.Create(
+                    "RabbitMQ protocol version mismatch",
+                    ex = protocolVersionMismatchException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.ProtocolVersionMismatchException.html" ]
+                )
+            | ProtocolViolation protocolViolationException ->
+                FailureResult.Create(
+                    "RabbitMQ protocol violation",
+                    ex = protocolViolationException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.ProtocolViolationException.html" ]
+                )
+            | RabbitMQClient rabbitMqClientException ->
+                FailureResult.Create(
+                    "RabbitMQ client error",
+                    ex = rabbitMqClientException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.RabbitMQClientException.html" ]
+                )
+            | SoftProtocol softProtocolException ->
+                FailureResult.Create(
+                    "RabbitMQ client error",
+                    ex = softProtocolException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.SoftProtocolException.html" ]
+                )
+            | SyntaxError syntaxErrorException ->
+                FailureResult.Create(
+                    "RabbitMQ syntax error",
+                    ex = syntaxErrorException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.SyntaxErrorException.html" ]
+                )
+            | TopologyRecovery topologyRecoveryException ->
+                FailureResult.Create(
+                    "RabbitMQ topology recovery error",
+                    ex = topologyRecoveryException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.TopologyRecoveryException.html" ]
+                )
+            | UnexpectedFrame unexpectedFrameException ->
+                FailureResult.Create(
+                    "RabbitMQ unexpected frame",
+                    ex = unexpectedFrameException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.UnexpectedFrameException.html" ]
+                )
+            | UnexpectedMethod unexpectedMethodException ->
+                FailureResult.Create(
+                    "RabbitMQ unexpected method",
+                    ex = unexpectedMethodException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.UnexpectedMethodException.html" ]
+                )
+            | UnknownClassOrMethod unknownClassOrMethodException ->
+                FailureResult.Create(
+                    "RabbitMQ unexpected method",
+                    ex = unknownClassOrMethodException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.UnknownClassOrMethodException.html" ]
+                )
+            | UnsupportedMethod unsupportedMethodException ->
+                FailureResult.Create(
+                    "RabbitMQ unsupported method",
+                    ex = unsupportedMethodException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.UnsupportedMethodException.html" ]
+                )
+            | UnsupportedMethodField unsupportedMethodFieldException ->
+                FailureResult.Create(
+                    "RabbitMQ unsupported method field",
+                    ex = unsupportedMethodFieldException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.UnsupportedMethodFieldException.html" ]
+                )
+            | WireFormatting wireFormattingException ->
+                FailureResult.Create(
+                    "RabbitMQ wire formatting error",
+                    ex = wireFormattingException,
+                    metadata =
+                        Map.ofList
+                            [ "link",
+                              "https://rabbitmq.github.io/rabbitmq-dotnet-client/api/RabbitMQ.Client.Exceptions.WireFormattingException.html" ]
+                )
             | OperationFailure failure -> failure
-            | UnhandledException ``exception`` -> failwith "todo"
+            | UnhandledException ``exception`` -> FailureResult.Create("Unhandled exception", ex = ``exception``)
