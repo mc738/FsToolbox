@@ -1,13 +1,13 @@
 ﻿namespace FsToolbox.RabbitMQ
 
-open System
-open System.Text
-open System.Text.Json
-open FsToolbox.Core.Results
-open RabbitMQ.Client
-open RabbitMQ.Client.Events
-
 module Channels =
+
+    open System
+    open System.Text
+    open System.Text.Json
+    open FsToolbox.Core.Results
+    open RabbitMQ.Client
+    open RabbitMQ.Client.Events
 
     let declareQueue (definition: QueueDefinition) (channel: IModel) =
         channel,
@@ -89,9 +89,6 @@ module Channels =
         use channel = connection.CreateModel()
 
         try
-            fn channel
+            fn channel |> Result.mapError RabbitMQFailure.OperationFailure
         with ex ->
-            { Message = $"Unhandled exception: {ex.Message}"
-              DisplayMessage = "Channel failure"
-              Exception = Some ex }
-            |> Error
+            RabbitMQFailure.FromException ex |> Error

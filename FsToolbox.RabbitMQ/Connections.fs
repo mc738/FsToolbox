@@ -2,6 +2,7 @@
 
 open FsToolbox.Core.Results
 open RabbitMQ.Client
+open RabbitMQ.Client.Exceptions
 
 
 module Connections =
@@ -10,9 +11,6 @@ module Connections =
         use connection = factory.CreateConnection()
 
         try
-            fn connection
-        with ex ->
-            { Message = $"Unhandled exception: {ex.Message}"
-              DisplayMessage = "Connection failure"
-              Exception = Some ex }
-            |> Error
+            fn connection |> Result.mapError RabbitMQFailure.OperationFailure
+        with
+        | ex -> RabbitMQFailure.FromException ex |> Error
