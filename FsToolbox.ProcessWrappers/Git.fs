@@ -7,6 +7,7 @@ module Git =
     open FsToolbox.Core.Processes
     open FsToolbox.ProcessWrappers.Common
     open FsToolbox.Core
+    open FsToolbox.Extensions.Strings
 
     type CloneSettings =
         { Repository: string
@@ -33,14 +34,14 @@ module Git =
           Template: string option
           ConfigurationVariables: Map<string, string> option
           Depth: int option
-          ShallowSince: DateTime option
+          ShallowSince: string option
           ShallowExclude: string option
           SingleBranch: bool option
           NoTags: bool option
-          RecurseSubmodules: string option
+          RecurseSubmodules: string list option
           ShallowModules: bool option
           RemoteSubmodules: bool option
-          SeparateGitDirectory: bool option
+          SeparateGitDirectory: string option
           RefFormat: string option
           Jobs: int option
           BundleUri: string option }
@@ -83,23 +84,75 @@ module Git =
               BundleUri = None }
 
         member gc.CreateArgs(gitPath: string) =
-            [
-                Some gitPath
-                gc.Template |> Option.map (fun td -> $"--template={wrapString td}")
-                gc.Local |> Option.ifTrue "--local"
-                gc.NoHardLinks |> Option.ifTrue "--no-hardlinks"
-                gc.Shared |> Option.ifTrue "--shared"
-                gc.Reference |> Option.map (fun r -> $"--reference {wrapString r}")
-                gc.Dissociate |> Option.ifTrue "--dissociate"
-                gc.Quiet |> Option.ifTrue "--quiet"
-                
-                
-                
-                
-            ]
+            [ Some gitPath
+              gc.Template |> Option.map (fun td -> $"--template={wrapString td}")
+              gc.Local |> Option.ifTrue "--local"
+              gc.NoHardLinks |> Option.ifTrue "--no-hardlinks"
+              gc.Shared |> Option.ifTrue "--shared"
+              gc.Reference |> Option.map (fun r -> $"--reference {wrapString r}")
+              gc.Dissociate |> Option.ifTrue "--dissociate"
+              gc.Quiet |> Option.ifTrue "--quiet"
+              gc.Verbose |> Option.ifTrue "--verbose"
+              gc.Progress |> Option.ifTrue "--progress"
+              gc.ServerOption |> Option.map (fun so -> $"--server-option={wrapString so}")
+              gc.NoCheckout |> Option.ifTrue "--no-checkout"
+              gc.RejectShallow
+              |> Option.map (fun v ->
+                  match v with
+                  | true -> "--reject-shallow"
+                  | false -> "--no-reject-shallow")
+              gc.Bare |> Option.ifTrue "--bare"
+              gc.Sparse |> Option.ifTrue "--sparse"
+              gc.Filter |> Option.map (fun fs -> $"--filter={wrapString fs}")
+              gc.AlsoFilterSubModules |> Option.ifTrue "--also-filter-submodules"
+              gc.Mirror |> Option.ifTrue "--mirror"
+              gc.Origin |> Option.map (fun o -> $"--origin {wrapString o}")
+              gc.Branch |> Option.map (fun b -> $"--branch {wrapString b}")
+              gc.UnloadPack |> Option.map (fun up -> $"--upload-pack {wrapString up}")
+              gc.Template |> Option.map (fun t -> $"--template={wrapString t}")
+              yield!
+                  gc.ConfigurationVariables
+                  |> Option.map (fun m ->
+                      m
+                      |> Map.toList
+                      |> List.map (fun (k, v) -> Some $"--config {wrapString k}={wrapString v}"))
+                  |> Option.defaultValue []
+              gc.Depth |> Option.map (fun d -> $"--depth {d}")
+              gc.ShallowSince
+              |> Option.map (fun ss -> $"--shallow-since={forceWrapString ss}")
+              gc.ShallowExclude |> Option.map (fun se -> $"--shallow-exclude={wrapString se}")
+              gc.SingleBranch
+              |> Option.map (fun sb -> if sb then "--single-branch" else "--no-single-branch")
+              gc.NoTags |> Option.ifTrue "--no-tags"
+              yield!
+                  gc.RecurseSubmodules
+                  |> Option.map (fun rs ->
+                      rs
+                      |> List.map (fun r ->
+                          match r.IsNullOrWhiteSpace() with
+                          | true -> Some "--recurse-submodules"
+                          | false -> Some $"--recurse-submodules={wrapString r}"))
+                  |> Option.defaultValue []
+              gc.ShallowModules
+              |> Option.map (fun sm ->
+                  match sm with
+                  | true -> "--shallow-submodules"
+                  | false -> "--no-shallow-submodules")
+              gc.RemoteSubmodules
+              |> Option.map (fun rs ->
+                  match rs with
+                  | true -> "--remote-submodules"
+                  | false -> "--no-remote-submodules")
+              gc.SeparateGitDirectory
+              |> Option.map (fun sgd -> $"--separate-git-dir={wrapString sgd}")
+              gc.RefFormat |> Option.map (fun rf -> $"--separate-git-dir={wrapString rf}")
+              gc.Jobs |> Option.map (fun j -> $"--jobs {j}")
+              Some gc.Repository
+              gc.Directory
+              gc.BundleUri |> Option.map (fun bu -> $"--bundle-uri={wrapString bu}") ]
             |> List.choose id
             |> concatStrings " "
-    
+
     let getLastCommitHash (gitPath: string) (path: string) =
         match
             Process.run
