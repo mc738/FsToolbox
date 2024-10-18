@@ -83,8 +83,8 @@ module Git =
               Jobs = None
               BundleUri = None }
 
-        member gc.CreateArgs(gitPath: string) =
-            [ Some gitPath
+        member gc.CreateArgs() =
+            [ Some "clone"
               gc.Template |> Option.map (fun td -> $"--template={wrapString td}")
               gc.Local |> Option.ifTrue "--local"
               gc.NoHardLinks |> Option.ifTrue "--no-hardlinks"
