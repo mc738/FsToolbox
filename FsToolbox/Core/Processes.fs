@@ -9,7 +9,6 @@ module Processes =
     [<RequireQualifiedAccess>]
     module Process =
 
-
         type ProcessParameters =
             { Name: string
               Args: string
@@ -25,6 +24,7 @@ module Processes =
             procInfo.UseShellExecute <- false
             procInfo.FileName <- filename
             procInfo.Arguments <- args
+
 
             match startDir with
             | Some d -> procInfo.WorkingDirectory <- d
@@ -74,7 +74,19 @@ module Processes =
             | true -> Ok output
             | false -> Error(String.concat Environment.NewLine errors)
 
-    type ProcessResult =
+
+    type ProcessSettings =
+        { Name: string
+          StartInfoBuilder: ProcessStartInfo -> ProcessStartInfo
+          StandardOutputHandler: (string -> unit) option
+          StandardErrorHandler: (string -> unit) option
+          ResultHandler: ProcessResult -> ActionResult<ProcessResult> }
+
+    and ProcessFailure =
+        { Results: ProcessResult
+          IsTransient: bool }
+
+    and ProcessResult =
         { ExitCode: int
           Args: string
           Pid: int
@@ -149,15 +161,10 @@ module Processes =
                   ExecutionDuration = timer.Elapsed
                   ExitTime = p.ExitTime }
                 |> ActionResult.Success
-            | false ->
-                ({ Message = "Process failed to start"
-                   DisplayMessage = "Process failed to start"
-                   Exception = None }
-                : FailureResult)
-                |> ActionResult.Failure
+            | false -> FailureResult.Create("Process failed to start") |> ActionResult.Failure
         with ex ->
-            ({ Message = $"Unhandled exception while executing process. Error: {ex.Message}"
-               DisplayMessage = "Unhandled exception while executing process"
-               Exception = Some ex }
-            : FailureResult)
+            FailureResult.Create(
+                $"Unhandled exception while executing process. Error: {ex.Message}",
+                "Unhandled exception while executing process"
+            )
             |> ActionResult.Failure
