@@ -9,15 +9,30 @@ module DotNet =
     open FsToolbox.Core
     open FsToolbox.Core.Processes
 
-    [<RequireQualifiedAccess>]
-    type BuildType =
-        | Project
-        | Solution
+    //[<RequireQualifiedAccess>]
+    //type BuildType =
+    //    | Project
+    //    | Solution
+    //
+    //    member bt.Serialize() =
+    //        match bt with
+    //        | Project -> "PROJECT"
+    //        | Solution -> "SOLUTION"
+    //
+    //[<RequireQualifiedAccess>]
+    //type TestType =
+    //    | Project
+    //    | Solution
+    //    | Directory
+    //    | Dll
+    //    | Exe of string
+    //
+    //    member bt.Serialize() =
+    //        match bt with
+    //        | Project -> "PROJECT"
+    //        | Solution -> "SOLUTION"
 
-        member bt.Serialize() =
-            match bt with
-            | Project -> "PROJECT"
-            | Solution -> "SOLUTION"
+
 
     /// <summary>
     /// A type representing runtime identifiers.
@@ -94,7 +109,7 @@ module DotNet =
             | Diagnostic -> "diagnostic"
 
     type BuildSettings =
-        { BuildType: BuildType option
+        { Path: string option
           Architecture: string option
           ArtifactsPath: string option
           Configuration: ConfigurationType option
@@ -119,7 +134,7 @@ module DotNet =
           VersionSuffix: string option }
 
         static member Default =
-            { BuildType = None
+            { Path = None
               Architecture = None
               ArtifactsPath = None
               Configuration = None
@@ -145,7 +160,7 @@ module DotNet =
 
         member settings.CreateArgs() =
             [ Some "build"
-              settings.BuildType |> Option.map (fun bt -> bt.Serialize())
+              settings.Path |> Option.map wrapString
               settings.Architecture |> Option.map (fun a -> $"--arch {wrapString a}")
               settings.ArtifactsPath
               |> Option.map (fun ap -> $"--artifacts-path {wrapString ap}")
@@ -162,7 +177,7 @@ module DotNet =
               settings.NoSelfContained |> Option.ifTrue "--no-self-contained"
               settings.Output |> Option.map (fun o -> $"--output {wrapString o}")
               settings.OS |> Option.map (fun os -> $"--os {wrapString os}")
-              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt}")
+              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt.Serialize()}")
               settings.SelfContained
               |> Option.map (fun sc ->
                   match sc with
@@ -194,7 +209,7 @@ module DotNet =
             |> concatStrings " "
 
     type PackSettings =
-        { BuildType: BuildType option
+        { Path: string option
           ArtifactsPath: string option
           Configuration: ConfigurationType option
           Force: bool option
@@ -212,14 +227,14 @@ module DotNet =
           TerminalLogger: TerminalLogger option
           Verbosity: Verbosity option
           VersionSuffix: string option }
-        
+
         static member Default =
-            { BuildType = None
+            { Path = None
               ArtifactsPath = None
               Configuration = None
               Force = None
               IncludeSource = None
-              IncludeSymbols = None 
+              IncludeSymbols = None
               Interactive = None
               NoBuild = None
               NoDependencies = None
@@ -235,7 +250,7 @@ module DotNet =
 
         member settings.CreateArgs() =
             [ Some "pack"
-              settings.BuildType |> Option.map (fun bt -> bt.Serialize())
+              settings.Path |> Option.map wrapString
               settings.ArtifactsPath
               |> Option.map (fun ap -> $"--artifacts-path {wrapString ap}")
               settings.Configuration
@@ -247,7 +262,7 @@ module DotNet =
               settings.NoRestore |> Option.ifTrue "--no-restore"
               settings.NoLogo |> Option.ifTrue "--nologo"
               settings.Output |> Option.map (fun o -> $"--output {wrapString o}")
-              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt}")
+              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt.Serialize()}")
               settings.Serviceable |> Option.ifTrue "--serviceable"
               settings.TerminalLogger |> Option.map (fun tl -> $"--tl:{tl.Serialize()}")
               settings.Verbosity |> Option.map (fun v -> $"--verbosity {v.Serialize()}")
@@ -267,7 +282,7 @@ module DotNet =
             |> concatStrings " "
 
     type PublishSettings =
-        { BuildType: BuildType option
+        { Path: string option
           Architecture: string option
           ArtifactsPath: string option
           Configuration: ConfigurationType option
@@ -293,7 +308,7 @@ module DotNet =
           VersionSuffix: string option }
 
         static member Default =
-            { BuildType = None
+            { Path = None
               Architecture = None
               ArtifactsPath = None
               Configuration = None
@@ -302,7 +317,7 @@ module DotNet =
               Force = None
               Interactive = None
               Manifest = None
-              NoBuild = None 
+              NoBuild = None
               NoDependencies = None
               NoRestore = None
               NoLogo = None
@@ -320,7 +335,7 @@ module DotNet =
 
         member settings.CreateArgs() =
             [ Some "publish"
-              settings.BuildType |> Option.map (fun bt -> bt.Serialize())
+              settings.Path |> Option.map wrapString
               settings.Architecture |> Option.map (fun a -> $"--arch {wrapString a}")
               settings.ArtifactsPath
               |> Option.map (fun ap -> $"--artifacts-path {wrapString ap}")
@@ -337,7 +352,7 @@ module DotNet =
               settings.NoSelfContained |> Option.ifTrue "--no-self-contained"
               settings.Output |> Option.map (fun o -> $"--output {wrapString o}")
               settings.OS |> Option.map (fun os -> $"--os {wrapString os}")
-              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt}")
+              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt.Serialize()}")
               settings.SelfContained
               |> Option.map (fun sc ->
                   match sc with
@@ -369,105 +384,128 @@ module DotNet =
             |> concatStrings " "
 
     type TestSettings =
-        { BuildType: BuildType option
+        { Path: string option
+          TestAdapterPath: string option
           Architecture: string option
           ArtifactsPath: string option
+          Blame: bool option
+          BlameCrash: bool option
+          BlameCrashDumpType: string option
+          BlameCrashCollectAlways: bool option
+          BlameHang: bool option
+          BlameHangDumpType: string option
+          BlameHangTimeout: string option
           Configuration: ConfigurationType option
-          DisableBuildServers: bool option
+          Collect: string option
+          Diagnostic: string option
           Framework: string option
-          Force: bool option
+          EnvironmentalVariables: Map<string, string> option
+          Filter: string option
           Interactive: bool option
-          NoDependencies: bool option
-          NoIncremental: bool option
-          NoRestore: bool option
+          Logger: string option
+          NoBuild: bool option
           NoLogo: bool option
-          NoSelfContained: bool option
+          NoRestore: bool option
           Output: string option
           OS: string option
-          Properties: Map<string, string> option
+          ResultsDirectory: string option
           RunTime: RuntimeIdentifier option
-          SelfContained: bool option
-          Source: string option
-          TerminalLogger: TerminalLogger option
+          Settings: string option
+          ListTests: bool option
           Verbosity: Verbosity option
-          UserCurrentRunTime: bool option
-          VersionSuffix: string option }
+          Args: string list option
+          RunSettings: string option }
 
         static member Default =
-            { BuildType = None
+            { Path = None
+              TestAdapterPath = None
               Architecture = None
               ArtifactsPath = None
+              Blame = None
+              BlameCrash = None
+              BlameCrashDumpType = None
+              BlameCrashCollectAlways = None
+              BlameHang = None
+              BlameHangDumpType = None
+              BlameHangTimeout = None
               Configuration = None
-              DisableBuildServers = None
+              Collect = None
+              Diagnostic = None
               Framework = None
-              Force = None
+              EnvironmentalVariables = None
+              Filter = None
               Interactive = None
-              NoDependencies = None
-              NoIncremental = None
-              NoRestore = None
+              Logger = None
+              NoBuild = None
               NoLogo = None
-              NoSelfContained = None
+              NoRestore = None
               Output = None
               OS = None
-              Properties = None
+              ResultsDirectory = None
               RunTime = None
-              SelfContained = None
-              Source = None
-              TerminalLogger = None
+              Settings = None
+              ListTests = None
               Verbosity = None
-              UserCurrentRunTime = None
-              VersionSuffix = None }
+              Args = None
+              RunSettings = None }
 
         member settings.CreateArgs() =
-            [ Some "build"
-              settings.BuildType |> Option.map (fun bt -> bt.Serialize())
+            [ Some "test"
+              settings.Path |> Option.map wrapString
               settings.Architecture |> Option.map (fun a -> $"--arch {wrapString a}")
               settings.ArtifactsPath
               |> Option.map (fun ap -> $"--artifacts-path {wrapString ap}")
+              settings.Blame |> Option.ifTrue "--blame"
+              settings.BlameCrash |> Option.ifTrue "--blame-crash"
+              settings.BlameCrashDumpType
+              |> Option.map (fun bcd -> $"--blame-crash-dump-type {wrapString bcd}")
+              settings.BlameCrashCollectAlways |> Option.ifTrue "--blame-crash-collect-always"
+              settings.BlameHang |> Option.ifTrue "--blame-hang"
+              settings.BlameHangDumpType
+              |> Option.map (fun bhd -> $"--blame-hang-dump-type {bhd}")
+              settings.BlameHangTimeout
+              |> Option.map (fun bht -> $"--blame-hang-timeout {bht}")
               settings.Configuration
               |> Option.map (fun c -> $"--configuration {c.Serialize()}")
-              settings.DisableBuildServers |> Option.ifTrue "--disable-build-servers"
+              settings.Collect |> Option.map (fun c -> $"--collect {wrapString c}")
+              settings.Diagnostic |> Option.map (fun d -> $"--diag {wrapString d}")
               settings.Framework |> Option.map (fun f -> $"--framework {wrapString f}")
-              settings.Force |> Option.ifTrue "--force"
-              settings.Interactive |> Option.ifTrue "--interactive"
-              settings.NoDependencies |> Option.ifTrue "--no-dependencies"
-              settings.NoIncremental |> Option.ifTrue "--no-incremental"
-              settings.NoRestore |> Option.ifTrue "--no-restore"
-              settings.NoLogo |> Option.ifTrue "--nologo"
-              settings.NoSelfContained |> Option.ifTrue "--no-self-contained"
-              settings.Output |> Option.map (fun o -> $"--output {wrapString o}")
-              settings.OS |> Option.map (fun os -> $"--os {wrapString os}")
-              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt}")
-              settings.SelfContained
-              |> Option.map (fun sc ->
-                  match sc with
-                  | true -> "--self-contained true"
-                  | false -> "--self-contained false")
-
-              settings.Source |> Option.map (fun s -> $"--source {wrapString s}")
-              settings.TerminalLogger |> Option.map (fun tl -> $"--tl:{tl.Serialize()}")
-              settings.Verbosity |> Option.map (fun v -> $"--verbosity {v.Serialize()}")
-              settings.UserCurrentRunTime
-              |> Option.map (fun ucr ->
-                  match ucr with
-                  | true -> "--use-current-runtime true"
-                  | false -> "--use-current-runtime false")
-
-              settings.VersionSuffix
-              |> Option.map (fun vs -> $"--version-suffix {wrapString vs}")
 
               yield!
-                  settings.Properties
-                  |> Option.map (fun properties ->
-                      properties
+                  settings.EnvironmentalVariables
+                  |> Option.map (fun evs ->
+                      evs
                       |> Map.toList
-                      |> List.map (fun (k, v) -> Some $"--property:{wrapString k}={wrapString v}"))
+                      |> List.map (fun (k, v) -> Some $"--environment {wrapString k}={wrapString v}"))
                   |> Option.defaultValue []
 
-              ]
+              settings.Filter |> Option.map (fun f -> $"--filter {wrapString f}")
+              settings.Interactive |> Option.ifTrue "--interactive"
+              settings.Logger |> Option.map (fun l -> $"--logger {wrapString l}")
+              settings.NoBuild |> Option.ifTrue "--no-build"
+              settings.NoLogo |> Option.ifTrue "--nologo"
+              settings.NoRestore |> Option.ifTrue "--no-restore"
+              settings.Output |> Option.map (fun o -> $"--output {wrapString o}")
+              settings.OS |> Option.map (fun os -> $"--os {wrapString os}")
+              settings.ResultsDirectory
+              |> Option.map (fun rd -> $"--results-directory {wrapString rd}")
+              settings.RunTime |> Option.map (fun rt -> $"--runtime {rt.Serialize()}")
+              settings.Settings |> Option.map (fun s -> $"--settings {wrapString s}")
+              settings.ListTests |> Option.ifTrue "--list-tests"
+              settings.Verbosity |> Option.map (fun v -> $"--verbosity {v.Serialize()}")
+              yield!
+                  settings.Args
+                  |> Option.map (fun s -> s |> List.map (wrapString >> Some))
+                  |> Option.defaultValue []
+
+              match settings.RunSettings with
+              | Some rs ->
+                  Some "--"
+                  Some rs
+              | None -> () ]
             |> List.choose id
             |> concatStrings " "
-    
+
 (*
     let publish (dotnetPath: string) name =
 
