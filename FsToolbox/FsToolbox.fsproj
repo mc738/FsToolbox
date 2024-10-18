@@ -26,6 +26,7 @@
         <Compile Include="Core\Json.fs"/>
         <Compile Include="Core\Rsa.fs"/>
         <Compile Include="Core\RsaV2.fs"/>
+        <Compile Include="Core\Option.fs" />
         <Compile Include="Extensions\Strings.fs"/>
         <Compile Include="Extensions\Streams.fs"/>
         <Compile Include="AppEnvironment\Args\Mapping.fs"/>
