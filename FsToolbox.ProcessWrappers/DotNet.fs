@@ -680,7 +680,7 @@ module DotNet =
 
         execute settings
 
-    let nugestPush
+    let nugetPush
         (startHandler: ProcessStartHandler)
         (diagnosticHandler: ProcessDiagnosticHandler)
         (dotNetPath: string)
@@ -707,102 +707,87 @@ module DotNet =
             : ProcessSettings)
 
         execute settings
-(*
-    let publish (dotnetPath: string) name =
 
-        let args =
-            [ "publish"
-              createSourcePath name context
-              "--configuration Release"
-              $"--output {Path.Combine(getPublishPath context, name)}"
-              // TODO - Add type (such as linux-x64) and version etc(?)
-              "-p:UseAppHost=false"
-              $"/p:VersionPrefix={getVersion context}"
-              match getVersionSuffix context with
-              | Some v -> $"/p:VersionSuffix={v}"
-              | None -> ""
-              $"/p:InformationalVersion={getBuildName context}" ]
-            |> (fun a -> String.Join(' ', a))
-        //let args =
+    module StandardOperations =
+        
+        let publish (dotnetPath: string) sourcePath outputPath =
 
-        //    "publish --configuration Release --output {output} /p:VersionPrefix={}.{}.{}"
+            let args =
+                [ "publish"
+                  sourcePath
+                  "--configuration Release"
+                  $"--output {outputPath}"
+                  "-p:UseAppHost=false"
+                  $"/p:VersionPrefix={getVersion context}"
+                  match getVersionSuffix context with
+                  | Some v -> $"/p:VersionSuffix={v}"
+                  | None -> ""
+                  $"/p:InformationalVersion={getBuildName context}" ]
+                |> (fun a -> String.Join(' ', a))
+                
+            let output, errors = Process.execute dotnetPath args None //(getSrcPath context)
 
-        Process.execute
-        let output, errors = Process.execute dotnetPath args None //(getSrcPath context)
+            match errors.Length = 0 with
+            | true -> Ok output.Head
+            | false -> Error(String.Join(Environment.NewLine, errors))
 
-        match errors.Length = 0 with
-        | true -> Ok output.Head
-        | false -> Error(String.Join(Environment.NewLine, errors))
+        /// Run dotnet test and return the past to the results file.
+        let test dotnetPath testName =
+            // dotnet test --logger "trx;logfilename=mytests.xml" -r C:\TestResults\FDOM\
+            let args =
+                [ "test"
+                  createSourcePath testName context
+                  $"--logger \"trx;logfilename={testName}.xml\""
+                  $"-r {getTestsPath context}" ]
+                |> (fun a -> String.Join(' ', a))
+            //let args =
+            //    "publish --configuration Release --output {output} /p:VersionPrefix={}.{}.{}"
 
-    /// Run dotnet test and return the past to the results file.
-    let test dotnetPath testName =
-        context.Log("dot-net-test", "Running tests.")
-        // dotnet test --logger "trx;logfilename=mytests.xml" -r C:\TestResults\FDOM\
-        let args =
-            [ "test"
-              createSourcePath testName context
-              $"--logger \"trx;logfilename={testName}.xml\""
-              $"-r {getTestsPath context}" ]
-            |> (fun a -> String.Join(' ', a))
-        //let args =
-        //    "publish --configuration Release --output {output} /p:VersionPrefix={}.{}.{}"
+            let output, errors = Process.execute dotnetPath args None //path
 
-        let output, errors = Process.execute dotnetPath args None //path
+            match errors.Length = 0 with
+            | true ->
+                Ok(Path.Combine(getTestsPath context, $"{testName}.xml"))
+            | false ->
+                let errorMessage = String.Join(Environment.NewLine, errors)
+                Error(String.Join(Environment.NewLine, errors))
 
-        match errors.Length = 0 with
-        | true ->
-            output
-            |> List.map (fun o -> context.Log("dot-net-test", o))
-            |> ignore
+        /// Run dotnet test and return the past to the results file.
 
-            context.Log("dot-net-test", "Tests complete.")
-            Ok(Path.Combine(getTestsPath context, $"{testName}.xml"))
-        | false ->
-            errors
-            |> List.map (fun e -> context.LogError("dot-net-test", e))
-            |> ignore
+        let pack (dotnetPath: string) name =
 
-            let errorMessage = String.Join(Environment.NewLine, errors)
-            context.LogError("dot-net-test", $"Tests failed. Error: {errorMessage}")
-            Error(String.Join(Environment.NewLine, errors))
+            let args =
+                [ "pack"
+                  createSourcePath name context
+                  "--configuration Release"
+                  $"--output {getPackagePath context}"
+                  $"/p:VersionPrefix={getVersion context}"
+                  match getVersionSuffix context with
+                  | Some v -> $"/p:VersionSuffix={v}"
+                  | None -> ""
+                  $"/p:InformationalVersion={getBuildName context}" ]
+                |> (fun a -> String.Join(' ', a))
 
-    /// Run dotnet test and return the past to the results file.
+            let output, errors = Process.execute dotnetPath args None //(getSrcPath context)
 
-    let pack (dotnetPath: string) name =
+            match errors.Length = 0 with
+            | true -> Ok output.Head
+            | false -> Error(String.Join(Environment.NewLine, errors))
 
-        let args =
-            [ "pack"
-              createSourcePath name context
-              "--configuration Release"
-              $"--output {getPackagePath context}"
-              $"/p:VersionPrefix={getVersion context}"
-              match getVersionSuffix context with
-              | Some v -> $"/p:VersionSuffix={v}"
-              | None -> ""
-              $"/p:InformationalVersion={getBuildName context}" ]
-            |> (fun a -> String.Join(' ', a))
+        let push (dotnetPath: string) name source =
 
-        let output, errors = Process.execute dotnetPath args None //(getSrcPath context)
-
-        match errors.Length = 0 with
-        | true -> Ok output.Head
-        | false -> Error(String.Join(Environment.NewLine, errors))
-
-    let push (dotnetPath: string) name source =
-
-        let args =
-            [ "nuget"
-              "push"
-              createPackagePath name context
-              $"--source \"{source}\"" ]
-            |> (fun a -> String.Join(' ', a))
+            let args =
+                [ "nuget"
+                  "push"
+                  createPackagePath name context
+                  $"--source \"{source}\"" ]
+                |> (fun a -> String.Join(' ', a))
 
 
-        printfn $"******** Running command: {dotnetPath} {args}"
+            printfn $"******** Running command: {dotnetPath} {args}"
 
-        let output, errors = Process.execute dotnetPath args None //(getSrcPath context)
+            let output, errors = Process.execute dotnetPath args None //(getSrcPath context)
 
-        match errors.Length = 0 with
-        | true -> Ok output.Head
-        | false -> Error(String.Join(Environment.NewLine, errors))
-*)
+            match errors.Length = 0 with
+            | true -> Ok output.Head
+            | false -> Error(String.Join(Environment.NewLine, errors))
