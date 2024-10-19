@@ -1,5 +1,7 @@
 namespace FsToolbox.ProcessWrappers
 
+open System
+open FsToolbox.Core.Results
 open Microsoft.FSharp.Core
 
 [<RequireQualifiedAccess>]
@@ -506,6 +508,205 @@ module DotNet =
             |> List.choose id
             |> concatStrings " "
 
+    type NugetPushSettings =
+        { ApiKey: string option
+          ConfigurationFile: string option
+          DisableBuffer: bool option
+          ForceEnglishOutput: bool option
+          NonInteractive: bool option
+          NoServiceEndpoint: bool option
+          NoSymbols: bool option
+          Source: string option
+          SkipDuplicate: bool option
+          SymbolSource: string option
+          SymbolApiKey: string option
+          Timeout: int option
+          Verbosity: Verbosity option }
+
+        static member Default =
+            { ApiKey = None
+              ConfigurationFile = None
+              DisableBuffer = None
+              ForceEnglishOutput = None
+              NonInteractive = None
+              NoServiceEndpoint = None
+              NoSymbols = None
+              Source = None
+              SkipDuplicate = None
+              SymbolSource = None
+              SymbolApiKey = None
+              Timeout = None
+              Verbosity = None }
+
+        member settings.CreateArgs() =
+            [ Some "nuget push"
+              settings.ApiKey |> Option.map (fun ak -> $"-ApiKey {wrapString ak}")
+              settings.ConfigurationFile
+              |> Option.map (fun c -> $"-ConfigFile {wrapString c}")
+              settings.DisableBuffer |> Option.ifTrue "-DisableBuffering"
+              settings.ForceEnglishOutput |> Option.ifTrue "-ForceEnglishOutput"
+              settings.NonInteractive |> Option.ifTrue "-NonInteractive"
+              settings.NoServiceEndpoint |> Option.ifTrue "-NoServiceEndpoint"
+              settings.NoSymbols |> Option.ifTrue "-NoSymbols"
+              settings.Source |> Option.map (fun s -> $"-Source {wrapString s}")
+              settings.SkipDuplicate |> Option.ifTrue "-SkipDuplicate"
+              settings.SymbolSource |> Option.map (fun ss -> $"-SymbolSource {wrapString ss}")
+              settings.SymbolApiKey
+              |> Option.map (fun sak -> $"-SymbolApiKey {wrapString sak}")
+              settings.Timeout |> Option.map (fun t -> $"-Timeout {t}")
+              settings.Verbosity
+              |> Option.bind (fun v ->
+                  match v with
+                  | Verbosity.Quiet
+                  | Verbosity.Normal
+                  | Verbosity.Detailed -> Some $"-Verbosity {v.Serialize()}"
+                  | Verbosity.Minimal -> None
+                  | Verbosity.Diagnostic -> None)
+
+
+              ]
+            |> List.choose id
+            |> concatStrings " "
+
+    let build
+        (startHandler: ProcessStartHandler)
+        (diagnosticHandler: ProcessDiagnosticHandler)
+        (dotNetPath: string)
+        (buildSettings: BuildSettings)
+        =
+
+        let settings =
+            ({ Name = dotNetPath
+               Args = buildSettings.CreateArgs()
+               OverrideName = true
+               OverrideArgs = true
+               StartHandler = startHandler
+               DiagnosticHandler = diagnosticHandler
+               ResultHandler =
+                 fun pr ->
+                     match pr.StdError.IsEmpty with
+                     | true -> ActionResult.Success pr
+                     | false ->
+                         FailureResult.Create(
+                             "Failed to execute `dotnet build`.",
+                             metadata = Map.ofList [ "errors", pr.StdError |> String.concat Environment.NewLine ]
+                         )
+                         |> ActionResult.Failure }
+            : ProcessSettings)
+
+        execute settings
+
+    let pack
+        (startHandler: ProcessStartHandler)
+        (diagnosticHandler: ProcessDiagnosticHandler)
+        (dotNetPath: string)
+        (packSettings: PackSettings)
+        =
+
+        let settings =
+            ({ Name = dotNetPath
+               Args = packSettings.CreateArgs()
+               OverrideName = true
+               OverrideArgs = true
+               StartHandler = startHandler
+               DiagnosticHandler = diagnosticHandler
+               ResultHandler =
+                 fun pr ->
+                     match pr.StdError.IsEmpty with
+                     | true -> ActionResult.Success pr
+                     | false ->
+                         FailureResult.Create(
+                             "Failed to execute `dotnet pack`.",
+                             metadata = Map.ofList [ "errors", pr.StdError |> String.concat Environment.NewLine ]
+                         )
+                         |> ActionResult.Failure }
+            : ProcessSettings)
+
+        execute settings
+
+    let publish
+        (startHandler: ProcessStartHandler)
+        (diagnosticHandler: ProcessDiagnosticHandler)
+        (dotNetPath: string)
+        (publishSettings: PublishSettings)
+        =
+
+        let settings =
+            ({ Name = dotNetPath
+               Args = publishSettings.CreateArgs()
+               OverrideName = true
+               OverrideArgs = true
+               StartHandler = startHandler
+               DiagnosticHandler = diagnosticHandler
+               ResultHandler =
+                 fun pr ->
+                     match pr.StdError.IsEmpty with
+                     | true -> ActionResult.Success pr
+                     | false ->
+                         FailureResult.Create(
+                             "Failed to execute `dotnet publish`.",
+                             metadata = Map.ofList [ "errors", pr.StdError |> String.concat Environment.NewLine ]
+                         )
+                         |> ActionResult.Failure }
+            : ProcessSettings)
+
+        execute settings
+
+    let test
+        (startHandler: ProcessStartHandler)
+        (diagnosticHandler: ProcessDiagnosticHandler)
+        (dotNetPath: string)
+        (testSettings: TestSettings)
+        =
+
+        let settings =
+            ({ Name = dotNetPath
+               Args = testSettings.CreateArgs()
+               OverrideName = true
+               OverrideArgs = true
+               StartHandler = startHandler
+               DiagnosticHandler = diagnosticHandler
+               ResultHandler =
+                 fun pr ->
+                     match pr.StdError.IsEmpty with
+                     | true -> ActionResult.Success pr
+                     | false ->
+                         FailureResult.Create(
+                             "Failed to execute `dotnet test`.",
+                             metadata = Map.ofList [ "errors", pr.StdError |> String.concat Environment.NewLine ]
+                         )
+                         |> ActionResult.Failure }
+            : ProcessSettings)
+
+        execute settings
+
+    let nugestPush
+        (startHandler: ProcessStartHandler)
+        (diagnosticHandler: ProcessDiagnosticHandler)
+        (dotNetPath: string)
+        (pushSettings: NugetPushSettings)
+        =
+
+        let settings =
+            ({ Name = dotNetPath
+               Args = pushSettings.CreateArgs()
+               OverrideName = true
+               OverrideArgs = true
+               StartHandler = startHandler
+               DiagnosticHandler = diagnosticHandler
+               ResultHandler =
+                 fun pr ->
+                     match pr.StdError.IsEmpty with
+                     | true -> ActionResult.Success pr
+                     | false ->
+                         FailureResult.Create(
+                             "Failed to execute `dotnet nuget push`.",
+                             metadata = Map.ofList [ "errors", pr.StdError |> String.concat Environment.NewLine ]
+                         )
+                         |> ActionResult.Failure }
+            : ProcessSettings)
+
+        execute settings
 (*
     let publish (dotnetPath: string) name =
 
