@@ -1,5 +1,7 @@
 namespace FsToolbox.ProcessWrappers
 
+open FsToolbox.Core.Results
+
 [<RequireQualifiedAccess>]
 module Git =
 
@@ -153,64 +155,94 @@ module Git =
             |> List.choose id
             |> concatStrings " "
 
-    let getLastCommitHash (gitPath: string) (path: string) =
-        match
-            Process.run
-                { Name = gitPath
-                  Args = "rev-parse HEAD"
-                  StartDirectory = (Some path) }
-        with
-        | Ok r when r.Length > 0 -> Ok r.Head
-        | Ok r -> Ok "Not commit hash found."
-        | Error e -> Error e
+    // A collection of simplify standard git operations.
+    module StandardOperations =
 
-    let clone (gitPath: string) (sourceUrl: string) (path: string) =
-        let output, errors = Process.execute gitPath $"clone {sourceUrl}" (path |> Some)
+        let getLastCommitHash (gitPath: string) (path: string) =
+            match
+                Process.run
+                    { Name = gitPath
+                      Args = "rev-parse HEAD"
+                      StartDirectory = (Some path) }
+            with
+            | Ok r when r.Length > 0 -> Ok r.Head
+            | Ok r -> Ok "Not commit hash found."
+            | Error e -> Error e
 
-        match errors.Length = 0 with
-        | true -> Ok output
-        | false ->
-            match errors.[0].StartsWith("Cloning into") with
-            | true -> Ok [ "Cloned" ]
+        let clone (gitPath: string) (sourceUrl: string) (path: string) =
+            let output, errors = Process.execute gitPath $"clone {sourceUrl}" (path |> Some)
+
+            match errors.Length = 0 with
+            | true -> Ok output
+            | false ->
+                match errors.[0].StartsWith("Cloning into") with
+                | true -> Ok [ "Cloned" ]
+                | false -> Error errors
+
+        let addTag (gitPath: string) (path: string) (tag: string) =
+            let output, errors = Process.execute gitPath $"tag {tag}" (path |> Some)
+
+            match errors.Length = 0 with
+            | true -> Ok output
+            | false -> Error "Tag not added"
+
+        let pushTag (gitPath: string) (path: string) (tag: string) =
+            let output, errors = Process.execute gitPath $"push origin {tag}" (path |> Some)
+            // For whatever reason the results are returned in STDERR...
+
+            match errors.Length > 1 with
+            | true ->
+                match errors.[1].StartsWith(" * [new tag]") with
+                | true -> errors |> String.concat Environment.NewLine |> Ok
+                | false -> Error "Tag not added"
+            | false -> Error "Tag not added"
+
+        let getAllCommits (gitPath: string) (path) =
+            let output, errors = Process.execute gitPath $"log --oneline" (path |> Some)
+
+            match errors.IsEmpty with
+            | true -> Ok output
             | false -> Error errors
 
-    let addTag (gitPath: string) (path: string) (tag: string) =
-        let output, errors = Process.execute gitPath $"tag {tag}" (path |> Some)
+        let getChangedAllFiles (gitPath: string) (commitHash: string) path =
+            let output, errors =
+                Process.execute gitPath $"diff --name-only -r {commitHash}" (path |> Some)
 
-        match errors.Length = 0 with
-        | true -> Ok output
-        | false -> Error "Tag not added"
+            match errors.IsEmpty with
+            | true -> Ok output
+            | false -> Error errors
 
-    let pushTag (gitPath: string) (path: string) (tag: string) =
-        let output, errors = Process.execute gitPath $"push origin {tag}" (path |> Some)
-        // For whatever reason the results are returned in STDERR...
+        let getChangedFiles (gitPath: string) (commitHash: string) path =
+            let output, errors =
+                Process.execute gitPath $"diff --name-only -r {commitHash} {commitHash}~1" (path |> Some)
 
-        match errors.Length > 1 with
-        | true ->
-            match errors.[1].StartsWith(" * [new tag]") with
-            | true -> errors |> String.concat Environment.NewLine |> Ok
-            | false -> Error "Tag not added"
-        | false -> Error "Tag not added"
+            match errors.IsEmpty with
+            | true -> Ok output
+            | false -> Error errors
 
-    let getAllCommits (gitPath: string) (path) =
-        let output, errors = Process.execute gitPath $"log --oneline" (path |> Some)
+    let clone
+        (startHandler: ProcessStartHandler)
+        (diagnosticHandler: ProcessDiagnosticHandler)
+        (dotNetPath: string)
+        (cloneSettings: CloneSettings)
+        =
+        let settings =
+            ({ Name = dotNetPath
+               Args = cloneSettings.CreateArgs()
+               OverrideName = true
+               OverrideArgs = true
+               StartHandler = startHandler
+               DiagnosticHandler = diagnosticHandler
+               ResultHandler =
+                 fun pr ->
+                     match pr.StdError.[0].StartsWith("Cloning into") && pr.ExitCode = 0 with
+                     | true -> ActionResult.Success pr
+                     | false ->
+                         FailureResult.Create(
+                             "Failed to execute `git clone`.",
+                             metadata = Map.ofList [ "errors", pr.StdError |> String.concat Environment.NewLine ]
+                         )
+                         |> ActionResult.Failure }
+            : ProcessSettings)
 
-        match errors.IsEmpty with
-        | true -> Ok output
-        | false -> Error errors
-
-    let getChangedAllFiles (gitPath: string) (commitHash: string) path =
-        let output, errors =
-            Process.execute gitPath $"diff --name-only -r {commitHash}" (path |> Some)
-
-        match errors.IsEmpty with
-        | true -> Ok output
-        | false -> Error errors
-
-    let getChangedFiles (gitPath: string) (commitHash: string) path =
-        let output, errors =
-            Process.execute gitPath $"diff --name-only -r {commitHash} {commitHash}~1" (path |> Some)
-
-        match errors.IsEmpty with
-        | true -> Ok output
-        | false -> Error errors
+        execute settings
