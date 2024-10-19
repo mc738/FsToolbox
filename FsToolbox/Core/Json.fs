@@ -6,7 +6,7 @@ open System
 module Json =
 
     open System.Text.Json
-        
+
     let deserialize<'T> (json: string) =
         attempt (fun _ -> JsonSerializer.Deserialize<'T>(json))
 
@@ -221,32 +221,33 @@ module Json =
 
     let writeString (writer: Utf8JsonWriter) (name: string) (value: string) = writer.WriteString(name, value)
 
-    let writePropertyObject (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
+    let writeObjectProperty (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
         writer.WriteStartObject(name)
         handler writer
         writer.WriteEndObject()
+
+    [<Obsolete "Use `writeObjectProperty` instead. This is a alias to ensure backwards capability.">]
+    let writePropertyObject (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
+        writeObjectProperty handler name writer
 
     let writeObjectValue (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) =
         writer.WriteStartObject()
         handler writer
         writer.WriteEndObject()
 
-    [<Obsolete "Use `writeObjectProperty` instead. This is a alias to ensure backwards capability.">]    
-    let writeObject (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) =
-        writeObjectValue handler writer
-    
+    [<Obsolete "Use `writeObjectValue` instead. This is a alias to ensure backwards capability.">]
+    let writeObject (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) = writeObjectValue handler writer
+
     let writeArrayValue (handler: Utf8JsonWriter -> unit) (writer: Utf8JsonWriter) =
         writer.WriteStartArray()
         handler writer
         writer.WriteEndArray()
-        
+
     let writeArrayProperty (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
         writer.WriteStartArray(name)
         handler writer
         writer.WriteEndArray()
-        
+
     [<Obsolete "Use `writeArrayProperty` instead. This is a alias to ensure backwards capability.">]
     let writeArray (handler: Utf8JsonWriter -> unit) (name: string) (writer: Utf8JsonWriter) =
         writeArrayProperty handler name writer
-
-    

@@ -594,7 +594,7 @@ module DotNet =
                          |> ActionResult.Failure }
             : ProcessSettings)
 
-        execute settings
+        Process.execute settings
 
     let pack
         (startHandler: ProcessStartHandler)
@@ -622,7 +622,7 @@ module DotNet =
                          |> ActionResult.Failure }
             : ProcessSettings)
 
-        execute settings
+        Process.execute settings
 
     let publish
         (startHandler: ProcessStartHandler)
@@ -650,7 +650,7 @@ module DotNet =
                          |> ActionResult.Failure }
             : ProcessSettings)
 
-        execute settings
+        Process.execute settings
 
     let test
         (startHandler: ProcessStartHandler)
@@ -678,7 +678,7 @@ module DotNet =
                          |> ActionResult.Failure }
             : ProcessSettings)
 
-        execute settings
+        Process.execute settings
 
     let nugetPush
         (startHandler: ProcessStartHandler)
@@ -706,4 +706,4 @@ module DotNet =
                          |> ActionResult.Failure }
             : ProcessSettings)
 
-        execute settings
+        Process.execute settings

@@ -52,9 +52,7 @@ module Common =
                     return! fn ()
                 with ex ->
                     return
-                        { Message = $"Unhandled exception: {ex.Message}"
-                          DisplayMessage = errorDisplayMessage
-                          Exception = Some ex }
+                        FailureResult.Create($"Unhandled exception: {ex.Message}", errorDisplayMessage, ex = ex)
                         |> Error
             }
 

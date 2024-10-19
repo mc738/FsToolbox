@@ -169,7 +169,7 @@ module Git =
             | Error e -> Error e
 
         let clone (gitPath: string) (sourceUrl: string) (path: string) =
-            let output, errors = Process.execute gitPath $"clone {sourceUrl}" (path |> Some)
+            let output, errors = Process.executeWithDefaultSettings gitPath $"clone {sourceUrl}" (path |> Some)
 
             match errors.Length = 0 with
             | true -> Ok output
@@ -179,14 +179,14 @@ module Git =
                 | false -> Error errors
 
         let addTag (gitPath: string) (path: string) (tag: string) =
-            let output, errors = Process.execute gitPath $"tag {tag}" (path |> Some)
+            let output, errors = Process.executeWithDefaultSettings gitPath $"tag {tag}" (path |> Some)
 
             match errors.Length = 0 with
             | true -> Ok output
             | false -> Error "Tag not added"
 
         let pushTag (gitPath: string) (path: string) (tag: string) =
-            let output, errors = Process.execute gitPath $"push origin {tag}" (path |> Some)
+            let output, errors = Process.executeWithDefaultSettings gitPath $"push origin {tag}" (path |> Some)
             // For whatever reason the results are returned in STDERR...
 
             match errors.Length > 1 with
@@ -197,7 +197,7 @@ module Git =
             | false -> Error "Tag not added"
 
         let getAllCommits (gitPath: string) (path) =
-            let output, errors = Process.execute gitPath $"log --oneline" (path |> Some)
+            let output, errors = Process.executeWithDefaultSettings gitPath $"log --oneline" (path |> Some)
 
             match errors.IsEmpty with
             | true -> Ok output
@@ -205,7 +205,7 @@ module Git =
 
         let getChangedAllFiles (gitPath: string) (commitHash: string) path =
             let output, errors =
-                Process.execute gitPath $"diff --name-only -r {commitHash}" (path |> Some)
+                Process.executeWithDefaultSettings gitPath $"diff --name-only -r {commitHash}" (path |> Some)
 
             match errors.IsEmpty with
             | true -> Ok output
@@ -213,7 +213,7 @@ module Git =
 
         let getChangedFiles (gitPath: string) (commitHash: string) path =
             let output, errors =
-                Process.execute gitPath $"diff --name-only -r {commitHash} {commitHash}~1" (path |> Some)
+                Process.executeWithDefaultSettings gitPath $"diff --name-only -r {commitHash} {commitHash}~1" (path |> Some)
 
             match errors.IsEmpty with
             | true -> Ok output
@@ -244,4 +244,4 @@ module Git =
                          |> ActionResult.Failure }
             : ProcessSettings)
 
-        execute settings
+        Process.execute settings

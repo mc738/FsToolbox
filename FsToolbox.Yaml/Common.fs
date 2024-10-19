@@ -56,10 +56,7 @@ module Common =
             :?> YamlDocument
             |> Ok
         with exn ->
-            ({ Message = $"Unhandled exception while parsing yaml document: {exn.Message}"
-               DisplayMessage = "Error while parsing yaml document"
-               Exception = Some exn }
-            : FailureResult)
+            FailureResult.Create($"Unhandled exception while parsing yaml document: {exn.Message}", "Error while parsing yaml document", ex = exn)
             |> Error
 
     let getPropertyValue (name: string) (node: YamlNode) =
