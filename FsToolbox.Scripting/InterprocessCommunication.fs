@@ -1,4 +1,4 @@
-﻿module FsToolbox.Scripting
+﻿namespace FsToolbox.Scripting
 
 open System.IO.Pipes
 

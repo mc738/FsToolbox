@@ -6,74 +6,6 @@ open FsToolbox.Core.Results
 
 module Processes =
 
-    [<RequireQualifiedAccess>]
-    module Process =
-
-        type ProcessParameters =
-            { Name: string
-              Args: string
-              StartDirectory: string option }
-
-        /// Execute a process
-        let execute filename args startDir =
-            // TODO add proper error handling.
-            let timer = Stopwatch.StartNew()
-            let procInfo = ProcessStartInfo()
-            procInfo.RedirectStandardOutput <- true
-            procInfo.RedirectStandardError <- true
-            procInfo.UseShellExecute <- false
-            procInfo.FileName <- filename
-            procInfo.Arguments <- args
-
-
-            match startDir with
-            | Some d -> procInfo.WorkingDirectory <- d
-            | _ -> ()
-
-            let outputs = System.Collections.Generic.List<string>()
-
-            let errors = System.Collections.Generic.List<string>()
-
-            use p = new Process()
-            let outputHandler f (_sender: obj) (args: DataReceivedEventArgs) = f args.Data
-
-            p.StartInfo <- procInfo
-            p.OutputDataReceived.AddHandler(DataReceivedEventHandler(outputHandler outputs.Add))
-            p.ErrorDataReceived.AddHandler(DataReceivedEventHandler(outputHandler errors.Add))
-
-            let started =
-                try
-                    p.Start()
-                with ex ->
-                    ex.Data.Add("filename", filename)
-                    reraise ()
-
-            if not started then
-                failwithf $"Failed to start process {filename}"
-
-            printfn $"Started {p.ProcessName} (pid: {p.Id})"
-            printfn $"\tArgs: {args}"
-            printfn $"\tId: {p.Id}"
-            p.BeginOutputReadLine()
-            p.BeginErrorReadLine()
-            p.WaitForExit()
-            timer.Stop()
-            printfn $"Finished {filename} after {timer.ElapsedMilliseconds} milliseconds"
-
-            let cleanOut l =
-                l |> Seq.filter (fun o -> String.IsNullOrWhiteSpace o |> not) |> List.ofSeq
-
-            cleanOut outputs, cleanOut errors
-
-        /// A wrapper around `Processes.execute` to be used in pipelines.
-        let run (parameters: ProcessParameters) =
-            let output, errors =
-                execute parameters.Name parameters.Args parameters.StartDirectory
-
-            match errors.Length = 0 with
-            | true -> Ok output
-            | false -> Error(String.concat Environment.NewLine errors)
-
     type ProcessSettings =
         { Name: string
           Args: string
@@ -88,7 +20,7 @@ module Processes =
               Args = ""
               OverrideName = false
               OverrideArgs = false
-              StartHandler = ProcessStartHandler.Default 
+              StartHandler = ProcessStartHandler.Default
               DiagnosticHandler = ProcessDiagnosticHandler.Default
               ResultHandler = id >> ActionResult.Success }
 
@@ -112,10 +44,6 @@ module Processes =
               StartDirectory = None
               StartInfoBuilder = id }
 
-    and ProcessFailure =
-        { Results: ProcessResult
-          IsTransient: bool }
-
     and ProcessResult =
         { ExitCode: int
           TimedOut: bool
@@ -127,119 +55,158 @@ module Processes =
           ExecutionDuration: TimeSpan
           ExitTime: DateTime }
 
-    let execute (settings: ProcessSettings) =
 
-        let outputs = ResizeArray<string>()
+    [<RequireQualifiedAccess>]
+    module Process =
 
-        let errors = ResizeArray<string>()
+        type ProcessParameters =
+            { Name: string
+              Args: string
+              StartDirectory: string option }
 
-        try
-            let timer = Stopwatch.StartNew()
-            let procInfo = ProcessStartInfo() |> settings.StartHandler.StartInfoBuilder
+        let execute (settings: ProcessSettings) =
 
-            if
-                String.IsNullOrWhiteSpace procInfo.FileName
-                || (settings.OverrideName && String.IsNullOrWhiteSpace settings.Name |> not)
-            then
-                procInfo.FileName <- settings.Name
+            let outputs = ResizeArray<string>()
 
-            if
-                String.IsNullOrWhiteSpace procInfo.Arguments
-                || (settings.OverrideArgs && String.IsNullOrWhiteSpace settings.Args |> not)
-            then
-                procInfo.Arguments <- settings.Args
+            let errors = ResizeArray<string>()
 
-            match settings.StartHandler.StartDirectory with
-            | Some d -> procInfo.WorkingDirectory <- d
-            | _ -> ()
+            try
+                let timer = Stopwatch.StartNew()
+                let procInfo = ProcessStartInfo() |> settings.StartHandler.StartInfoBuilder
 
-            if
-                procInfo.RedirectStandardOutput |> not
-                && settings.DiagnosticHandler.StandardOutputHandler.IsSome
-            then
-                procInfo.RedirectStandardOutput <- true
+                if
+                    String.IsNullOrWhiteSpace procInfo.FileName
+                    || (settings.OverrideName && String.IsNullOrWhiteSpace settings.Name |> not)
+                then
+                    procInfo.FileName <- settings.Name
 
-            if
-                procInfo.RedirectStandardError |> not
-                && settings.DiagnosticHandler.StandardOutputHandler.IsSome
-            then
-                procInfo.RedirectStandardError <- true
+                if
+                    String.IsNullOrWhiteSpace procInfo.Arguments
+                    || (settings.OverrideArgs && String.IsNullOrWhiteSpace settings.Args |> not)
+                then
+                    procInfo.Arguments <- settings.Args
 
-            let outputHandler (_sender: obj) (args: DataReceivedEventArgs) =
-                settings.DiagnosticHandler.StandardOutputHandler
-                |> Option.iter (fun fn -> fn args.Data)
+                match settings.StartHandler.StartDirectory with
+                | Some d -> procInfo.WorkingDirectory <- d
+                | _ -> ()
 
-                outputs.Add args.Data
+                if
+                    procInfo.RedirectStandardOutput |> not
+                    && settings.DiagnosticHandler.StandardOutputHandler.IsSome
+                then
+                    procInfo.RedirectStandardOutput <- true
 
-            let errorHandler (_sender: obj) (args: DataReceivedEventArgs) =
-                settings.DiagnosticHandler.StandardErrorHandler
-                |> Option.iter (fun fn -> fn args.Data)
+                if
+                    procInfo.RedirectStandardError |> not
+                    && settings.DiagnosticHandler.StandardOutputHandler.IsSome
+                then
+                    procInfo.RedirectStandardError <- true
 
-                errors.Add args.Data
+                let outputHandler (_sender: obj) (args: DataReceivedEventArgs) =
+                    settings.DiagnosticHandler.StandardOutputHandler
+                    |> Option.iter (fun fn -> fn args.Data)
 
-            use proc = new Process()
-            proc.OutputDataReceived.AddHandler(DataReceivedEventHandler(outputHandler))
-            proc.ErrorDataReceived.AddHandler(DataReceivedEventHandler(errorHandler))
+                    outputs.Add args.Data
 
-            match proc.Start() with
-            | true ->
-                let pid = proc.Id
+                let errorHandler (_sender: obj) (args: DataReceivedEventArgs) =
+                    settings.DiagnosticHandler.StandardErrorHandler
+                    |> Option.iter (fun fn -> fn args.Data)
 
-                settings.DiagnosticHandler.Logger
-                |> Option.iter (fun l -> l $"Started {proc.ProcessName} (pid: {proc.Id})")
+                    errors.Add args.Data
 
-                settings.DiagnosticHandler.Logger
-                |> Option.iter (fun l -> l $"\tArgs: {procInfo.Arguments}")
+                use proc = new Process()
+                proc.OutputDataReceived.AddHandler(DataReceivedEventHandler(outputHandler))
+                proc.ErrorDataReceived.AddHandler(DataReceivedEventHandler(errorHandler))
 
-                proc.BeginOutputReadLine()
-                proc.BeginErrorReadLine()
+                match proc.Start() with
+                | true ->
+                    let pid = proc.Id
 
-                let exitedInTime =
-                    match settings.StartHandler.Timeout with
-                    | Some timeout -> proc.WaitForExit(timeout)
-                    | None ->
-                        proc.WaitForExit()
-                        true
+                    settings.DiagnosticHandler.Logger
+                    |> Option.iter (fun l -> l $"Started {proc.ProcessName} (pid: {proc.Id})")
 
-                timer.Stop()
+                    settings.DiagnosticHandler.Logger
+                    |> Option.iter (fun l -> l $"\tArgs: {procInfo.Arguments}")
 
-                settings.DiagnosticHandler.Logger
-                |> Option.iter (fun l -> l $"Process {proc.ProcessName} (pid: {proc.Id}) finished")
+                    proc.BeginOutputReadLine()
+                    proc.BeginErrorReadLine()
 
-                settings.DiagnosticHandler.Logger
-                |> Option.iter (fun l -> l $"\tCompleted in: {timer.ElapsedMilliseconds}ms")
+                    let exitedInTime =
+                        match settings.StartHandler.Timeout with
+                        | Some timeout -> proc.WaitForExit(timeout)
+                        | None ->
+                            proc.WaitForExit()
+                            true
 
-                settings.DiagnosticHandler.Logger
-                |> Option.iter (fun l -> l $"\tTimed out: {exitedInTime |> not}")
+                    timer.Stop()
 
-                let cleanOut l =
-                    l
-                    |> Seq.filter (fun o -> System.String.IsNullOrWhiteSpace o |> not)
-                    |> List.ofSeq
+                    settings.DiagnosticHandler.Logger
+                    |> Option.iter (fun l -> l $"Process {proc.ProcessName} (pid: {proc.Id}) finished")
 
-                { ExitCode = proc.ExitCode
-                  TimedOut = exitedInTime |> not
-                  Args = procInfo.Arguments
-                  Pid = pid
-                  StdOut = outputs |> List.ofSeq
-                  StdError = errors |> List.ofSeq
-                  StartTime = proc.StartTime
-                  ExecutionDuration = timer.Elapsed
-                  ExitTime = proc.ExitTime }
-                |> settings.ResultHandler
-            | false -> FailureResult.Create() |> ActionResult.Failure
-        with ex ->
-            FailureResult.Create(
-                $"Unhandled exception while executing process. Error: {ex.Message}",
-                "Unhandled exception while executing process",
-                ex = ex,
-                metadata =
-                    Map.ofList
-                        [ "output", outputs |> String.concat Environment.NewLine
-                          "errors", errors |> String.concat Environment.NewLine ]
-            )
-            |> ActionResult.Failure
+                    settings.DiagnosticHandler.Logger
+                    |> Option.iter (fun l -> l $"\tCompleted in: {timer.ElapsedMilliseconds}ms")
 
+                    settings.DiagnosticHandler.Logger
+                    |> Option.iter (fun l -> l $"\tTimed out: {exitedInTime |> not}")
+
+                    let cleanOut l =
+                        l
+                        |> Seq.filter (fun o -> System.String.IsNullOrWhiteSpace o |> not)
+                        |> List.ofSeq
+
+                    { ExitCode = proc.ExitCode
+                      TimedOut = exitedInTime |> not
+                      Args = procInfo.Arguments
+                      Pid = pid
+                      StdOut = outputs |> List.ofSeq
+                      StdError = errors |> List.ofSeq
+                      StartTime = proc.StartTime
+                      ExecutionDuration = timer.Elapsed
+                      ExitTime = proc.ExitTime }
+                    |> settings.ResultHandler
+                | false -> FailureResult.Create() |> ActionResult.Failure
+            with ex ->
+                FailureResult.Create(
+                    $"Unhandled exception while executing process. Error: {ex.Message}",
+                    "Unhandled exception while executing process",
+                    ex = ex,
+                    metadata =
+                        Map.ofList
+                            [ "output", outputs |> String.concat Environment.NewLine
+                              "errors", errors |> String.concat Environment.NewLine ]
+                )
+                |> ActionResult.Failure
+
+        /// Execute a process
+        [<Obsolete "Use `Process.execute` instead.">]
+        let executeWithDefaultSettings filename args startDir =
+            let settings =
+                { ProcessSettings.Default with
+                    Name = filename
+                    Args = args
+                    StartHandler =
+                        { ProcessStartHandler.Default with
+                            StartDirectory = startDir } }
+
+            match execute settings with
+            | ActionResult.Success processResult ->
+                processResult.StdOut, processResult.StdError
+            | ActionResult.Failure failureResult ->
+                match failureResult.Exception with
+                | Some ex -> raise ex
+                | None -> failwith "Process failed to execute"
+
+        /// A wrapper around `Processes.execute` to be used in pipelines.
+        [<Obsolete "Use `Process.execute` instead.">]
+        let run (parameters: ProcessParameters) =
+            let output, errors =
+                executeWithDefaultSettings parameters.Name parameters.Args parameters.StartDirectory
+
+            match errors.Length = 0 with
+            | true -> Ok output
+            | false -> Error(String.concat Environment.NewLine errors)
+
+    [<Obsolete "Use `executeProcess` instead.">]
     let executeWithDiagnostics
         filename
         args

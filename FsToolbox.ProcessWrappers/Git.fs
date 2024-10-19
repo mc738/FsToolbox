@@ -1,7 +1,5 @@
 namespace FsToolbox.ProcessWrappers
 
-open FsToolbox.Core.Results
-
 [<RequireQualifiedAccess>]
 module Git =
 
@@ -9,6 +7,7 @@ module Git =
     open FsToolbox.Core.Processes
     open FsToolbox.ProcessWrappers.Common
     open FsToolbox.Core
+    open FsToolbox.Core.Results
     open FsToolbox.Extensions.Strings
 
     type CloneSettings =
