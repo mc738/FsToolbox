@@ -30,10 +30,10 @@ module InterprocessCommunication =
             try
 
 
-                pipeServer.ReadAsync()
+                //pipeServer.ReadAsync()
 
 
-                let ss = new StreamString(pipeServer)
+                //let ss = new StreamString(pipeServer)
 
                 return ()
             with ex ->
