@@ -222,11 +222,11 @@ module Git =
     let clone
         (startHandler: ProcessStartHandler)
         (diagnosticHandler: ProcessDiagnosticHandler)
-        (dotNetPath: string)
+        (gitPath: string)
         (cloneSettings: CloneSettings)
         =
         let settings =
-            ({ Name = dotNetPath
+            ({ Name = gitPath
                Args = cloneSettings.CreateArgs()
                OverrideName = true
                OverrideArgs = true

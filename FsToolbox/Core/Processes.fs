@@ -76,7 +76,7 @@ module Processes =
 
                 if
                     String.IsNullOrWhiteSpace procInfo.FileName
-                    || (settings.OverrideName && String.IsNullOrWhiteSpace settings.Name |> not)
+                    || (settings.OverrideName && (String.IsNullOrWhiteSpace settings.Name |> not))
                 then
                     procInfo.FileName <- settings.Name
 
@@ -115,6 +115,7 @@ module Processes =
                     errors.Add args.Data
 
                 use proc = new Process()
+                proc.StartInfo <- procInfo
                 proc.OutputDataReceived.AddHandler(DataReceivedEventHandler(outputHandler))
                 proc.ErrorDataReceived.AddHandler(DataReceivedEventHandler(errorHandler))
 
@@ -189,8 +190,7 @@ module Processes =
                             StartDirectory = startDir } }
 
             match execute settings with
-            | ActionResult.Success processResult ->
-                processResult.StdOut, processResult.StdError
+            | ActionResult.Success processResult -> processResult.StdOut, processResult.StdError
             | ActionResult.Failure failureResult ->
                 match failureResult.Exception with
                 | Some ex -> raise ex
