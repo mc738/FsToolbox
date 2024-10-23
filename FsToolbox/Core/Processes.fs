@@ -121,6 +121,7 @@ module Processes =
 
                 match proc.Start() with
                 | true ->
+                    let startTime = DateTime.UtcNow
                     let pid = proc.Id
 
                     settings.DiagnosticHandler.Logger
@@ -166,7 +167,7 @@ module Processes =
                       Pid = pid
                       StdOut = outputs |> List.ofSeq
                       StdError = errors |> List.ofSeq
-                      StartTime = proc.StartTime
+                      StartTime = startTime
                       ExecutionDuration = timer.Elapsed
                       ExitTime = proc.ExitTime }
                     |> settings.ResultHandler
