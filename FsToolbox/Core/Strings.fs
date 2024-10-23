@@ -231,7 +231,7 @@ module Strings =
         | EncodingType.Url -> urlEncode str
         | EncodingType.Html -> htmlEncode str
         | EncodingType.None -> str
-        
+
     let decode (encodingType: EncodingType) (str: string) =
         match encodingType with
         | EncodingType.Url -> urlDecode str
@@ -258,3 +258,9 @@ module Strings =
             a[i] <- Array.randomItem chars
 
         String(a) |> encode settings.Encoding
+
+    let prependIfRequired (value: string) (str: string) =
+        if str.StartsWith value then str else $"{value}{str}"
+
+    let appendIfRequired (value: string) (str: string) =
+        if str.EndsWith value then str else $"{str}{value}"

@@ -139,6 +139,11 @@ module Processes =
                             proc.WaitForExit()
                             true
 
+                    if exitedInTime |> not then
+                        proc.Kill(true)
+                        
+                        proc.WaitForExit()
+                    
                     timer.Stop()
 
                     settings.DiagnosticHandler.Logger

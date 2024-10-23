@@ -155,7 +155,11 @@ module Strings =
         member str.HtmlDecode() = Strings.htmlDecode
 
         member str.Encode(encodingType: EncodingType) = Strings.encode encodingType str
-        
+
         member str.Decode(encodingType: EncodingType) = Strings.decode encodingType str
-        
+
         member str.Slugify(options: Strings.SlugifySettings) = Strings.slugify options str
+
+        member str.PrependIfRequired(value: string) = prependIfRequired value str
+
+        member str.AppendIfRequired(value: string) = appendIfRequired value str
