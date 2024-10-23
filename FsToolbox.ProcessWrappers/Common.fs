@@ -12,5 +12,5 @@ module Common =
 
     let concatStrings (separator: string) (values: string seq) =
         values
-        |> Seq.map wrapString
+        //|> Seq.map wrapString
         |> String.concat separator
