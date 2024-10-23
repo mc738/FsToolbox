@@ -584,7 +584,7 @@ module DotNet =
                DiagnosticHandler = diagnosticHandler
                ResultHandler =
                  fun pr ->
-                     match pr.StdError.IsEmpty with
+                     match pr.ExitCode = 0 && pr.StdError.IsEmpty with
                      | true -> ActionResult.Success pr
                      | false ->
                          FailureResult.Create(
