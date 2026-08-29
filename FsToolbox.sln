@@ -32,6 +32,12 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Testing.MsTest", 
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.ProcessWrappers", "FsToolbox.ProcessWrappers\FsToolbox.ProcessWrappers.fsproj", "{B81B3E03-83EC-428A-98F2-C3464B73354F}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Communications", "FsToolbox.Communications\FsToolbox.Communications.fsproj", "{0767A9D5-0C1C-41A0-B12D-AE8ACDE7E15A}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.OpenGL", "FsToolbox.OpenGL\FsToolbox.OpenGL.fsproj", "{DB45D1AF-1A17-495F-8C73-483DB402AB79}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.GameDevelopment", "FsToolbox.GameDevelopment\FsToolbox.GameDevelopment.fsproj", "{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,5 +96,17 @@ Global
 		{B81B3E03-83EC-428A-98F2-C3464B73354F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B81B3E03-83EC-428A-98F2-C3464B73354F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B81B3E03-83EC-428A-98F2-C3464B73354F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0767A9D5-0C1C-41A0-B12D-AE8ACDE7E15A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0767A9D5-0C1C-41A0-B12D-AE8ACDE7E15A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0767A9D5-0C1C-41A0-B12D-AE8ACDE7E15A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0767A9D5-0C1C-41A0-B12D-AE8ACDE7E15A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB45D1AF-1A17-495F-8C73-483DB402AB79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB45D1AF-1A17-495F-8C73-483DB402AB79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB45D1AF-1A17-495F-8C73-483DB402AB79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB45D1AF-1A17-495F-8C73-483DB402AB79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
