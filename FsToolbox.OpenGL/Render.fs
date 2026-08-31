@@ -3,6 +3,8 @@
 open Silk.NET.OpenGL
 open FSharp.NativeInterop
 
+#nowarn "9"
+
 type Render(gl: GL) as this =
 
         let mutable drawCallCount = 0
