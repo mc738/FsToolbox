@@ -13,7 +13,7 @@ module Types =
             val mutable Rotation: Quaternion
             val mutable Scale: Vector3
         end
-
+        
         static member Default =
             let mutable t = Transform()
             t.Position <- Vector3.Zero
