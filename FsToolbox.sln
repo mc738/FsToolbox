@@ -38,6 +38,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.OpenGL", "FsToolb
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.GameDevelopment", "FsToolbox.GameDevelopment\FsToolbox.GameDevelopment.fsproj", "{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.GLTF", "FsToolbox.GLTF\FsToolbox.GLTF.fsproj", "{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,5 +110,9 @@ Global
 		{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8C49FD5-53C2-441E-B810-F7F8AD9686EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
