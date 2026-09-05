@@ -9,23 +9,6 @@ open FsToolbox.OpenGL.Types
 open Silk.NET.OpenGL
 
 [<RequireQualifiedAccess>]
-type VertexAttribute =
-    | Float of float32
-    | Float2 of float32 * float32
-    | Float3 of float32 * float32 * float32
-    | Float4 of float32 * float32 * float32 * float32
-
-    member va.GetValues() =
-        match va with
-        | Float f -> [| f |]
-        | Float2(f, f1) -> [| f; f1 |]
-        | Float3(f, f1, f2) -> [| f; f1; f2 |]
-        | Float4(f, f1, f2, f3) -> [| f; f1; f2; f3 |]
-
-[<Struct; StructLayout(LayoutKind.Sequential)>]
-type Vertex = { Attributes: VertexAttribute array }
-
-[<RequireQualifiedAccess>]
 type InstancedMeshPropertyType =
     | Float of Name: string * Index: int
     | Float2 of Name: string * Index: int
@@ -254,6 +237,8 @@ type InstancedElementMesh(vertexLayout: VertexLayout) as this =
 /// </summary>
 type ElementMesh(vertexLayout: VertexLayout) as this =
 
+    let mutable indicesCount = 0u
+    
     let mutable vertexBuffer: VertexBufferObject option = None
 
     let mutable indexBuffer: IndexBufferObject option = None
@@ -263,6 +248,8 @@ type ElementMesh(vertexLayout: VertexLayout) as this =
     let mutable previousVertexBuffer: VertexBufferObject option = None
     let mutable previousIndexBuffer: IndexBufferObject option = None
 
+    member _.IndicesCount = indicesCount
+    
     member this.Bind() =
         match vao, indexBuffer with
         | Some vao, Some ibo ->
@@ -307,6 +294,8 @@ type ElementMesh(vertexLayout: VertexLayout) as this =
         indexBuffer <- Some(new IndexBufferObject(gl, indices.AsSpan(), BufferTargetARB.ElementArrayBuffer))
         vao <- Some(new VertexArrayObject(gl, vertexBuffer.Value, indexBuffer.Value))
 
+        indicesCount <- indices.Length |> uint
+        
         // Enable attribute
         let mutable offset = 0
 
