@@ -35,6 +35,105 @@ module Types =
         member this.LengthSquared() = this.X * this.X + this.Y * this.Y
 
     [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type UInt2 =
+        val mutable X: uint
+        val mutable Y: uint
+
+        new(x, y) = { X = x; Y = y }
+
+        static member inline (+)(a: Int2, b: Int2) = Int2(a.X + b.X, a.Y + b.Y)
+
+        static member inline (-)(a: Int2, b: Int2) = Int2(a.X - b.X, a.Y - b.Y)
+
+        static member inline (*)(a: Int2, b: Int2) = Int2(a.X * b.X, a.Y * b.Y)
+
+        static member inline (/)(a: Int2, b: Int2) = Int2(a.X / b.X, a.Y / b.Y)
+
+        static member inline Dot(a: Int2, b: Int2) = a.X * b.X + a.Y * b.Y
+
+        member this.ToArray() = [| this.X; this.Y |]
+
+        member this.Deconstruct() = (this.X, this.Y)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y))
+
+        member this.LengthSquared() = this.X * this.X + this.Y * this.Y
+
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type UInt3 =
+        val mutable X: uint
+        val mutable Y: uint
+        val mutable Z: uint
+
+        new(x, y, z) = { X = x; Y = y; Z = z }
+
+        static member inline (+)(a: UInt3, b: UInt3) =
+            UInt3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
+
+        static member inline (-)(a: UInt3, b: UInt3) =
+            UInt3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
+
+        static member inline (*)(a: UInt3, b: UInt3) =
+            UInt3(a.X * b.X, a.Y * b.Y, a.Z * b.Z)
+
+        static member inline (/)(a: UInt3, b: UInt3) =
+            UInt3(a.X / b.X, a.Y / b.Y, a.Z / b.Z)
+
+        static member inline Dot(a: UInt3, b: UInt3) =
+            a.X * b.X + a.Y * b.Y + a.Z * b.Z
+
+        member this.ToArray() = [| this.X; this.Y; this.Z |]
+
+        member this.Deconstruct() = (this.X, this.Y, this.Z)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y + this.Z * this.Z))
+
+        member this.LengthSquared() =
+            this.X * this.X + this.Y * this.Y + this.Z * this.Z
+
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type UInt4 =
+        val mutable X: uint
+        val mutable Y: uint
+        val mutable Z: uint
+        val mutable W: uint
+
+        new(x, y, z, w) = { X = x; Y = y; Z = z; W = w }
+
+        static member inline (+)(a: UInt4, b: UInt4) =
+            UInt4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W)
+
+        static member inline (-)(a: UInt4, b: UInt4) =
+            UInt4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W)
+
+        static member inline (*)(a: UInt4, b: UInt4) =
+            UInt4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W)
+
+        static member inline (/)(a: UInt4, b: UInt4) =
+            UInt4(a.X / b.X, a.Y / b.Y, a.Z / b.Z, a.W / b.W)
+
+        static member inline Dot(a: UInt4, b: UInt4) =
+            a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W
+
+        member this.ToArray() = [| this.X; this.Y; this.Z; this.W |]
+
+        member this.Deconstruct() = (this.X, this.Y, this.Z, this.W)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y + this.Z * this.Z + this.W * this.W))
+
+        member this.LengthSquared() =
+            this.X * this.X + this.Y * this.Y + this.Z * this.Z + this.W * this.W
+
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
     type Float2 =
         val mutable X: float32
         val mutable Y: float32
@@ -86,6 +185,45 @@ module Types =
 
         static member inline Cross(a: Float3, b: Float3) =
             Float3(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X)
+
+        member this.XY = Float2(this.X, this.Y)
+
+        member this.XZ = Float2(this.X, this.Z)
+
+        member this.YZ = Float2(this.Y, this.Z)
+
+        member this.ToArray() = [| this.X; this.Y; this.Z |]
+        
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type Float4 =
+        val mutable X: float32
+        val mutable Y: float32
+        val mutable Z: float32
+        val mutable W: float32
+
+        new(x, y, z, w) = { X = x; Y = y; Z = z; W = w }
+
+        new(float3: Float3, w: float32) = { X = float3.X; Y = float3.Y; Z = float3.Z; W = w }
+
+        static member Zero = Float4(0f, 0f, 0f, 0f)
+
+        static member One = Float4(1f, 1f, 1f, 1f)
+
+        // Maths ops
+        static member inline (+)(a: Float4, b: Float4) = Float4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W)
+
+        static member inline (-)(a: Float4, b: Float4) = Float4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W + b.W)
+
+        static member inline (*)(a: Float4, b: Float4) = Float4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W + b.W)
+
+        static member inline (*)(a: Float4, v: float32) = Float4(a.X * v, a.Y * v, a.Z * v, a.W * v)
+
+        static member inline (/)(a: Float4, b: Float4) = Float4(a.X / b.X, a.Y / b.Y, a.Z / b.Z, a.W / b.W)
+
+        static member inline Dot(a: Float4, b: Float4) = a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W
+
+        //static member inline Cross(a: Float4, b: Float4) =
+        //    Float3(a.Y * b.Z - a.Z * b.Y, a.Z * b.X - a.X * b.Z, a.X * b.Y - a.Y * b.X)
 
         member this.XY = Float2(this.X, this.Y)
 

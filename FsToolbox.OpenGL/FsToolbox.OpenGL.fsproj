@@ -11,7 +11,7 @@
         <Compile Include="Shaders.fs" />
         <Compile Include="Textures.fs" />
         <Compile Include="Materials.fs" />
-        <Compile Include="Render.fs" />
+        <Compile Include="OpenGLRenderer.fs" />
     </ItemGroup>
 
     <ItemGroup>

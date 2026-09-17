@@ -5,7 +5,7 @@ open FSharp.NativeInterop
 
 #nowarn "9"
 
-type Render(gl: GL) as this =
+type OpenGLRenderer(gl: GL) as this =
 
         let mutable drawCallCount = 0
 

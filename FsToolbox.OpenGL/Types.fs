@@ -4,7 +4,7 @@ open System
 open System.Runtime.InteropServices
 open Silk.NET.OpenGL
 
-type VertexBufferObject(gl: GL, data: Span<float32>, bufferType: BufferTargetARB) as this =
+type VertexBufferObject(gl: GL, data: Span<byte>, bufferType: BufferTargetARB) as this =
 
         let mutable handle = 0u
 

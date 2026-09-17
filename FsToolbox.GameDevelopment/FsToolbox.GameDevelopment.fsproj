@@ -10,8 +10,11 @@
         <Compile Include="Maths\Types.fs" />
         <Compile Include="Maths\Intersections.fs" />
         <Compile Include="Geometry\Types.fs" />
+        <Compile Include="Geometry\Shapes\Quad.fs" />
         <Compile Include="Cameras\Core.fs" />
         <Compile Include="Cameras\FreeLookCamera.fs" />
+        <Folder Include="Grids\TwoDimensional\" />
+        <Folder Include="Grids\ThreeDimensional\" />
     </ItemGroup>
 
 </Project>

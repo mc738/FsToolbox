@@ -79,7 +79,7 @@ type InstancedElementMesh(vertexLayout: VertexLayout) as this =
     member _.Build(gl: GL, vertices: Vertex array, indices: uint array, cfg: InstancedMeshConfiguration) =
         instancesArray <- cfg.Items
         indicesCount <- indices.Length |> uint
-        let verticesData = ResizeArray<float32>()
+        let verticesData = ResizeArray<byte>()
         let vertexSize = vertexLayout.Items |> List.sumBy (fun i -> i.Size |> uint)
 
         // Deal with any previous buffers.
@@ -107,7 +107,7 @@ type InstancedElementMesh(vertexLayout: VertexLayout) as this =
 
         for vertex in vertices do
             for attribute in vertex.Attributes do
-                verticesData.AddRange(attribute.GetValues())
+                verticesData.AddRange(attribute.GetBytes())
 
         let transformsData =
             [| for instance in instancesArray do
@@ -140,6 +140,7 @@ type InstancedElementMesh(vertexLayout: VertexLayout) as this =
                            for property in instance.Properties do
                                yield! property.Value
                        } |]
+            |> Array.collect BitConverter.GetBytes
 
         transformBuffer <- new VertexBufferObject(gl, transformsData.AsSpan(), BufferTargetARB.ArrayBuffer)
 
@@ -259,7 +260,7 @@ type ElementMesh(vertexLayout: VertexLayout) as this =
         | _, None -> failwith "Fix this"
 
     member _.Build(gl: GL, vertices: Vertex array, indices: uint array) =
-        let verticesData = ResizeArray<float32>()
+        let verticesData = ResizeArray<byte>()
         let vertexSize = vertexLayout.Items |> List.sumBy (fun i -> i.Size |> uint)
 
         // Deal with any previous buffers.
@@ -285,7 +286,7 @@ type ElementMesh(vertexLayout: VertexLayout) as this =
 
         for vertex in vertices do
             for attribute in vertex.Attributes do
-                verticesData.AddRange(attribute.GetValues())
+                verticesData.AddRange(attribute.GetBytes())
 
         // Create the buffers.
         let verts = verticesData.ToArray()
