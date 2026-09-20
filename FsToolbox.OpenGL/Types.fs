@@ -88,17 +88,17 @@ type VertexArrayObject
         member _.VertexAttributePointer
             (index: uint, count: int, pointerType: VertexAttribPointerType, vertexSize: uint, offset: int)
             =
-            let size =
+            let size, isInt =
                 match pointerType with
-                | VertexAttribPointerType.Byte -> sizeof<byte>
-                | VertexAttribPointerType.UnsignedByte -> sizeof<sbyte>
-                | VertexAttribPointerType.Short -> sizeof<int16>
-                | VertexAttribPointerType.UnsignedShort -> sizeof<uint16>
-                | VertexAttribPointerType.Int -> sizeof<int>
-                | VertexAttribPointerType.UnsignedInt -> sizeof<uint>
-                | VertexAttribPointerType.Float -> sizeof<float32>
-                | VertexAttribPointerType.Double -> sizeof<float>
-                | VertexAttribPointerType.HalfFloat -> sizeof<float32> / 2
+                | VertexAttribPointerType.Byte -> sizeof<byte>, true
+                | VertexAttribPointerType.UnsignedByte -> sizeof<sbyte>, true
+                | VertexAttribPointerType.Short -> sizeof<int16>, true
+                | VertexAttribPointerType.UnsignedShort -> sizeof<uint16>, true
+                | VertexAttribPointerType.Int -> sizeof<int>, true
+                | VertexAttribPointerType.UnsignedInt -> sizeof<uint>, true
+                | VertexAttribPointerType.Float -> sizeof<float32>, false
+                | VertexAttribPointerType.Double -> sizeof<float>, false
+                | VertexAttribPointerType.HalfFloat -> sizeof<float32> / 2, false
                 | VertexAttribPointerType.Fixed -> failwith "todo"
                 | VertexAttribPointerType.Int64Arb -> failwith "todo"
                 | VertexAttribPointerType.UnsignedInt64Arb -> failwith "todo"
@@ -107,17 +107,28 @@ type VertexArrayObject
                 | VertexAttribPointerType.Int2101010Rev -> failwith "todo"
 
             //let strideBytes = nativeint vertexSize * nativeint sizeof<float32>
+            
+            if isInt then
+                gl.VertexAttribIPointer(
+                    index,
+                    count,
+                    VertexAttribIType.Int,
+                    vertexSize * (size |> uint),
+                    nativeint (offset * size)
+                )
 
-            gl.VertexAttribPointer(
-                index,
-                count,
-                pointerType,
-                false,
-                vertexSize * (size |> uint),
-                nativeint (offset * size)
-            )
+                gl.EnableVertexAttribArray(index)
+            else
+                gl.VertexAttribPointer(
+                    index,
+                    count,
+                    pointerType,
+                    false,
+                    vertexSize * (size |> uint),
+                    nativeint (offset * size)
+                )
 
-            gl.EnableVertexAttribArray(index)
+                gl.EnableVertexAttribArray(index)
 
         member _.Bind() = gl.BindVertexArray(handle)
 

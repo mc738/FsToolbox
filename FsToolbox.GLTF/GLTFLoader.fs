@@ -86,6 +86,7 @@ module GLTFLoader =
                                     |> Accessor.Float4
                                 | EncodingType.UNSIGNED_INT 
                                 // Internal the version of opengl targeted only has ivec4. So both will be treated the same by the GPU.
+                                | EncodingType.UNSIGNED_BYTE
                                 | EncodingType.UNSIGNED_SHORT ->
                                     va.Value.AsVector4Array()
                                     |> Array.ofSeq
@@ -104,7 +105,7 @@ module GLTFLoader =
                           Type =
                               match f.Encoding with
                               | EncodingType.BYTE -> failwith "todo"
-                              | EncodingType.UNSIGNED_BYTE -> failwith "todo"
+                              | EncodingType.UNSIGNED_BYTE -> VertexAttributeEncodingType.Int
                               | EncodingType.SHORT -> failwith "todo"
                               | EncodingType.UNSIGNED_SHORT -> VertexAttributeEncodingType.Int
                               | EncodingType.UNSIGNED_INT -> VertexAttributeEncodingType.Int

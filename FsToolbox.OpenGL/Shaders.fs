@@ -64,7 +64,7 @@ type OpenGLShader(gl: GL, vertexCode: string, fragmentCode: string) as this =
 
         gl.Uniform1(location, value)
 
-    member _.SetUniform(name: string, value: Matrix4x4) =
+    member _.SetUniform(name: string, value: Matrix4x4, ?transpose: bool) =
         let location = gl.GetUniformLocation(handle, name)
 
         if location = -1 then
@@ -73,7 +73,7 @@ type OpenGLShader(gl: GL, vertexCode: string, fragmentCode: string) as this =
         // No Alloc!!!!!!!
         // Using memory marsh and pointing to the first element
         let span = MemoryMarshal.CreateReadOnlySpan(&value.M11, 16)
-        gl.UniformMatrix4(location, false, span)
+        gl.UniformMatrix4(location, transpose |> Option.defaultValue false, span)
 
     member _.SetUniform(name: string, value: Vector3) =
         let location = gl.GetUniformLocation(handle, name)

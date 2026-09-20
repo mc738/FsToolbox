@@ -29,7 +29,7 @@ module Types =
                 [| yield! BitConverter.GetBytes(f4.X)
                    yield! BitConverter.GetBytes(f4.Y)
                    yield! BitConverter.GetBytes(f4.Z)
-                   yield! BitConverter.GetBytes(f4.Z) |]
+                   yield! BitConverter.GetBytes(f4.W) |]
             | Int i -> BitConverter.GetBytes(i)
             | Int2 int2 ->
                 [| yield! BitConverter.GetBytes(int2.X)
