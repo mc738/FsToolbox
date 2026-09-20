@@ -7,6 +7,7 @@ open System.Runtime.InteropServices
 [<AutoOpen>]
 module Types =
 
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
     type Int2 =
         val mutable X: int
         val mutable Y: int
@@ -35,21 +36,92 @@ module Types =
         member this.LengthSquared() = this.X * this.X + this.Y * this.Y
 
     [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type Int3 =
+        val mutable X: int
+        val mutable Y: int
+        val mutable Z: int
+
+        new(x, y, z) = { X = x; Y = y; Z = z }
+
+        static member inline (+)(a: Int3, b: Int3) =
+            Int3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
+
+        static member inline (-)(a: Int3, b: Int3) =
+            Int3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
+
+        static member inline (*)(a: Int3, b: Int3) =
+            Int3(a.X * b.X, a.Y * b.Y, a.Z * b.Z)
+
+        static member inline (/)(a: Int3, b: Int3) =
+            Int3(a.X / b.X, a.Y / b.Y, a.Z / b.Z)
+
+        static member inline Dot(a: Int3, b: Int3) =
+            a.X * b.X + a.Y * b.Y + a.Z * b.Z
+
+        member this.ToArray() = [| this.X; this.Y; this.Z |]
+
+        member this.Deconstruct() = (this.X, this.Y, this.Z)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y + this.Z * this.Z))
+
+        member this.LengthSquared() =
+            this.X * this.X + this.Y * this.Y + this.Z * this.Z
+
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type Int4 =
+        val mutable X: int
+        val mutable Y: int
+        val mutable Z: int
+        val mutable W: int
+
+        new(x, y, z, w) = { X = x; Y = y; Z = z; W = w }
+
+        static member inline (+)(a: Int4, b: Int4) =
+            Int4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W)
+
+        static member inline (-)(a: Int4, b: Int4) =
+            Int4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W)
+
+        static member inline (*)(a: Int4, b: Int4) =
+            Int4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W)
+
+        static member inline (/)(a: Int4, b: Int4) =
+            Int4(a.X / b.X, a.Y / b.Y, a.Z / b.Z, a.W / b.W)
+
+        static member inline Dot(a: Int4, b: Int4) =
+            a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W
+
+        member this.ToArray() = [| this.X; this.Y; this.Z; this.W |]
+
+        member this.Deconstruct() = (this.X, this.Y, this.Z, this.W)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y + this.Z * this.Z + this.W * this.W))
+
+        member this.LengthSquared() =
+            this.X * this.X + this.Y * this.Y + this.Z * this.Z + this.W * this.W
+
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
     type UInt2 =
         val mutable X: uint
         val mutable Y: uint
 
         new(x, y) = { X = x; Y = y }
 
-        static member inline (+)(a: Int2, b: Int2) = Int2(a.X + b.X, a.Y + b.Y)
+        static member inline (+)(a: UInt2, b: UInt2) = UInt2(a.X + b.X, a.Y + b.Y)
 
-        static member inline (-)(a: Int2, b: Int2) = Int2(a.X - b.X, a.Y - b.Y)
+        static member inline (-)(a: UInt2, b: UInt2) = UInt2(a.X - b.X, a.Y - b.Y)
 
-        static member inline (*)(a: Int2, b: Int2) = Int2(a.X * b.X, a.Y * b.Y)
+        static member inline (*)(a: UInt2, b: UInt2) = UInt2(a.X * b.X, a.Y * b.Y)
 
-        static member inline (/)(a: Int2, b: Int2) = Int2(a.X / b.X, a.Y / b.Y)
+        static member inline (/)(a: UInt2, b: UInt2) = UInt2(a.X / b.X, a.Y / b.Y)
 
-        static member inline Dot(a: Int2, b: Int2) = a.X * b.X + a.Y * b.Y
+        static member inline Dot(a: UInt2, b: UInt2) = a.X * b.X + a.Y * b.Y
 
         member this.ToArray() = [| this.X; this.Y |]
 
@@ -119,6 +191,111 @@ module Types =
             UInt4(a.X / b.X, a.Y / b.Y, a.Z / b.Z, a.W / b.W)
 
         static member inline Dot(a: UInt4, b: UInt4) =
+            a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W
+
+        member this.ToArray() = [| this.X; this.Y; this.Z; this.W |]
+
+        member this.Deconstruct() = (this.X, this.Y, this.Z, this.W)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y + this.Z * this.Z + this.W * this.W))
+
+        member this.LengthSquared() =
+            this.X * this.X + this.Y * this.Y + this.Z * this.Z + this.W * this.W
+
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type UShort2 =
+        val mutable X: uint16
+        val mutable Y: uint16
+
+        new(x, y) = { X = x; Y = y }
+
+        static member inline (+)(a: UShort2, b: UShort2) =
+            UShort2(a.X + b.X, a.Y + b.Y)
+
+        static member inline (-)(a: UShort2, b: UShort2) =
+            UShort2(a.X - b.X, a.Y - b.Y)
+
+        static member inline (*)(a: UShort2, b: UShort2) =
+            UShort2(a.X * b.X, a.Y * b.Y)
+
+        static member inline (/)(a: UShort2, b: UShort2) =
+            UShort2(a.X / b.X, a.Y / b.Y)
+
+        static member inline Dot(a: UShort2, b: UShort2) =
+            a.X * b.X + a.Y * b.Y
+
+        member this.ToArray() = [| this.X; this.Y |]
+
+        member this.Deconstruct() = (this.X, this.Y)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y))
+
+        member this.LengthSquared() =
+            this.X * this.X + this.Y * this.Y
+                
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type UShort3 =
+        val mutable X: uint16
+        val mutable Y: uint16
+        val mutable Z: uint16
+
+        new(x, y, z) = { X = x; Y = y; Z = z }
+
+        static member inline (+)(a: UShort3, b: UShort3) =
+            UShort3(a.X + b.X, a.Y + b.Y, a.Z + b.Z)
+
+        static member inline (-)(a: UShort3, b: UShort3) =
+            UShort3(a.X - b.X, a.Y - b.Y, a.Z - b.Z)
+
+        static member inline (*)(a: UShort3, b: UShort3) =
+            UShort3(a.X * b.X, a.Y * b.Y, a.Z * b.Z)
+
+        static member inline (/)(a: UShort3, b: UShort3) =
+            UShort3(a.X / b.X, a.Y / b.Y, a.Z / b.Z)
+
+        static member inline Dot(a: UShort3, b: UShort3) =
+            a.X * b.X + a.Y * b.Y + a.Z * b.Z
+
+        member this.ToArray() = [| this.X; this.Y; this.Z |]
+
+        member this.Deconstruct() = (this.X, this.Y, this.Z)
+
+        //member this.ToFloat2() = Float2(this.X |> float32, this.Y |> float32)
+
+        member this.Length() =
+            MathF.Sqrt(float32 (this.X * this.X + this.Y * this.Y + this.Z * this.Z))
+
+        member this.LengthSquared() =
+            this.X * this.X + this.Y * this.Y + this.Z * this.Z
+                
+    [<Struct; StructLayout(LayoutKind.Sequential)>]
+    type UShort4 =
+        val mutable X: uint16
+        val mutable Y: uint16
+        val mutable Z: uint16
+        val mutable W: uint16
+
+        new(x, y, z, w) = { X = x; Y = y; Z = z; W = w }
+
+        static member inline (+)(a: UShort4, b: UShort4) =
+            UShort4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W)
+
+        static member inline (-)(a: UShort4, b: UShort4) =
+            UShort4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W)
+
+        static member inline (*)(a: UShort4, b: UShort4) =
+            UShort4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W)
+
+        static member inline (/)(a: UShort4, b: UShort4) =
+            UShort4(a.X / b.X, a.Y / b.Y, a.Z / b.Z, a.W / b.W)
+
+        static member inline Dot(a: UShort4, b: UShort4) =
             a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W
 
         member this.ToArray() = [| this.X; this.Y; this.Z; this.W |]

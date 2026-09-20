@@ -88,15 +88,33 @@ type VertexArrayObject
         member _.VertexAttributePointer
             (index: uint, count: int, pointerType: VertexAttribPointerType, vertexSize: uint, offset: int)
             =
-            let strideBytes = nativeint vertexSize * nativeint sizeof<float32>
+            let size =
+                match pointerType with
+                | VertexAttribPointerType.Byte -> sizeof<byte>
+                | VertexAttribPointerType.UnsignedByte -> sizeof<sbyte>
+                | VertexAttribPointerType.Short -> sizeof<int16>
+                | VertexAttribPointerType.UnsignedShort -> sizeof<uint16>
+                | VertexAttribPointerType.Int -> sizeof<int>
+                | VertexAttribPointerType.UnsignedInt -> sizeof<uint>
+                | VertexAttribPointerType.Float -> sizeof<float32>
+                | VertexAttribPointerType.Double -> sizeof<float>
+                | VertexAttribPointerType.HalfFloat -> sizeof<float32> / 2
+                | VertexAttribPointerType.Fixed -> failwith "todo"
+                | VertexAttribPointerType.Int64Arb -> failwith "todo"
+                | VertexAttribPointerType.UnsignedInt64Arb -> failwith "todo"
+                | VertexAttribPointerType.UnsignedInt2101010Rev -> failwith "todo"
+                | VertexAttribPointerType.UnsignedInt10f11f11fRev -> failwith "todo"
+                | VertexAttribPointerType.Int2101010Rev -> failwith "todo"
+
+            //let strideBytes = nativeint vertexSize * nativeint sizeof<float32>
 
             gl.VertexAttribPointer(
                 index,
                 count,
                 pointerType,
                 false,
-                vertexSize * (sizeof<float32> |> uint),
-                nativeint (offset * sizeof<float32>)
+                vertexSize * (size |> uint),
+                nativeint (offset * size)
             )
 
             gl.EnableVertexAttribArray(index)

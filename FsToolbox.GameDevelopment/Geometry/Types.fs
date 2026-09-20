@@ -12,11 +12,11 @@ module Types =
         | Float2 of Float2
         | Float3 of Float3
         | Float4 of Float4
-        | UInt of uint32
-        | UInt2 of UInt2
-        | UInt3 of UInt3
-        | UInt4 of UInt4
-
+        | Int of int32
+        | Int2 of Int2
+        | Int3 of Int3
+        | Int4 of Int4
+        
         member va.GetBytes() =
             match va with
             | Float f -> BitConverter.GetBytes(f)
@@ -30,19 +30,19 @@ module Types =
                    yield! BitConverter.GetBytes(f4.Y)
                    yield! BitConverter.GetBytes(f4.Z)
                    yield! BitConverter.GetBytes(f4.Z) |]
-            | UInt i -> BitConverter.GetBytes(i)
-            | UInt2 uInt2 ->
-                [| yield! BitConverter.GetBytes(uInt2.X)
-                   yield! BitConverter.GetBytes(uInt2.Y) |]
-            | UInt3 uInt3 ->
-                [| yield! BitConverter.GetBytes(uInt3.X)
-                   yield! BitConverter.GetBytes(uInt3.Y)
-                   yield! BitConverter.GetBytes(uInt3.Z) |]
-            | UInt4 uInt4 ->
-                [| yield! BitConverter.GetBytes(uInt4.X)
-                   yield! BitConverter.GetBytes(uInt4.Y)
-                   yield! BitConverter.GetBytes(uInt4.Z)
-                   yield! BitConverter.GetBytes(uInt4.W) |]
+            | Int i -> BitConverter.GetBytes(i)
+            | Int2 int2 ->
+                [| yield! BitConverter.GetBytes(int2.X)
+                   yield! BitConverter.GetBytes(int2.Y) |]
+            | Int3 int3 ->
+                [| yield! BitConverter.GetBytes(int3.X)
+                   yield! BitConverter.GetBytes(int3.Y)
+                   yield! BitConverter.GetBytes(int3.Z) |]
+            | Int4 int4 ->
+                [| yield! BitConverter.GetBytes(int4.X)
+                   yield! BitConverter.GetBytes(int4.Y)
+                   yield! BitConverter.GetBytes(int4.Z)
+                   yield! BitConverter.GetBytes(int4.W) |]
 
     [<Struct; StructLayout(LayoutKind.Sequential)>]
     type Vertex = { Attributes: VertexAttribute array }
@@ -52,8 +52,13 @@ module Types =
     and VertexLayoutItem =
         { Name: string
           ShaderName: string
+          Type: VertexAttributeEncodingType
           Size: int }
 
+    and [<RequireQualifiedAccess>] VertexAttributeEncodingType =
+        | Float
+        | Int
+    
     type Primitive =
         { Layout: VertexLayout
           Vertices: Vertex array

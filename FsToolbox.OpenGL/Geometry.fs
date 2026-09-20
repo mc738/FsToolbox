@@ -302,7 +302,14 @@ type ElementMesh(vertexLayout: VertexLayout) as this =
 
         for i, item in vertexLayout.Items |> Seq.indexed do
             // Currently dynamic meshes only use floats.
-            vao.Value.VertexAttributePointer(i |> uint, item.Size, VertexAttribPointerType.Float, vertexSize, offset)
+            
+            let t =
+                match item.Type with
+                | VertexAttributeEncodingType.Float -> VertexAttribPointerType.Float
+                | VertexAttributeEncodingType.Int -> VertexAttribPointerType.Int
+
+
+            vao.Value.VertexAttributePointer(i |> uint, item.Size, t, vertexSize, offset)
 
             offset <- offset + item.Size
 
