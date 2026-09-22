@@ -83,6 +83,19 @@ type OpenGLShader(gl: GL, vertexCode: string, fragmentCode: string) as this =
 
         gl.Uniform3(location, value)
 
+    
+    member _.SetUniform(name: string, values: Matrix4x4 array, ?transpose: bool) =
+        let location = gl.GetUniformLocation(handle, name)
+
+        if location = -1 then
+            failwith $"{name} not found on shader"
+            
+        let floatSpan = MemoryMarshal.Cast<Matrix4x4, float32>(ReadOnlySpan(values))
+    
+        gl.UniformMatrix4(location, transpose |> Option.defaultValue false, floatSpan)
+        
+        ()
+    
     member private _.LoadShader(shaderType: ShaderType, shaderCode: string) =
         //To load a single shader we need to:
         //1) Load the shader from a file.

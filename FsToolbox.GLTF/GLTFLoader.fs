@@ -1,6 +1,7 @@
 ﻿namespace FsToolbox.GLTF
 
 open System.Numerics
+open Anim.Core
 open FsToolbox.GameDevelopment.Geometry.Types
 open FsToolbox.GameDevelopment.Maths
 open SharpGLTF.Memory
@@ -166,3 +167,98 @@ module GLTFLoader =
             [| for mesh in root.LogicalMeshes do
                    { Primitives = mesh.Primitives |> Seq.map Operations.createPrimitive |> Seq.toArray } |] }
         : Model3D)
+
+    let loadAnimations (modelRoot: ModelRoot) =
+            [ for animation in modelRoot.LogicalAnimations do
+              { Name = animation.Name
+                Duration = animation.Duration
+                IsLoop = true
+                Channels =
+                  [ for (nodeId, channels) in animation.Channels |> Seq.groupBy (fun c -> c.TargetNode.LogicalIndex) do
+                        let tc, rc, sc =
+                            channels
+                            |> Seq.fold
+                                (fun
+                                    (tc: Keyframe<Vector3> array option,
+                                     rc: Keyframe<Quaternion> array option,
+                                     sc: Keyframe<Vector3> array option)
+                                    c ->
+                                    let newTc =
+                                        match c.GetTranslationSampler() with
+                                        | null -> tc
+                                        | sampler ->
+                                            [| for time, v in sampler.GetLinearKeys() do
+                                                   { Time = time; Value = v }: Keyframe<Vector3> |]
+                                            |> Some
+
+                                    let newRc =
+                                        match c.GetRotationSampler() with
+                                        | null -> rc
+                                        | sampler ->
+                                            [| for time, v in sampler.GetLinearKeys() do
+                                                   ({ Time = time; Value = v }: Keyframe<Quaternion>) |]
+                                            |> Some
+
+                                    let newSc =
+                                        match c.GetScaleSampler() with
+                                        | null -> sc
+                                        | sampler ->
+                                            [| for time, v in sampler.GetLinearKeys() do
+                                                   ({ Time = time; Value = v }: Keyframe<Vector3>) |]
+                                            |> Some
+
+                                    (newTc, newRc, newSc))
+                                (None, None, None)
+
+                        (nodeId,
+                        { NodeId = nodeId
+                          TranslationKeyframes = tc |> Option.defaultValue [||]
+                          RotationKeyframes = rc |> Option.defaultValue [||]
+                          ScaleKeyframes = sc |> Option.defaultValue [||] }) ]
+                  |> Map.ofList
+                Events = [||] } ]
+        
+    let loadArmature (modelRoot: ModelRoot) =
+            [ for skin in modelRoot.LogicalSkins do
+              let joints = skin.Joints
+              
+              let j = ResizeArray<ArmatureJoint>()
+              
+
+              let root =
+                  joints
+                  |> Seq.filter (fun j ->
+                      let hasParent =
+                          joints |> Seq.exists (fun other -> other.VisualChildren |> Seq.contains j)
+
+                      hasParent |> not)
+                  
+              let i = skin.InverseBindMatrices
+              
+              let jointIndexMap = skin.Joints |> Seq.mapi (fun idx node -> node.LogicalIndex, idx) |> Map.ofSeq
+
+              let rec build (node: Node) =
+                  
+                  let iv = i.[node.LogicalIndex]
+                  
+                  let jointIdx = jointIndexMap.[node.LogicalIndex] 
+
+                  j.Add({
+                      JointIndex = jointIdx
+                      NodeIndex = node.LogicalIndex
+                      InverseBindMatrix = i.[jointIdx]
+                      DefaultTranslation = node.LocalTransform.Translation
+                      DefaultRotation = node.LocalTransform.Rotation
+                      DefaultScale = node.LocalTransform.Scale
+                  }: ArmatureJoint)
+                  
+                 
+                  
+                  { NodeId = node.LogicalIndex
+                    Name = node.Name
+                    Children = node.VisualChildren |> Seq.map build |> List.ofSeq }
+                  
+              let rootBones = root |> Seq.map build |> List.ofSeq
+
+              { RootBones = rootBones
+                Joints = j |> Seq.map (fun j -> j.NodeIndex, j) |> Map.ofSeq } ]

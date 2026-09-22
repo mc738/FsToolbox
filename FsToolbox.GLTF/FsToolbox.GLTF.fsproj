@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Anim\src\Anim\Anim.fsproj" />
       <ProjectReference Include="..\FsToolbox.GameDevelopment\FsToolbox.GameDevelopment.fsproj" />
     </ItemGroup>
 
