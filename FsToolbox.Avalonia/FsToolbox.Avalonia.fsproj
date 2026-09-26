@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Commands.fs" />
+        <Compile Include="Dsl\Common.fs" />
+        <Compile Include="Dsl\Grid.fs" />
+        <Compile Include="Dsl\StackPanel.fs" />
+        <Compile Include="Dsl\DockPanel.fs" />
+        <Compile Include="Dsl\Label.fs" />
+        <Compile Include="Dsl\TextBox.fs" />
+        <Compile Include="Dsl\ListBox.fs" />
+        <Compile Include="Dsl\ListBoxItem.fs" />
+        <Compile Include="Dsl\ComboBox.fs" />
+        <Compile Include="Dsl\ComboBoxItem.fs" />
+        <Compile Include="Dsl\Button.fs" />
+        <Compile Include="Dsl\ContextMenu.fs" />
+        <Compile Include="Dsl\MenuItem.fs" />
+        <Compile Include="Dsl\Presets.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Avalonia" Version="12.1.1" />
+    </ItemGroup>
+
+</Project>

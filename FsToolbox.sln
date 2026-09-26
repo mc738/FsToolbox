@@ -40,6 +40,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.GameDevelopment",
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.GLTF", "FsToolbox.GLTF\FsToolbox.GLTF.fsproj", "{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsToolbox.Avalonia", "FsToolbox.Avalonia\FsToolbox.Avalonia.fsproj", "{EFDED560-8ABD-4F0F-A025-4C378A20C48E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,5 +116,9 @@ Global
 		{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{748A2324-C6A0-4EDF-9F78-BA0C4A94F422}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFDED560-8ABD-4F0F-A025-4C378A20C48E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFDED560-8ABD-4F0F-A025-4C378A20C48E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFDED560-8ABD-4F0F-A025-4C378A20C48E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFDED560-8ABD-4F0F-A025-4C378A20C48E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
