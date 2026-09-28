@@ -24,6 +24,9 @@
         <Compile Include="Dsl\Presets.fs" />
         <Compile Include="Dsl\TabItem.fs" />
         <Compile Include="Dsl\Menu.fs" />
+        <Compile Include="Dsl\Binding.fs" />
+        <Compile Include="Dsl\Window.fs" />
+        <Compile Include="Dsl\Border.fs" />
     </ItemGroup>
 
     <ItemGroup>

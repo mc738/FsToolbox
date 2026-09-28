@@ -2,13 +2,14 @@ namespace FsToolbox.Avalonia.Dsl
 
 open Avalonia.Controls
 open Avalonia.Layout
+open Avalonia.Media
 
 [<RequireQualifiedAccess>]
 module StackPanel =
 
     let create (style: ControlStyle) =
         let stackPanel = StackPanel()
-
+        
         match style.StretchType with
         | StretchType.None -> ()
         | StretchType.Vertical -> stackPanel.VerticalAlignment <- VerticalAlignment.Stretch
@@ -23,6 +24,10 @@ module StackPanel =
 
     let withOrientation (o: Orientation) (sp: StackPanel) =
         sp.Orientation <- o
+        sp
+        
+    let withFlowDirection (flow: FlowDirection) (sp: StackPanel) =
+        sp.FlowDirection <- flow
         sp
 
     let withChild (child: Control) (stackPanel: StackPanel) =
