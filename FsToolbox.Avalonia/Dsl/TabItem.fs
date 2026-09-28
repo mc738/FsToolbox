@@ -2,12 +2,12 @@ namespace FsToolbox.Avalonia.Dsl
 
 open Avalonia.Controls
 open Avalonia.Layout
-open FsToolbox.Avalonia.Commands
 
 [<RequireQualifiedAccess>]
-module MenuItem =
+module TabItem =
+    
     let create (style: ControlStyle) =
-        let c = MenuItem()
+        let c = TabItem()
 
         match style.StretchType with
         | StretchType.None -> ()
@@ -22,20 +22,10 @@ module MenuItem =
 
         c
 
-    let createDefault () =
-        let style = ControlStyle.Default
-        create style
-
-    let withHeader (header: string) (mi: MenuItem) =
-        mi.Header <- header
-        mi
-
-    let withCommand (fn: unit -> unit) (mi: MenuItem) =
-        mi.Command <- RelayCommand(fn, (fun () -> true))
-        mi
-
-    let withChildren (children: MenuItem seq) (mi: MenuItem) =
-        for item in children do
-            mi.Items.Add(item) |> ignore
-
-        mi
+    let withHeader (text: obj) (ti: TabItem) =
+        ti.Header <- text
+        ti
+   
+    let withContent (content: obj) (ti: TabItem) =
+        ti.Content <- content
+        ti

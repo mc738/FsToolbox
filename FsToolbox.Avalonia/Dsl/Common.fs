@@ -3,6 +3,7 @@ namespace FsToolbox.Avalonia.Dsl
 open Avalonia
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
+open Avalonia.Media
 
 [<AutoOpen>]
 module Common =
@@ -27,7 +28,7 @@ module Common =
         static member Default =
             { StretchType = StretchType.None
               Classes = [] }
-
+    
     [<AutoOpen>]
     module Control =
 
@@ -41,6 +42,30 @@ module Common =
                 c.DataContext :?> 'T |> Ok
             with ex ->
                 Error ex.Message
+                
+        let withGridRow<'T when 'T :> Control> (row: int) (c: 'T) =
+            Grid.SetRow(c, row)
+            c
+       
+        
+        let withGridRowSpan<'T when 'T :> Control> (rowSpan: int) (c: 'T) =
+            Grid.SetRowSpan(c, rowSpan)
+            c
+           
+        let withGridColumn<'T when 'T :> Control> (column: int) (c: 'T) =
+            Grid.SetColumn(c, column)
+            c
+         
+        let withGridColumnSpan<'T when 'T :> Control> (columnSpan: int) (c: 'T) =
+            Grid.SetColumnSpan(c, columnSpan)
+            c
+            
+        let withDock<'T when 'T :> Control> (dock: Dock) (c: 'T) =
+            DockPanel.SetDock(c, dock )
+            c
+             
+            
+  
 
     [<AutoOpen>]
     module SelectingItemsControl =
@@ -70,3 +95,6 @@ module Common =
 
         let setChildren<'T when 'T :> Panel> (children: Control seq) (p: 'T) = p.Children.AddRange(children)
 
+        let withBackground<'T when 'T :> Panel> (background: IBrush) (p: 'T) =
+            p.Background <- background
+            p

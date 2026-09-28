@@ -20,7 +20,10 @@
         <Compile Include="Dsl\Button.fs" />
         <Compile Include="Dsl\ContextMenu.fs" />
         <Compile Include="Dsl\MenuItem.fs" />
+        <Compile Include="Dsl\TabControl.fs" />
         <Compile Include="Dsl\Presets.fs" />
+        <Compile Include="Dsl\TabItem.fs" />
+        <Compile Include="Dsl\Menu.fs" />
     </ItemGroup>
 
     <ItemGroup>

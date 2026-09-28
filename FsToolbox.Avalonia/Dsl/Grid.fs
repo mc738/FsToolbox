@@ -17,8 +17,23 @@ module Grid =
             grid.VerticalAlignment <- VerticalAlignment.Stretch
             grid.HorizontalAlignment <- HorizontalAlignment.Stretch
 
+        columns |> Option.iter (fun cd -> grid.ColumnDefinitions <- cd)
+        rows |> Option.iter (fun rd -> grid.RowDefinitions <- rd)
+
+        grid
+        
+    let withRows (rows: RowDefinition seq) (grid: Grid) =
+        let rds = RowDefinitions()
+        rds.AddRange(rows)
+        grid.RowDefinitions <- rds
         grid
 
+    let withColumns (columns: ColumnDefinition seq) (grid: Grid) =
+        let cds = ColumnDefinitions()
+        cds.AddRange(columns)
+        grid.ColumnDefinitions <- cds
+        grid
+    
     let withChild (child: Control) (row: int option) (column: int option) (grid: Grid) =
         match column with
         | None -> ()
