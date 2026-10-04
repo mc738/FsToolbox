@@ -19,14 +19,6 @@
         <Compile Include="Animations\Armatures\Impl.fs" />
         <Compile Include="Animations\Clips\Types.fs" />
         <Compile Include="Animations\Clips\Impl.fs" />
-        <Compile Include="Serialization\Common.fs" />
-
-        <Compile Include="Serialization\Json\Impl.fs" />
-
-        <Compile Include="Serialization\Json\Extensions\Common.fs" />
-        <Compile Include="Serialization\Json\Extensions\Maths.fs" />
-        <Compile Include="Serialization\Json\Extensions\Geometry.fs" />
-        <Compile Include="Serialization\Json\JsonSerializer.fs" />
     </ItemGroup>
 
     <ItemGroup>

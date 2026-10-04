@@ -1,4 +1,4 @@
-namespace FsToolbox.GameDevelopment.Serialization.Json.V1.Core
+namespace FsToolbox.GameDevelopment.Serialization.Json.V1
 
 [<AutoOpen>]
 module Types =

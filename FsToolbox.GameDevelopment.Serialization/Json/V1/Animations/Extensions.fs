@@ -4,7 +4,7 @@ open System.Text.Json
 open FsToolbox.GameDevelopment.Animations.Armatures
 open FsToolbox.Core
 open FsToolbox.GameDevelopment.Animations.Clips
-open FsToolbox.GameDevelopment.Serialization.Json.Extensions
+open FsToolbox.GameDevelopment.Serialization.Json.V1
 
 [<AutoOpen>]
 module Extensions =

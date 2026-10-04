@@ -4,8 +4,8 @@ open System.Text.Json
 open FsToolbox.Core
 open FsToolbox.GameDevelopment.Geometry.Types
 open FsToolbox.GameDevelopment.Maths
+open FsToolbox.GameDevelopment.Serialization.Json.V1
 open FsToolbox.GameDevelopment.Serialization.Json.V1.Maths
-open FsToolbox.GameDevelopment.Serialization.Json.V1.Core
 
 [<RequireQualifiedAccess>]
 module Deserializer =

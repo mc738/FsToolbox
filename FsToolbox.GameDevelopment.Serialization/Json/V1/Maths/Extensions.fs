@@ -1,9 +1,9 @@
-module FsToolbox.GameDevelopment.Serialization.Json.V1.Maths
+namespace FsToolbox.GameDevelopment.Serialization.Json.V1.Maths
 
 open System.Text.Json
 open FsToolbox.Core
 open FsToolbox.GameDevelopment.Maths
-open FsToolbox.GameDevelopment.Serialization.Json.V1.Core
+open FsToolbox.GameDevelopment.Serialization.Json.V1
 
 [<AutoOpen>]
 module Extensions =

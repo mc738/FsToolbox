@@ -1,13 +1,8 @@
 ﻿namespace FsToolbox.GameDevelopment.Geometry
 
 open System
-open System.IO
 open System.Runtime.InteropServices
-open System.Text
-open System.Text.Json
 open FsToolbox.GameDevelopment.Maths
-open FsToolbox.Core
-open FsToolbox.GameDevelopment.
 
 module Types =
 
@@ -48,11 +43,9 @@ module Types =
                    yield! BitConverter.GetBytes(int4.W) |]
 
     [<Struct; StructLayout(LayoutKind.Sequential)>]
-    type Vertex =
-        { Attributes: VertexAttribute array }
+    type Vertex = { Attributes: VertexAttribute array }
 
-    type VertexLayout =
-        { Items: VertexLayoutItem list }
+    type VertexLayout = { Items: VertexLayoutItem list }
 
     and VertexLayoutItem =
         { Name: string
@@ -74,42 +67,12 @@ module Types =
             match this with
             | Float -> "float32"
             | Int -> "int32"
-            
+
     type Primitive =
         { Layout: VertexLayout
           Vertices: Vertex array
           Indices: uint array }
 
-    type Mesh =
-        { Primitives: Primitive array }
+    type Mesh = { Primitives: Primitive array }
 
-    type Model3D =
-        { Meshes: Mesh array }
-                
-        static member FromJsonString(json: string) =
-            let root = JsonDocument.Parse(json).RootElement
-            Model3D.FromJson root
-
-        member this.ToJsonStream(output: Stream) =
-            use writer = new Utf8JsonWriter(output)
-
-            writer
-            |> Json.writeObjectValue (fun w ->
-                w
-                |> Json.writeArrayProperty
-                    (fun iw ->
-                        for p in this.Meshes do
-                            p.WriteToJson iw)
-                    "meshes")
-
-            writer.Flush()
-
-        member this.ToJsonBytes() =
-            use ms = new MemoryStream()
-
-            this.ToJsonStream(ms)
-
-            ms.ToArray()
-
-        member this.ToJsonString() =
-            this.ToJsonBytes() |> Encoding.UTF8.GetString
+    type Model3D = { Meshes: Mesh array }

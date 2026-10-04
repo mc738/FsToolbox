@@ -1,13 +1,12 @@
-namespace FsToolbox.GameDevelopment.Serialization.Json.Extensions
+namespace FsToolbox.GameDevelopment.Serialization.Json.V1
 
 open System.Numerics
 open System.Text.Json
 open FsToolbox.Core
-open FsToolbox.GameDevelopment.Serialization.Json
 
 [<AutoOpen>]
-module Common =
-
+module Extensions =
+    
     type Vector3 with
 
         member this.WriteJsonObject(writer: Utf8JsonWriter) =
@@ -138,3 +137,5 @@ module Common =
                 |> Ok
 
     ()
+
+
