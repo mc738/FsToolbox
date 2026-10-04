@@ -9,6 +9,7 @@
         <Compile Include="Core\Types.fs" />
         <Compile Include="Json\V1\Types.fs" />
         <Compile Include="Json\V1\Extensions.fs" />
+        <Compile Include="Json\V1\Deserializer.fs" />
         <Compile Include="Json\V1\Maths\Extensions.fs" />
         <Compile Include="Json\V1\Maths\Serialize.fs" />
         <Compile Include="Json\V1\Maths\Deserializer.fs" />

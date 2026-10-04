@@ -106,7 +106,7 @@ module Extensions =
                 iw.WriteNumber("time", this.Time))
 
     type AnimationClip with
-        member this.WriteToJson(writer: Utf8JsonWriter) =
+        member this.WriteToJsonObject(writer: Utf8JsonWriter) =
             writer
             |> Json.writeObjectValue (fun w ->
                 w.WriteString("name", this.Name)
