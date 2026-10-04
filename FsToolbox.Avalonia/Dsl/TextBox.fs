@@ -1,6 +1,7 @@
 namespace FsToolbox.Avalonia.Dsl
 
 open Avalonia.Controls
+open Avalonia.Input
 open Avalonia.Layout
 
 [<RequireQualifiedAccess>]
@@ -24,4 +25,12 @@ module TextBox =
 
     let withPlaceholderText (placeholderText: string) (c: TextBox) =
         c.PlaceholderText <- placeholderText
+        c
+        
+    let onTextChanged (e: TextChangedEventArgs -> unit) (c: TextBox) =
+        c.TextChanged.Add(e)
+        c
+        
+    let onTextInput (e: TextInputEventArgs -> unit) (c: TextBox) =
+        c.TextInput.Add(e)
         c

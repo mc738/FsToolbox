@@ -22,13 +22,13 @@ module Grid =
 
         grid
         
-    let withRows (rows: RowDefinition seq) (grid: Grid) =
+    let withRows<'T when 'T :> Grid> (rows: RowDefinition seq) (grid: 'T) =
         let rds = RowDefinitions()
         rds.AddRange(rows)
         grid.RowDefinitions <- rds
         grid
 
-    let withColumns (columns: ColumnDefinition seq) (grid: Grid) =
+    let withColumns<'T when 'T :> Grid> (columns: ColumnDefinition seq) (grid: 'T) =
         let cds = ColumnDefinitions()
         cds.AddRange(columns)
         grid.ColumnDefinitions <- cds

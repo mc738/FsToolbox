@@ -1,8 +1,9 @@
 ﻿namespace FsToolbox.GLTF
 
 open System.Numerics
-open Anim.Core
 open FsToolbox.GameDevelopment.Geometry.Types
+open FsToolbox.GameDevelopment.Animations.Armatures
+open FsToolbox.GameDevelopment.Animations.Clips
 open FsToolbox.GameDevelopment.Maths
 open SharpGLTF.Memory
 open SharpGLTF.Schema2
@@ -20,8 +21,6 @@ module GLTFLoader =
         | Int3 of Int3 array
         | Int4 of Int4 array
         
-        
-
     [<RequireQualifiedAccess>]
     module private Operations =
         let createPrimitive (prim: SharpGLTF.Schema2.MeshPrimitive) =

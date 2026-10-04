@@ -96,6 +96,20 @@ module Common =
         ()
     
     [<AutoOpen>]
+    module StyledElement =
+        
+        let withClass<'T when 'T :> StyledElement> (className: string) (c: 'T) =
+            c.Classes.Add(className)
+            c
+            
+        
+        let withClasses<'T when 'T :> StyledElement> (classes: string seq) (c: 'T) =
+            for cn in classes do
+                c.Classes.Add(cn)
+                
+            c
+    
+    [<AutoOpen>]
     module SelectingItemsControl =
 
         let withItems<'T when 'T :> SelectingItemsControl> (clearCurrent: bool) (items: Control seq) (c: 'T) =

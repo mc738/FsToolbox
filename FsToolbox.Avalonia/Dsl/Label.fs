@@ -22,7 +22,7 @@ module Label =
             c.Classes.Add(cl)
 
         c
-
+    
     let createDefault () = create ControlStyle.Default
 
     let withContent (content: obj) (l: Label) =
