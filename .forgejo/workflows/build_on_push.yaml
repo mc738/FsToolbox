@@ -1,0 +1,12 @@
+on: [push]
+jobs:
+  test:
+    name: cargo build
+    runs-on: docker
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+            dotnet-version: '8.0.x'
+      - run: cargo build
+

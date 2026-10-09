@@ -32,6 +32,9 @@ type JsonTypeSerializer() =
             match source.GetAsString() with
             | Error e -> DeserializationError.SourceError e |> Error
             | Ok s ->
+                let i = s
+                let d = JsonDocument.Parse(s).RootElement
+                
                 match Deserializer.deserializeAnimationClip (JsonDocument.Parse(s).RootElement) with
                 | Ok a -> Ok a
                 | Error e ->

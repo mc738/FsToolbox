@@ -96,7 +96,7 @@ module Extensions =
                             |> Json.writeObjectValue (fun ow ->
                                 ow.WriteNumber("time", kf.Time)
                                 kf.Value.WriteJsonProperty(ow, "value")))
-                    "rotationKeyframes")
+                    "scaleKeyframes")
 
     type AnimationEvent with
         member this.WriteToJson(writer: Utf8JsonWriter) =

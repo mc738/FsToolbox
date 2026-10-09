@@ -19,6 +19,8 @@
         <Compile Include="Animations\Armatures\Impl.fs" />
         <Compile Include="Animations\Clips\Types.fs" />
         <Compile Include="Animations\Clips\Impl.fs" />
+        <Compile Include="Animations\Clips\Operations.fs" />
+        <Compile Include="Animations\Animator.fs" />
     </ItemGroup>
 
     <ItemGroup>

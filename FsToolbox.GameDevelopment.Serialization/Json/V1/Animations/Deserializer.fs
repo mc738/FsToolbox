@@ -98,11 +98,14 @@ module Deserializer =
                         | Ok j -> jointsResults.Add(key, j)
                         | Error e -> error <- Some e
 
-            Ok(
-                { RootBones = []
-                  Joints = failwith "todo" }
-                : Armature
-            )
+            match error with
+            | Some e -> Error e
+            | None ->
+                Ok(
+                    { RootBones = rootBoneResults |> List.ofSeq
+                      Joints = jointsResults |> Map.ofSeq }
+                    : Armature
+                )
 
     let deserializeAnimationChannel (root: JsonElement) =
         match
@@ -158,13 +161,16 @@ module Deserializer =
                     | _, Error e -> error <- Some e
                     | Some time, Ok value -> scaleKeyframes.Add({ Time = time; Value = value })
 
-            Ok(
-                { NodeId = 0
-                  TranslationKeyframes = translationKeyframes.ToArray()
-                  RotationKeyframes = rotationKeyframes.ToArray()
-                  ScaleKeyframes = scaleKeyframes.ToArray() }
-                : AnimationChannel
-            )
+            match error with
+            | Some e -> Error e
+            | None ->
+                Ok(
+                    { NodeId = ni
+                      TranslationKeyframes = translationKeyframes.ToArray()
+                      RotationKeyframes = rotationKeyframes.ToArray()
+                      ScaleKeyframes = scaleKeyframes.ToArray() }
+                    : AnimationChannel
+                )
 
     let deserializeAnimationEvent (root: JsonElement) =
         match Json.tryGetSingleProperty "time" root, Json.tryGetStringProperty "name" root with
@@ -173,14 +179,48 @@ module Deserializer =
         | Some time, Some name -> Ok({ Time = time; Name = name })
 
     let deserializeAnimationClip (root: JsonElement) =
-        match Json.tryGetStringProperty "name" root, Json.tryGetArrayProperty "tracks" root with
-        | None, _ -> JsonReadError.MissingProperty "name" |> Error
-        | _, None -> JsonReadError.MissingProperty "tracks" |> Error
-        | Some name, Some tracks ->
-            ({ Name = ""
-               Duration = failwith "todo"
-               IsLoop = failwith "todo"
-               Channels = failwith "todo"
-               Events = failwith "todo" }
-            : AnimationClip)
-            |> Ok
+        match
+            Json.tryGetStringProperty "name" root,
+            Json.tryGetSingleProperty "duration" root,
+            Json.tryGetBoolProperty "isLoop" root,
+            Json.tryGetArrayProperty "channels" root,
+            Json.tryGetArrayProperty "events" root
+        with
+        | None,_,  _, _, _ -> JsonReadError.MissingProperty "name" |> Error
+        | _, None, _, _, _ -> JsonReadError.MissingProperty "duration" |> Error
+        | _, _, None, _, _ -> JsonReadError.MissingProperty "isLoop" |> Error
+        | _, _, _, None, _ -> JsonReadError.MissingProperty "channels" |> Error
+        | _, _, _, _, None -> JsonReadError.MissingProperty "events" |> Error
+        | Some name, Some duration, Some isLoop, Some channels, Some events ->
+            let mutable error: JsonReadError option = None
+
+            let channelsResult = ResizeArray<int *AnimationChannel>()
+            let eventsResult = ResizeArray<AnimationEvent>()
+
+
+            for channel in channels do
+                if error.IsNone then
+                    match Json.tryGetIntProperty "key" channel, Json.tryGetProperty "value" channel with
+                    | None, _ -> error <- Some(JsonReadError.MissingProperty "key")
+                    | _, None -> error <- Some(JsonReadError.MissingProperty "value")
+                    | Some key, Some value ->
+                        match deserializeAnimationChannel value with
+                        | Ok c -> channelsResult.Add(key, c)
+                        | Error e -> error <- Some e
+               
+            for event in events do
+                if error.IsNone then
+                    match deserializeAnimationEvent event with
+                    | Ok e -> eventsResult.Add(e)
+                    | Error e -> error <- Some e
+
+            match error with
+            | Some e -> Error e
+            | None ->
+                ({ Name = name
+                   Duration = duration
+                   IsLoop = isLoop
+                   Channels = channelsResult |> Map.ofSeq
+                   Events = eventsResult.ToArray() }
+                : AnimationClip)
+                |> Ok

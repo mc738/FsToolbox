@@ -3,6 +3,7 @@ namespace FsToolbox.GameDevelopment.Serialization.Core
 open System
 open System.Collections.Generic
 open System.IO
+open System.Text
 open FsToolbox.GameDevelopment.Animations.Armatures
 open FsToolbox.GameDevelopment.Animations.Clips
 open FsToolbox.GameDevelopment.Geometry.Types
@@ -15,37 +16,33 @@ module Types =
 
     type ISerializationTarget =
         inherit IDisposable
-        
+
         abstract member GetStream: unit -> Result<Stream, SerializationTargetError>
 
-    
+
     type FileSerializationTarget(path: string) =
-        let fs = File.OpenRead path
-        
-        
+        let fs = File.Create path
+
+
         interface ISerializationTarget with
             member x.Dispose() = fs.Dispose()
-            member this.GetStream() =
-                fs :> Stream |> Ok
-                
+            member this.GetStream() = fs :> Stream |> Ok
+
     type MemorySerializationTarget() =
         let ms = new MemoryStream()
-        
+
         interface ISerializationTarget with
             member x.Dispose() = ms.Dispose()
-            member this.GetStream() =
-                ms :> Stream |> Ok
-                
-                
-                
-                
+            member this.GetStream() = ms :> Stream |> Ok
+
+
+
+
     [<RequireQualifiedAccess>]
     type SerializationSourceError = InvalidOperation of string
 
     type ISerializationSource =
         inherit IDisposable
-        
-        abstract member Deserialize: string -> obj
 
         abstract member GetAsString: unit -> Result<string, SerializationSourceError>
 
@@ -61,7 +58,40 @@ module Types =
     type DeserializationError =
         | SourceError of SerializationSourceError
         | UnhandledException of exn
-    
+
+
+
+    type FileSerializationSource(path: string) =
+        let fs = File.OpenRead path
+
+
+        interface ISerializationSource with
+            member x.Dispose() = fs.Dispose()
+
+            member this.GetAsBytes() =
+                use ms = new MemoryStream()
+                fs.CopyTo(ms)
+                ms.ToArray() |> Ok
+
+            member this.GetAsStream() = fs :> Stream |> Ok
+
+            member this.GetAsString() =
+                use ms = new MemoryStream()
+                fs.CopyTo(ms)
+                ms.ToArray() |> Encoding.UTF8.GetString |> Ok
+
+    type MemorySerializationSource() =
+        let ms = new MemoryStream()
+
+        interface ISerializationSource with
+            member x.Dispose() = ms.Dispose()
+            member this.GetAsBytes() = ms.ToArray() |> Ok
+            member this.GetAsStream() = ms :> Stream |> Ok
+
+            member this.GetAsString() =
+                ms.ToArray() |> Encoding.UTF8.GetString |> Ok
+
+
     type ITypeSerializer =
 
         abstract member SerializeModel: ISerializationTarget * Model3D -> Result<unit, SerializationError>
